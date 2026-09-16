@@ -1,0 +1,2385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>UCE Sales Mobile App</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    html, body {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100%; height: 100%;
+      margin: 0; padding: 0;
+      overflow: hidden !important;
+      background-color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.88rem;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      width: 100%; height: 100%;
+      position: absolute; top: 0; left: 0;
+    }
+    .app-top-bar {
+      flex: 0 0 54px;
+      background: #0f172a;
+      color: #fff;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 100;
+    }
+    .app-main-content {
+      flex: 1 1 auto;
+      overflow-y: scroll !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding: 12px;
+      position: relative;
+    }
+    .scroll-buttons-container {
+      position: fixed;
+      right: 12px;
+      bottom: 75px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 999;
+    }
+    .btn-scroll {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #0f172a;
+      color: #ffffff;
+      border: 2px solid #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      cursor: pointer;
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    .app-bottom-nav {
+      flex: 0 0 60px;
+      background: #ffffff;
+      border-top: 1px solid #cbd5e1;
+      display: flex; justify-content: space-around; align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+      z-index: 100;
+    }
+    .nav-btn {
+      text-align: center; color: #64748b; font-size: 0.72rem; font-weight: 600;
+      text-decoration: none; flex: 1; padding: 6px 0; cursor: pointer;
+    }
+    .nav-btn i { font-size: 1.2rem; display: block; margin-bottom: 2px; }
+    .nav-btn.active { color: #2563eb; }
+    .app-card {
+      background: #ffffff; border-radius: 14px; padding: 14px;
+      border: 1px solid #e2e8f0; margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .form-control, .form-select {
+      font-size: 0.85rem !important; padding: 8px 10px;
+      border-radius: 8px; border: 1px solid #cbd5e1;
+    }
+    .form-label { font-weight: 600; font-size: 0.76rem; color: #475569; margin-bottom: 3px; }
+    .lead-card {
+      background: #fff; border-radius: 12px; padding: 12px 14px;
+      border-left: 4px solid #2563eb; margin-bottom: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      border: 1px solid #e2e8f0; border-left-width: 4px;
+    }
+    .extra-small { font-size: 0.74rem; }
+    .modal-body { 
+      max-height: 70vh; 
+      overflow-y: scroll !important; 
+      -webkit-overflow-scrolling: touch !important; 
+      position: relative;
+    }
+    .cal-header-m { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 700; color: #64748b; font-size: 0.72rem; padding-bottom: 4px; }
+    .cal-grid-m { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-day-m { min-height: 55px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 2px; text-align: center; cursor: pointer; }
+    .cal-day-m.empty { background: transparent; border: none; }
+    .day-num-m { font-weight: 700; font-size: 0.75rem; color: #1e293b; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin: 1px; }
+
+    .brand-dropdown-menu-mob {
+      position: absolute !important;
+      top: 100% !important;
+      left: 0 !important;
+      right: 0 !important;
+      z-index: 1055 !important;
+      max-height: 210px;
+      overflow-y: auto;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      background: #ffffff;
+      padding: 8px 12px 8px 16px !important;
+    }
+    .brand-item-hover:hover {
+      background-color: #f1f5f9;
+    }
+
+    #floatingNotificationBanner {
+      position: fixed;
+      top: -120px;
+      left: 12px;
+      right: 12px;
+      z-index: 10000;
+      background: #0f172a;
+      color: #ffffff;
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+    }
+    #floatingNotificationBanner.show {
+      top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="floatingNotificationBanner" onclick="dismissFloatingBanner()">
+  <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; min-width: 38px;">
+    <i class="fa fa-bell fa-lg"></i>
+  </div>
+  <div class="flex-grow-1 text-truncate">
+    <div class="fw-bold extra-small text-warning" id="floatBannerTitle">Notification</div>
+    <div class="small text-white text-truncate" id="floatBannerMsg">Message</div>
+  </div>
+  <button type="button" class="btn-close btn-close-white extra-small" onclick="event.stopPropagation(); dismissFloatingBanner();"></button>
+</div>
+
+<div id="loginScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
+  <div class="app-card w-100 shadow-lg text-center" style="max-width: 360px;">
+    <div class="bg-primary text-white d-inline-block rounded-circle p-3 mb-2">
+      <i class="fa fa-cubes fa-2x"></i>
+    </div>
+    <h5 class="fw-bold text-dark mb-1">UCE Sales Mobile App</h5>
+    <p class="text-muted extra-small mb-3">Sign in to access your portal</p>
+    
+    <div id="loginError" class="alert alert-danger d-none small py-2"></div>
+    <form id="loginForm">
+      <input type="text" id="loginUsername" class="form-control mb-2" placeholder="Username / Email" required>
+      <input type="password" id="loginPassword" class="form-control mb-3" placeholder="Password" required>
+      <button type="submit" id="loginBtn" class="btn btn-primary w-100 fw-bold py-2">LOG IN</button>
+    </form>
+  </div>
+</div>
+
+<div class="scroll-buttons-container">
+  <div class="btn-scroll" onclick="scrollPage('up')"><i class="fa fa-chevron-up"></i></div>
+  <div class="btn-scroll" onclick="scrollPage('down')"><i class="fa fa-chevron-down"></i></div>
+</div>
+
+<div class="app-shell">
+  <div class="app-top-bar">
+    <div class="d-flex align-items-center gap-2">
+      <img src="https://unitedcontrolengg.com/wp-content/uploads/2025/06/United-Logo.png" alt="Logo" style="height: 35px; width: auto; margin-right: 8px; vertical-align: middle;">
+      <span class="fw-bold fs-6">UCE SALES</span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button id="notifEnableBtn" onclick="requestNotificationPermission()" class="btn btn-sm btn-outline-warning py-0 px-2 d-none" title="Enable Notifications"><i class="fa fa-bell"></i></button>
+      <span id="loggedUserMobile" class="badge bg-secondary">User</span>
+      <button onclick="logout()" class="btn btn-sm btn-outline-light py-0 px-2"><i class="fa fa-power-off"></i></button>
+    </div>
+  </div>
+
+  <div class="app-main-content" id="mainScrollContainer">
+    <div id="alertBox" class="alert d-none alert-dismissible fade show py-2 small mb-2" role="alert">
+      <span id="alertMsg"></span>
+      <button type="button" class="btn-close py-2" onclick="hideAlert()"></button>
+    </div>
+
+    <!-- TAB 1: LEADS FEED -->
+    <div id="tab-leads">
+      <div id="reminderBanner" class="app-card p-3 mb-3 border-start border-warning border-4 bg-light d-none">
+        <h6 class="fw-bold text-dark mb-1"><i class="fa fa-bell text-warning me-2"></i>Today's Reminders</h6>
+        <p class="text-muted extra-small mb-2" id="reminderText">Checking today's follow-ups...</p>
+        <div class="d-flex gap-1">
+          <button class="btn btn-sm btn-outline-primary py-1 px-2 extra-small" onclick="filterTodayLeadFollowups()">Lead F/Up</button>
+          <button class="btn btn-sm btn-outline-success py-1 px-2 extra-small" onclick="filterTodayPaymentFollowups()">Payment F/Up</button>
+          <button class="btn btn-sm btn-outline-secondary py-1 px-2 extra-small" onclick="clearReminderFilter()">Show All</button>
+        </div>
+      </div>
+      
+      <div class="app-card p-3 mb-3 bg-light border-start border-primary border-4" id="sidebarTargetWidget">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fw-bold text-primary extra-small"><i class="fa fa-bullseye me-1"></i> Performance & Targets</span>
+        </div>
+        <div class="d-flex justify-content-between extra-small text-muted mb-1">
+          <span>Monthly: <b id="mTargetText" class="text-dark">₹0 / ₹0</b></span>
+        </div>
+        <div class="progress mb-1" style="height: 4px; background-color: #cbd5e1;">
+          <div id="mProgressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%;"></div>
+        </div>
+        <div class="d-flex justify-content-between text-muted" style="font-size: 0.7rem;">
+          <span id="mPctText" class="text-success fw-bold">0% Done</span>
+          <span id="mBalanceText" class="text-dark">Bal: ₹0</span>
+        </div>
+        <hr class="border-secondary my-1">
+        <div class="d-flex justify-content-between extra-small text-muted mb-1">
+          <span>Quarterly: <b id="qTargetText" class="text-dark">₹0 / ₹0</b></span>
+        </div>
+        <div class="progress mb-1" style="height: 4px; background-color: #cbd5e1;">
+          <div id="qProgressBar" class="progress-bar bg-info" role="progressbar" style="width: 0%;"></div>
+        </div>
+        <div class="d-flex justify-content-between text-muted" style="font-size: 0.7rem;">
+          <span id="qPctText" class="text-info fw-bold">0% Done</span>
+          <span id="qBalanceText" class="text-dark">Bal: ₹0</span>
+        </div>
+        <hr class="border-secondary my-1">
+        <div class="d-flex justify-content-between extra-small text-muted mb-1">
+          <span>Annual: <b id="aTargetText" class="text-dark">₹0 / ₹0</b></span>
+        </div>
+        <div class="progress mb-1" style="height: 4px; background-color: #cbd5e1;">
+          <div id="aProgressBar" class="progress-bar bg-warning" role="progressbar" style="width: 0%;"></div>
+        </div>
+        <div class="d-flex justify-content-between text-muted" style="font-size: 0.7rem;">
+          <span id="aPctText" class="text-warning fw-bold">0% Done</span>
+          <span id="aBalanceText" class="text-dark">Bal: ₹0</span>
+        </div>
+      </div>
+
+      <div class="app-card bg-light p-2 mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="fw-bold extra-small text-dark">Filter Enquiries</span>
+          <button class="btn btn-xs btn-success fw-bold py-0 px-2 extra-small" onclick="openMemberExportModalMob()">
+            <i class="fa fa-file-excel me-1"></i> Export Report
+          </button>
+        </div>
+        <div class="row g-2 mb-1">
+          <div class="col-12">
+            <input type="text" id="searchInput" oninput="applyFilters()" class="form-control form-control-sm" placeholder="🔍 Search (ID, Customer, Brand)...">
+          </div>
+          <div class="col-6">
+            <label class="form-label extra-small mb-0">From Date</label>
+            <input type="date" id="filterFromDate" onchange="applyFilters()" class="form-control form-control-sm">
+          </div>
+          <div class="col-6">
+            <label class="form-label extra-small mb-0">To Date</label>
+            <input type="date" id="filterToDate" onchange="applyFilters()" class="form-control form-control-sm">
+          </div>
+          <div class="col-6">
+            <label class="form-label extra-small mb-0">Status</label>
+            <select id="filterStatus" onchange="applyFilters()" class="form-select form-select-sm">
+              <option value="ALL">All Status</option>
+              <option value="New Lead">New Lead</option>
+              <option value="Hot lead">Hot lead</option>
+              <option value="Quoted">Quoted</option>
+              <option value="Live">Live</option>
+              <option value="Won">Won</option>
+              <option value="Lost">Lost</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="form-label extra-small mb-0">Payment Status</label>
+            <select id="filterPaymentStatus" onchange="applyFilters()" class="form-select form-select-sm">
+              <option value="ALL">All Payment</option>
+              <option value="Pending">Pending</option>
+              <option value="Advance Received">Advance Received</option>
+              <option value="Fully Paid">Fully Paid</option>
+              <option value="Partial">Partial</option>
+              <option value="Credit">Credit</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label extra-small mb-0">Sales Person</label>
+            <select id="filterSalesPerson" onchange="onSalespersonFilterChange()" class="form-select form-select-sm">
+              <option value="ALL">All Team Member</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="mobileLeadsContainer">
+        <div class="text-center text-muted py-4">Loading enquiries...</div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-2 px-1 mb-5">
+        <small class="text-muted extra-small" id="paginationInfo">Showing 0 entries</small>
+        <div class="btn-group btn-group-sm">
+          <button class="btn btn-outline-secondary py-1" onclick="prevPage()">Prev</button>
+          <button class="btn btn-outline-secondary py-1" onclick="nextPage()">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: CREATE ENQUIRY -->
+    <div id="tab-add" class="d-none">
+      <div class="app-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold text-primary m-0"><i class="fa fa-plus-circle me-1"></i> New Enquiry Form</h6>
+          <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 extra-small" onclick="resetMobileEnquiryForm()"><i class="fa fa-undo me-1"></i> Reset</button>
+        </div>
+        <form id="enquiryForm">
+          <div class="row g-2 mb-2">
+            <div class="col-12">
+              <label class="form-label">1. Sales Person *</label>
+              <input class="form-control fw-bold" list="salesPersonsList" id="salesPersonInput" placeholder="Select or type salesperson..." required oninput="filterCustomersBySalesPerson()">
+              <datalist id="salesPersonsList"></datalist>
+            </div>
+            <div class="col-12">
+              <label class="form-label">2. Select Customer *</label>
+              <input class="form-control" list="customersList" id="customerInput" placeholder="Type or select..." required onchange="autoFillCustomerInfo()">
+              <datalist id="customersList"></datalist>
+            </div>
+            <div class="col-6">
+              <label class="form-label">City</label>
+              <input type="text" class="form-control" id="custCity" placeholder="City">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Complete Address</label>
+              <input type="text" class="form-control" id="custAddress" placeholder="Address">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Contact Person</label>
+              <input type="text" class="form-control" id="custContactPerson" placeholder="Name">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Phone</label>
+              <input type="text" class="form-control" id="custMobile" placeholder="Phone">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" id="custEmail" placeholder="Email">
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Description *</label>
+            <textarea class="form-control" id="description" rows="2" required placeholder="Requirement detail..."></textarea>
+          </div>
+
+          <div class="position-relative mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label class="form-label m-0">Select Brands (Multiple Allowed) *</label>
+              <button type="button" class="btn btn-xs btn-link text-primary p-0 text-decoration-none fw-bold extra-small" onclick="toggleAddNewBrandInputMob()">+ Add New Brand</button>
+            </div>
+            <div class="dropdown">
+              <button class="btn btn-outline-secondary btn-sm w-100 text-start d-flex justify-content-between align-items-center bg-white" type="button" id="brandDropdownBtnMob" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <span id="brandDropdownLabelMob" class="text-truncate extra-small">Select Brands...</span>
+                <i class="fa fa-chevron-down text-muted extra-small"></i>
+              </button>
+              <div class="dropdown-menu w-100 p-2 brand-dropdown-menu-mob" id="brandCheckboxContainerMob">
+                <div class="text-muted extra-small py-1">Loading brands...</div>
+              </div>
+            </div>
+
+            <div class="input-group input-group-sm mt-1 d-none" id="newBrandRowMob">
+              <input type="text" class="form-control extra-small" id="newCustomBrandInputMob" placeholder="Brand name...">
+              <button class="btn btn-primary fw-bold extra-small" type="button" onclick="submitNewBrandPermanentlyMob()">Save</button>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="form-label">Approx Value (₹) *</label>
+              <input type="number" class="form-control" id="approxValue" placeholder="0.00" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Mode</label>
+              <select class="form-select" id="mode">
+                <option value="Email">Email</option>
+                <option value="Phone Call">Phone Call</option>
+                <option value="Visit">Direct Visit</option>
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Website">Website</option>
+                <option value="IndiaMart">IndiaMart</option>
+                <option value="Digital Marketing">Digital Marketing</option>
+                <option value="Tradeindia">Tradeindia</option>
+                <option value="JustDial">JustDial</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Enquiry Date *</label>
+              <input type="date" class="form-control" id="enquiryDate" required onchange="calculatePaymentFollowupDateMob()">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Expected Close</label>
+              <input type="date" class="form-control" id="expectedClose">
+            </div>
+          </div>
+
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="form-label">Payment Status</label>
+              <select class="form-select" id="paymentStatus">
+                <option value="Pending" selected>Pending</option>
+                <option value="Advance Received">Advance Received</option>
+                <option value="Fully Paid">Fully Paid</option>
+                <option value="Partial">Partial</option>
+                <option value="Credit">Credit</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Payment Terms *</label>
+              <select class="form-select" id="paymentTermsSelectMob" onchange="calculatePaymentFollowupDateMob()">
+                <option value="0" selected>100% Advance (0 Days)</option>
+                <option value="7">7 Days Credit</option>
+                <option value="15">15 Days Credit</option>
+                <option value="30">30 Days Credit</option>
+                <option value="45">45 Days Credit</option>
+                <option value="60">60 Days Credit</option>
+                <option value="90">90 Days Credit</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label text-success">Payment Follow-Up</label>
+              <input type="date" class="form-control border-success" id="paymentFollowupDateMob">
+            </div>
+            <div class="col-6">
+              <label class="form-label text-primary">Lead Follow-Up Date</label>
+              <input type="date" class="form-control border-primary" id="leadFollowup">
+            </div>
+          </div>
+
+          <div class="row g-2 mb-2">
+            <div class="col-12">
+              <label class="form-label">Dispatch Info</label>
+              <input type="text" class="form-control" id="dispatch" placeholder="Dispatch details...">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Internal Remarks / Notes</label>
+              <input type="text" class="form-control" id="remark" placeholder="Any internal notes...">
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 mt-2 mb-5">
+            <button type="button" class="btn btn-outline-secondary w-50 fw-bold py-2" onclick="resetMobileEnquiryForm()">RESET</button>
+            <button type="submit" id="saveEnquiryBtn" class="btn btn-primary w-50 fw-bold py-2 fs-6">SAVE</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB 3: VISUAL ANALYTICS -->
+    <div id="tab-analytics" class="d-none">
+      <div class="row g-2 mb-3">
+        <div class="col-6">
+          <div class="app-card text-center p-2">
+            <small class="text-muted fw-bold">Total Enquiries</small>
+            <h4 id="statTotalEnq" class="fw-bold text-dark m-0">0</h4>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="app-card text-center p-2 border-start border-success border-4">
+            <small class="text-muted fw-bold">Won Value</small>
+            <h4 id="statWonValue" class="fw-bold text-success m-0">₹0</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="app-card mb-3">
+        <h6 class="fw-bold text-primary mb-2 extra-small"><i class="fa fa-chart-pie me-1"></i> Power BI Executive Reports</h6>
+        <div class="mb-2">
+          <select id="powerBiReportSelect" class="form-select form-select-sm fw-bold border-primary" onchange="renderMobilePowerBiDashboard()">
+            <option value="funnel">📈 Sales Funnel & Pipeline Velocity</option>
+            <option value="brands">🏷️ Brand Performance Matrix</option>
+            <option value="marketing">🎯 Lead Source / Marketing ROI</option>
+            <option value="productivity">⚡ Team Activity vs Revenue</option>
+            <option value="cashflow">💰 Cash Flow & Payment Aging</option>
+          </select>
+        </div>
+        <h6 id="powerBiChartTitle" class="fw-bold text-center mb-2 extra-small text-muted">Sales Funnel Progression</h6>
+        <div style="height: 250px;">
+          <canvas id="powerBiCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: CALLS & VISITS CALENDAR -->
+    <div id="tab-calls" class="d-none">
+      <div class="app-card mb-3 p-2">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <button class="btn btn-xs btn-outline-secondary py-0 px-2" onclick="changeMobileCalendarMonth(-1)"><i class="fa fa-chevron-left"></i></button>
+          <span class="fw-bold text-dark extra-small" id="mobCalMonthLabel"></span>
+          <button class="btn btn-xs btn-outline-secondary py-0 px-2" onclick="changeMobileCalendarMonth(1)"><i class="fa fa-chevron-right"></i></button>
+        </div>
+        
+        <div class="cal-header-m">
+          <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+        </div>
+        <div class="cal-grid-m" id="mobCalendarDays"></div>
+      </div>
+
+      <div class="app-card mb-5 p-2">
+        <h6 class="fw-bold text-dark extra-small mb-2"><i class="fa fa-layer-group me-1 text-primary"></i> Monthly Customer Summary</h6>
+        <div id="mobMonthlySummaryContainer">
+          <div class="text-center text-muted py-3 extra-small">No activity records for this month</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: TO-DO TASKS CALENDAR -->
+    <div id="tab-todo" class="d-none">
+      <div class="app-card mb-3 p-2">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <button class="btn btn-xs btn-outline-secondary py-0 px-2" onclick="changeMobTodoCalendarMonth(-1)"><i class="fa fa-chevron-left"></i></button>
+          <span class="fw-bold text-dark extra-small" id="mobTodoCalMonthLabel"></span>
+          <button class="btn btn-xs btn-outline-secondary py-0 px-2" onclick="changeMobTodoCalendarMonth(1)"><i class="fa fa-chevron-right"></i></button>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+          <span class="text-muted extra-small"><i class="fa fa-info-circle me-1"></i>Date par click karke task add/view karein</span>
+          <span class="badge bg-light text-dark border extra-small" id="mobTodoTotalSummary">Pending: 0 | Done: 0</span>
+        </div>
+
+        <div class="cal-header-m">
+          <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+        </div>
+        <div class="cal-grid-m" id="mobTodoCalendarDays"></div>
+      </div>
+
+      <div class="app-card mb-5 p-2">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-2">
+          <h6 class="fw-bold text-dark extra-small m-0"><i class="fa fa-tasks me-1 text-primary"></i> Monthly Task Overview</h6>
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-xs btn-outline-secondary active py-0 px-2 extra-small" id="btnMobFilterAll" onclick="filterMobTasksSummary('ALL')">All</button>
+            <button class="btn btn-xs btn-outline-secondary py-0 px-2 extra-small" id="btnMobFilterPending" onclick="filterMobTasksSummary('Pending')">Pending</button>
+            <button class="btn btn-xs btn-outline-secondary py-0 px-2 extra-small" id="btnMobFilterDone" onclick="filterMobTasksSummary('Completed')">Done</button>
+          </div>
+        </div>
+        <div id="mobMonthlyTaskSummaryContainer">
+          <div class="text-center text-muted py-3 extra-small">No tasks found for this month</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <div class="app-bottom-nav">
+    <a class="nav-btn" id="nb-leads" onclick="switchTab('leads')">
+      <i class="fa fa-list"></i>Leads
+    </a>
+    <a class="nav-btn" id="nb-todo" onclick="switchTab('todo')">
+      <i class="fa fa-calendar-check"></i>To-Do
+    </a>
+    <a class="nav-btn" id="nb-add" onclick="switchTab('add')">
+      <i class="fa fa-plus-circle"></i>Add Lead
+    </a>
+    <a class="nav-btn" id="nb-analytics" onclick="switchTab('analytics')">
+      <i class="fa fa-chart-pie"></i>Analytics
+    </a>
+    <a class="nav-btn" id="nb-calls" onclick="switchTab('calls')">
+      <i class="fa fa-phone-alt"></i>Calls Log
+    </a>
+  </div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal fade" id="mobExportModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header bg-success text-white py-2">
+        <h6 class="modal-title fw-bold extra-small"><i class="fa fa-file-excel me-1"></i> Export Enquiries Report</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3">
+        <div class="mb-2">
+          <label class="form-label extra-small">Team Member</label>
+          <select id="mobExportSpSelect" class="form-select form-select-sm extra-small"></select>
+        </div>
+        <div class="mb-2">
+          <label class="form-label extra-small">Frequency Preset</label>
+          <select id="mobExportPresetSelect" class="form-select form-select-sm extra-small" onchange="onMobExportPresetChange()">
+            <option value="today">Daily (Today Only)</option>
+            <option value="week">Weekly (This Week)</option>
+            <option value="month" selected>Monthly (This Month)</option>
+            <option value="custom">Custom Date Range</option>
+          </select>
+        </div>
+        <div class="row g-1 mb-2 d-none" id="mobExportCustomDateRow">
+          <div class="col-6">
+            <input type="date" id="mobExportFromDate" class="form-control form-control-sm extra-small">
+          </div>
+          <div class="col-6">
+            <input type="date" id="mobExportToDate" class="form-control form-control-sm extra-small">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-sm btn-secondary extra-small" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-sm btn-success fw-bold extra-small" id="mobExportBtn" onclick="submitMobExportDownload()">Download CSV</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal fade" id="leadDetailsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 position-relative">
+      <div class="modal-header bg-primary text-white py-2">
+        <h6 class="modal-title fw-bold" id="modalEnqTitle">Lead Details & Update</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      
+      <div style="position: absolute; right: 10px; top: 60px; z-index: 1050; display: flex; flex-direction: column; gap: 5px;">
+        <button class="btn btn-sm btn-dark py-1 px-2 opacity-75" onclick="scrollModal('up')"><i class="fa fa-chevron-up"></i></button>
+        <button class="btn btn-sm btn-dark py-1 px-2 opacity-75" onclick="scrollModal('down')"><i class="fa fa-chevron-down"></i></button>
+      </div>
+
+      <div class="modal-body p-3" id="modalScrollBody">
+        <input type="hidden" id="editEnqId">
+
+        <div class="p-2 mb-3 bg-light rounded border border-primary shadow-sm" id="modalProToolsContainer">
+          <h6 class="fw-bold text-primary mb-2 extra-small"><i class="fa fa-rocket me-1"></i> Pro Tools & Quick Actions</h6>
+          <div class="row g-1 mb-2">
+            <div class="col-6">
+              <button type="button" class="btn btn-sm btn-success w-100 fw-bold py-1 extra-small" onclick="modalSendWhatsApp()">
+                <i class="fab fa-whatsapp me-1"></i> WhatsApp
+              </button>
+            </div>
+            <div class="col-6">
+              <button type="button" class="btn btn-sm btn-info text-white w-100 fw-bold py-1 extra-small" onclick="modalOpenCustomerLedger()">
+                <i class="fa fa-history me-1"></i> Ledger
+              </button>
+            </div>
+            <div class="col-12 mt-1">
+              <div class="input-group input-group-sm">
+                <select class="form-select extra-small" id="modalSnoozeType">
+                  <option value="lead">Lead F/Up</option>
+                  <option value="payment">Payment F/Up</option>
+                </select>
+                <input type="date" class="form-control extra-small" id="modalSnoozeDate">
+                <button class="btn btn-outline-primary fw-bold extra-small" type="button" onclick="modalExecuteSnooze()">Snooze</button>
+              </div>
+            </div>
+            <div class="col-12 mt-1" id="transferActionWrapper">
+              <div class="input-group input-group-sm">
+                <select class="form-select extra-small" id="modalTransferSp">
+                  <option value="">Transfer To...</option>
+                </select>
+                <button class="btn btn-outline-danger fw-bold extra-small" type="button" onclick="modalExecuteTransfer()">Transfer</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="dynamicCustomerDetailsBox" class="p-2 bg-white rounded border extra-small">
+            <div class="text-muted text-center py-1">Loading details...</div>
+          </div>
+        </div>
+
+        <div class="p-2 bg-light rounded border mb-3">
+          <div class="row g-1 extra-small">
+            <div class="col-6"><b>Customer:</b> <span id="mCustName">-</span></div>
+            <div class="col-6"><b>City:</b> <span id="mCustCity">-</span></div>
+            <div class="col-12"><b>Address:</b> <span id="mCustAddress">-</span></div>
+            <div class="col-6"><b>Contact:</b> <span id="mCustContact">-</span></div>
+            <div class="col-6"><b>Phone:</b> <span id="mCustPhone">-</span></div>
+            <div class="col-12"><b>Email:</b> <span id="mCustEmail">-</span></div>
+            <div class="col-6"><b>Brand:</b> <span id="mBrand">-</span></div>
+            <div class="col-6"><b>Mode:</b> <span id="mMode">-</span></div>
+            <div class="col-12"><b>Salesperson:</b> <span id="mSalesPerson">-</span></div>
+            <div class="col-12 mt-1"><b>Description:</b> <p class="m-0 text-muted" id="mDescription">-</p></div>
+          </div>
+        </div>
+
+        <div id="modalLockNotice" class="alert alert-warning py-1 px-2 extra-small fw-bold d-none mb-2">
+          🔒 This completed enquiry is locked because the maximum 2 edit limit has been reached.
+        </div>
+
+        <h6 class="fw-bold text-primary mb-2 extra-small">Update Lead Status & Values</h6>
+
+        <div class="row g-2">
+          <div class="col-6">
+            <label class="form-label">Approx Value (₹) *</label>
+            <input type="number" id="editApproxValue" class="form-control fw-bold text-success">
+          </div>
+          <div class="col-6">
+            <label class="form-label">Status *</label>
+            <select id="editStatus" class="form-select" onchange="toggleModalLostReason()">
+              <option value="New Lead">New Lead</option>
+              <option value="Hot lead">Hot lead</option>
+              <option value="Quoted">Quoted</option>
+              <option value="Live">Live</option>
+              <option value="Won">Won</option>
+              <option value="Lost">Lost</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="form-label">Payment Status</label>
+            <select id="editPaymentStatus" class="form-select">
+              <option value="Pending">Pending</option>
+              <option value="Advance Received">Advance Received</option>
+              <option value="Fully Paid">Fully Paid</option>
+              <option value="Partial">Partial</option>
+              <option value="Credit">Credit</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="form-label text-primary">Lead Follow-Up Date</label>
+            <input type="date" id="editLeadFollowup" class="form-control border-primary">
+          </div>
+          <div class="col-6">
+            <label class="form-label text-success">Payment Follow-Up Date</label>
+            <input type="date" id="editPaymentFollowup" class="form-control border-success">
+          </div>
+          <div class="col-6">
+            <label class="form-label">Payment Terms</label>
+            <input type="text" id="editPaymentTerms" class="form-control" placeholder="Terms...">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Dispatch Info</label>
+            <input type="text" id="editDispatch" class="form-control" placeholder="Dispatch details...">
+          </div>
+          <div id="modalLostReasonContainer" class="col-12 d-none">
+            <label class="form-label text-danger">Lost Reason Details *</label>
+            <input type="text" id="editLostReason" class="form-control border-danger" placeholder="Reason for deal loss...">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Internal Remarks</label>
+            <textarea id="editRemark" class="form-control" rows="2" placeholder="Internal notes..."></textarea>
+          </div>
+        </div>
+
+        <button onclick="saveLeadFullUpdate()" id="saveUpdateBtn" class="btn btn-primary w-100 fw-bold py-2 mt-3">SAVE ALL UPDATES</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ACTIVITY MODAL -->
+<div class="modal fade" id="mobDateActivityModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header bg-primary text-white py-2">
+        <h6 class="modal-title fw-bold extra-small" id="mobModalDateTitle">Log Activity</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3">
+        <div class="p-2 mb-2 bg-light rounded border">
+          <input class="form-control fw-bold mb-2 extra-small" list="salesPersonsList" id="mobModalActSp" placeholder="Salesperson..." oninput="filterMobCustomerDropdown()">
+          <input class="form-control mb-2 extra-small" list="mobActCustList" id="mobModalActCust" placeholder="Customer Name...">
+          <datalist id="mobActCustList"></datalist>
+
+          <div class="row g-1 mb-2">
+            <div class="col-6">
+              <select class="form-select extra-small" id="mobModalActType">
+                <option value="Call">📞 Call</option>
+                <option value="Visit">🚗 Visit</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <select class="form-select extra-small" id="mobModalActStatus">
+                <option value="Yes">Connected</option>
+                <option value="No">Failed / Later</option>
+              </select>
+            </div>
+          </div>
+          <input type="text" class="form-control mb-2 extra-small" id="mobModalActRemark" placeholder="Remarks / outcome...">
+          <button class="btn btn-sm btn-success w-100 fw-bold py-1 extra-small" id="mobSaveActBtn" onclick="submitMobActivityRecord()">Save Activity</button>
+        </div>
+
+        <h6 class="fw-bold extra-small text-muted mb-1">Entries Logged</h6>
+        <div id="mobModalEntriesList" class="extra-small"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TO-DO TASK MODAL POPUP -->
+<div class="modal fade" id="mobTodoDateModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header bg-primary text-white py-2">
+        <h6 class="modal-title fw-bold extra-small" id="mobTodoModalDateTitle">Tasks for Date</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3">
+        <div class="p-2 mb-3 bg-light rounded border">
+          <h6 class="fw-bold text-primary mb-2 extra-small"><i class="fa fa-plus-circle me-1"></i> Add Task for this Date</h6>
+          <div class="row g-1 mb-2">
+            <div class="col-7">
+              <input class="form-control fw-bold extra-small" list="salesPersonsList" id="mobModalTodoSp" placeholder="Salesperson...">
+            </div>
+            <div class="col-5">
+              <select class="form-select extra-small" id="mobModalTodoPriority">
+                <option value="High">🔴 High</option>
+                <option value="Medium" selected>🟡 Medium</option>
+                <option value="Low">🟢 Low</option>
+              </select>
+            </div>
+            <div class="col-12 mt-1">
+              <input type="text" class="form-control extra-small" id="mobModalTodoTitle" placeholder="Task description / title..." required>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-success w-100 fw-bold py-1 extra-small" id="mobSaveTodoBtn" onclick="submitMobTodoTask()"><i class="fa fa-plus me-1"></i> Add Task</button>
+        </div>
+
+        <h6 class="fw-bold extra-small text-muted mb-1"><i class="fa fa-list me-1"></i> Scheduled Tasks for this Day</h6>
+        <div id="mobModalTasksList" class="extra-small"></div>
+      </div>
+      <div class="modal-footer py-1">
+        <button type="button" class="btn btn-sm btn-secondary extra-small" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxeS23zbPNegYQjszbE5-Iqcw4ySVUy8Yddi6HE3RcFInfYUvSJtMpeR1XdNbM_Lne8/exec";
+
+  async function callAppsScriptApi(action, data = {}) {
+    try {
+      const response = await fetch(APPS_SCRIPT_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: action, data: data })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("API Call Error:", error);
+      return { success: false, message: error.toString() };
+    }
+  }
+
+  let bannerTimer = null;
+  function showFloatingNotification(title, message) {
+    playNotificationChime();
+    const banner = document.getElementById('floatingNotificationBanner');
+    const titleEl = document.getElementById('floatBannerTitle');
+    const msgEl = document.getElementById('floatBannerMsg');
+
+    if (banner && titleEl && msgEl) {
+      titleEl.innerText = title;
+      msgEl.innerText = message;
+      banner.classList.add('show');
+      if (bannerTimer) clearTimeout(bannerTimer);
+      bannerTimer = setTimeout(() => { banner.classList.remove('show'); }, 5000);
+    }
+  }
+
+  function dismissFloatingBanner() {
+    const banner = document.getElementById('floatingNotificationBanner');
+    if (banner) banner.classList.remove('show');
+    if (bannerTimer) clearTimeout(bannerTimer);
+  }
+
+  function checkNotificationSupport() {
+    if ('Notification' in window) {
+      const btn = document.getElementById('notifEnableBtn');
+      if (Notification.permission === 'default' && btn) btn.classList.remove('d-none');
+      else if (btn) btn.classList.add('d-none');
+    }
+  }
+
+  async function requestNotificationPermission() {
+    if (!('Notification' in window)) return;
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      const btn = document.getElementById('notifEnableBtn');
+      if (btn) btn.classList.add('d-none');
+      showFloatingNotification("Enabled", "Push notifications are now active!");
+    }
+  }
+
+  let rawCustomers = [], masterSalesPersons = [], masterBrandsList = [];
+  let globalEnquiries = [], globalActivities = [], filteredList = [];
+  let loggedInUser = null, currentPage = 1, pageSize = 15;
+  let powerBiMobileChartInstance = null;
+  let currentLeadPhone = '', currentLeadBrand = '';
+  let mobCalDate = new Date(), selectedMobDateStr = '';
+  let userGeoCoords = null, globalTasks = [];
+  let mobTodoCalDate = new Date(), selectedMobTodoDateStr = '';
+  let currentMobTaskFilter = 'ALL';
+
+  function playNotificationChime() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.4);
+    } catch (e) {}
+  }
+
+  function initGeolocation() {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        pos => { userGeoCoords = { latitude: pos.coords.latitude, longitude: pos.coords.longitude }; },
+        err => {},
+        { timeout: 8000, enableHighAccuracy: false }
+      );
+    }
+  }
+
+  function scrollPage(direction) {
+    const scroller = document.getElementById('mainScrollContainer');
+    if (!scroller) return;
+    scroller.scrollBy({ top: direction === 'up' ? -250 : 250, behavior: 'smooth' });
+  }
+
+  function scrollModal(direction) {
+    const modalBody = document.getElementById('modalScrollBody');
+    if (!modalBody) return;
+    modalBody.scrollBy({ top: direction === 'up' ? -180 : 180, behavior: 'smooth' });
+  }
+
+  // --- ROLE-BASED NAVIGATION RESTRICTION FOR ENGINEER / DELIVERY ---
+  function applyRoleNavigationRestrictions() {
+    if (!loggedInUser || !loggedInUser.role) return;
+    const role = String(loggedInUser.role).toLowerCase();
+    
+    const userBadge = document.getElementById('loggedUserMobile');
+    if (userBadge) {
+      userBadge.innerText = `${loggedInUser.salesPerson} (${loggedInUser.role})`;
+    }
+
+    if (role.indexOf('engineer') > -1 || role.indexOf('delivery') > -1 || role.indexOf('employee') > -1) {
+      // Hide unauthorized bottom navigation buttons for Engineer/Delivery
+      const leadsBtn = document.getElementById('nb-leads');
+      const addBtn = document.getElementById('nb-add');
+      const analyticsBtn = document.getElementById('nb-analytics');
+      const callsBtn = document.getElementById('nb-calls');
+
+      if (leadsBtn) leadsBtn.style.display = 'none';
+      if (addBtn) addBtn.style.display = 'none';
+      if (analyticsBtn) analyticsBtn.style.display = 'none';
+      if (callsBtn) callsBtn.style.display = 'none';
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', function() {
+    resetMobileEnquiryForm();
+    checkNotificationSupport();
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.getElementById('enquiryForm').addEventListener('submit', handleSaveEnquiry);
+
+    const session = localStorage.getItem('sales_portal_session');
+    if (session) {
+      try {
+        loggedInUser = JSON.parse(session);
+        if (loggedInUser && loggedInUser.salesPerson) {
+          document.getElementById('loginScreen').style.display = 'none';
+          document.getElementById('loggedUserMobile').innerText = loggedInUser.salesPerson;
+          applyRoleNavigationRestrictions();
+
+          const role = String(loggedInUser.role || '').toLowerCase();
+          const isRestrictedRole = role.indexOf('engineer') > -1 || role.indexOf('delivery') > -1 || role.indexOf('employee') > -1;
+
+          let savedTab = localStorage.getItem('active_portal_tab') || 'leads';
+          if (isRestrictedRole && (savedTab === 'leads' || savedTab === 'add')) {
+            savedTab = 'todo';
+          }
+
+          switchTab(savedTab);
+          fetchMasterData();
+          checkNotificationSupport();
+        } else {
+          document.getElementById('loginScreen').style.display = 'flex';
+        }
+      } catch (e) {
+        document.getElementById('loginScreen').style.display = 'flex';
+      }
+    } else {
+      document.getElementById('loginScreen').style.display = 'flex';
+    }
+    initGeolocation();
+  });
+
+  function resetMobileEnquiryForm() {
+    const form = document.getElementById('enquiryForm');
+    if (form) form.reset();
+    const today = new Date().toISOString().split('T')[0];
+    if (document.getElementById('enquiryDate')) document.getElementById('enquiryDate').value = today;
+    if (document.getElementById('paymentTermsSelectMob')) document.getElementById('paymentTermsSelectMob').value = '0';
+    
+    const cbs = document.querySelectorAll('.brand-checkbox-input-mob');
+    cbs.forEach(cb => cb.checked = false);
+    updateBrandDropdownLabelMob();
+
+    if (loggedInUser && loggedInUser.salesPerson) {
+      const spInputEl = document.getElementById('salesPersonInput');
+      if (spInputEl) spInputEl.value = loggedInUser.salesPerson;
+    }
+    calculatePaymentFollowupDateMob();
+  }
+
+  function calculatePaymentFollowupDateMob() {
+    const orderDateVal = document.getElementById('enquiryDate').value;
+    const termDays = parseInt(document.getElementById('paymentTermsSelectMob').value, 10) || 0;
+    if (!orderDateVal) return;
+
+    const base = new Date(orderDateVal);
+    base.setDate(base.getDate() + termDays);
+    document.getElementById('paymentFollowupDateMob').value = base.toISOString().split('T')[0];
+  }
+
+  function renderBrandCheckboxesMob(brands) {
+    const container = document.getElementById('brandCheckboxContainerMob');
+    if (!container) return;
+    masterBrandsList = brands || [];
+
+    let html = '';
+    masterBrandsList.forEach((b, idx) => {
+      html += `
+        <div class="form-check py-1 mb-0 rounded brand-item-hover" style="padding-left: 2rem;">
+          <input class="form-check-input brand-checkbox-input-mob" type="checkbox" id="brandCbMob_${idx}" value="${escapeHtml(b)}" onchange="updateBrandDropdownLabelMob()" style="cursor: pointer; margin-left: -1.75rem;">
+          <label class="form-check-label w-100 extra-small" for="brandCbMob_${idx}" style="cursor: pointer;">${escapeHtml(b)}</label>
+        </div>
+      `;
+    });
+    container.innerHTML = html || '<div class="text-muted extra-small">No brands available</div>';
+    updateBrandDropdownLabelMob();
+  }
+
+  function updateBrandDropdownLabelMob() {
+    const cbs = document.querySelectorAll('.brand-checkbox-input-mob:checked');
+    const labelEl = document.getElementById('brandDropdownLabelMob');
+    if (!labelEl) return;
+    
+    if (cbs.length === 0) {
+      labelEl.innerText = "Select Brands...";
+      labelEl.classList.add('text-muted');
+    } else if (cbs.length <= 2) {
+      labelEl.innerText = Array.from(cbs).map(cb => cb.value).join(', ');
+      labelEl.classList.remove('text-muted');
+    } else {
+      labelEl.innerText = `${cbs.length} Brands (${cbs[0].value}, +${cbs.length - 1} more)`;
+      labelEl.classList.remove('text-muted');
+    }
+  }
+
+  function toggleAddNewBrandInputMob() {
+    const row = document.getElementById('newBrandRowMob');
+    if (!row) return;
+    row.classList.toggle('d-none');
+    if (!row.classList.contains('d-none')) {
+      document.getElementById('newCustomBrandInputMob').focus();
+    }
+  }
+
+  async function submitNewBrandPermanentlyMob() {
+    const input = document.getElementById('newCustomBrandInputMob');
+    const brandName = input.value.trim();
+    if (!brandName) { alert("Please enter brand name!"); return; }
+
+    const sp = loggedInUser ? loggedInUser.salesPerson : 'User';
+    const res = await callAppsScriptApi("addNewMasterBrand", { brandName: brandName, sp: sp });
+
+    if (res && res.success) {
+      if (masterBrandsList.indexOf(res.brand) === -1) {
+        masterBrandsList.push(res.brand);
+      }
+      renderBrandCheckboxesMob(masterBrandsList);
+      setTimeout(() => {
+        const cbs = document.querySelectorAll('.brand-checkbox-input-mob');
+        cbs.forEach(cb => { if (cb.value.toLowerCase() === res.brand.toLowerCase()) cb.checked = true; });
+        updateBrandDropdownLabelMob();
+      }, 100);
+
+      input.value = '';
+      toggleAddNewBrandInputMob();
+      showFloatingNotification("New Brand Added", `Brand "${res.brand}" is now active in master catalog.`);
+    } else {
+      alert("Error: " + (res ? res.message : 'Failed to add brand'));
+    }
+  }
+
+  function getSelectedBrandsListMob() {
+    const selected = [];
+    const cbs = document.querySelectorAll('.brand-checkbox-input-mob:checked');
+    cbs.forEach(cb => selected.push(cb.value));
+    return selected.length > 0 ? selected.join(', ') : 'Other';
+  }
+
+  function switchTab(tab) {
+    const role = loggedInUser && loggedInUser.role ? String(loggedInUser.role).toLowerCase() : '';
+    const isRestricted = role.indexOf('engineer') > -1 || role.indexOf('delivery') > -1 || role.indexOf('employee') > -1;
+
+    if (isRestricted && (tab === 'leads' || tab === 'add' || tab === 'analytics' || tab === 'calls')) {
+      showFloatingNotification("Access Denied", "This section is restricted for your role.");
+      return;
+    }
+
+    ['leads', 'add', 'analytics', 'calls', 'todo'].forEach(t => {
+      const el = document.getElementById('tab-' + t);
+      const nb = document.getElementById('nb-' + t);
+      if (el) el.classList.toggle('d-none', t !== tab);
+      if (nb) nb.classList.toggle('active', t === tab);
+    });
+    
+    const mainContent = document.getElementById('mainScrollContainer');
+    if (mainContent) mainContent.scrollTop = 0;
+
+    if (loggedInUser) {
+      loadDashboard();
+    }
+
+    if (tab === 'analytics') renderMobilePowerBiDashboard();
+    if (tab === 'calls') renderMobileCalendarAndSummary();
+    if (tab === 'todo') renderMobileTodoCalendarAndSummary();
+    localStorage.setItem('active_portal_tab', tab);
+  }
+
+  async function fetchMasterData() {
+    const data = await callAppsScriptApi("getMasterData", { user: loggedInUser });
+    if (!data || !data.success) return;
+
+    rawCustomers = data.customers || [];
+    masterSalesPersons = data.salesPersons || [];
+    renderBrandCheckboxesMob(data.brands || []);
+
+    let spOptionsHtml = '', filterOpts = '<option value="ALL">All Team Member</option>';
+    let mobExportSpOpts = '<option value="ALL">All Team Members</option>';
+
+    masterSalesPersons.forEach(sp => {
+      spOptionsHtml += `<option value="${sp}">`;
+      filterOpts += `<option value="${sp}">${sp}</option>`;
+      mobExportSpOpts += `<option value="${sp}">${sp}</option>`;
+    });
+
+    const spListDatalist = document.getElementById('salesPersonsList');
+    if (spListDatalist) spListDatalist.innerHTML = spOptionsHtml;
+
+    const spFilter = document.getElementById('filterSalesPerson');
+    if (spFilter) spFilter.innerHTML = filterOpts;
+
+    const mobExportSpSelect = document.getElementById('mobExportSpSelect');
+    if (mobExportSpSelect) mobExportSpSelect.innerHTML = mobExportSpOpts;
+
+    const role = loggedInUser && loggedInUser.role ? loggedInUser.role.toLowerCase() : '';
+    const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
+
+    const spInputEl = document.getElementById('salesPersonInput');
+    const transferWrapper = document.getElementById('transferActionWrapper');
+
+    if (!isMgmt) {
+      if (spInputEl) { spInputEl.value = loggedInUser ? loggedInUser.salesPerson : ''; spInputEl.readOnly = true; }
+      if (spFilter) { spFilter.value = loggedInUser ? loggedInUser.salesPerson : 'ALL'; spFilter.disabled = true; }
+      if (mobExportSpSelect) { mobExportSpSelect.value = loggedInUser ? loggedInUser.salesPerson : 'ALL'; mobExportSpSelect.disabled = true; }
+      if (transferWrapper) transferWrapper.classList.add('d-none');
+    } else {
+      if (spInputEl) spInputEl.readOnly = false;
+      if (spFilter) spFilter.disabled = false;
+      if (mobExportSpSelect) mobExportSpSelect.disabled = false;
+      if (transferWrapper) transferWrapper.classList.remove('d-none');
+
+      const transferSelect = document.getElementById('modalTransferSp');
+      if (transferSelect) {
+        let tOpts = '<option value="">Transfer To...</option>';
+        masterSalesPersons.forEach(sp => { tOpts += `<option value="${sp}">${sp}</option>`; });
+        transferSelect.innerHTML = tOpts;
+      }
+    }
+
+    if (loggedInUser && loggedInUser.salesPerson) {
+      if (spInputEl && !spInputEl.value) spInputEl.value = loggedInUser.salesPerson;
+    }
+
+    filterCustomersBySalesPerson();
+    filterMobCustomerDropdown();
+    loadDashboard();
+    setTimeout(loadSidebarTargetInfo, 600);
+  }
+
+  function filterCustomersBySalesPerson() {
+    const spInput = document.getElementById('salesPersonInput').value.trim().toLowerCase();
+    if (!spInput) {
+      populateCustomerDatalist(rawCustomers);
+    } else {
+      const filtered = rawCustomers.filter(c => String(c.salesPerson || '').toLowerCase().trim() === spInput || String(c.salesPerson || '').toLowerCase().trim().indexOf(spInput) > -1);
+      populateCustomerDatalist(filtered);
+    }
+  }
+
+  function filterMobCustomerDropdown() {
+    const spInput = document.getElementById('mobModalActSp') ? document.getElementById('mobModalActSp').value.trim().toLowerCase() : '';
+    const datalist = document.getElementById('mobActCustList');
+    if (!datalist) return;
+
+    let filtered = rawCustomers;
+    if (spInput) {
+      filtered = rawCustomers.filter(c => String(c.salesPerson || '').toLowerCase().trim() === spInput || String(c.salesPerson || '').toLowerCase().trim().indexOf(spInput) > -1);
+    }
+    datalist.innerHTML = filtered.map(c => `<option value="${c.name}">`).join('');
+  }
+
+  function populateCustomerDatalist(list) {
+    let cList = '';
+    list.forEach(c => cList += `<option value="${c.name}">`);
+    document.getElementById('customersList').innerHTML = cList;
+  }
+
+  function autoFillCustomerInfo() {
+    const custName = document.getElementById('customerInput').value;
+    const cust = rawCustomers.find(c => String(c.name).toLowerCase() === custName.trim().toLowerCase());
+    if (cust) {
+      document.getElementById('custCity').value = cust.city || '';
+      document.getElementById('custAddress').value = cust.address || '';
+      document.getElementById('custContactPerson').value = cust.contactPerson || '';
+      document.getElementById('custMobile').value = cust.mobile || '';
+      document.getElementById('custEmail').value = cust.email || '';
+      if (cust.defaultTerms !== undefined) {
+        document.getElementById('paymentTermsSelectMob').value = cust.defaultTerms;
+      }
+      if (cust.salesPerson && !document.getElementById('salesPersonInput').value) {
+        document.getElementById('salesPersonInput').value = cust.salesPerson;
+      }
+      calculatePaymentFollowupDateMob();
+    }
+  }
+
+  async function loadDashboard() {
+    const data = await callAppsScriptApi("getDashboardData", { user: loggedInUser });
+    if (!data || !data.success) return;
+
+    globalEnquiries = data.enquiries || [];
+    globalActivities = data.activities || [];
+    globalTasks = data.tasks || [];
+    applyFilters();
+    renderMobilePowerBiDashboard();
+    checkTodayReminders(globalEnquiries, globalTasks);
+    renderMobileCalendarAndSummary();
+    renderMobileTodoCalendarAndSummary();
+  }
+
+  function checkTodayReminders(enquiries, tasks) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    let todayLeadCount = 0;
+    let todayPayCount = 0;
+    let todayTaskCount = 0;
+
+    enquiries.forEach(e => {
+      if (e.leadFollowup === todayStr && String(e.status).toLowerCase() !== 'won' && String(e.status).toLowerCase() !== 'lost') {
+        todayLeadCount++;
+      }
+      if (e.paymentFollowup === todayStr && String(e.paymentStatus).toLowerCase() !== 'fully paid') {
+        todayPayCount++;
+      }
+    });
+
+    if (tasks) {
+      tasks.forEach(t => {
+        if (t.dueDate === todayStr && t.status !== 'Completed') {
+          todayTaskCount++;
+        }
+      });
+    }
+
+    const banner = document.getElementById('reminderBanner');
+    const textElem = document.getElementById('reminderText');
+
+    if (todayLeadCount > 0 || todayPayCount > 0 || todayTaskCount > 0) {
+      if (banner && textElem) {
+        textElem.innerHTML = `You have <b>${todayLeadCount} Lead Follow-up(s)</b>, <b>${todayPayCount} Payment Follow-up(s)</b>, and <b>${todayTaskCount} Task(s)</b> scheduled for today (${todayStr}).`;
+        banner.classList.remove('d-none');
+      }
+    } else {
+      if (banner) banner.classList.add('d-none');
+    }
+  }
+
+  function filterTodayLeadFollowups() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    filteredList = globalEnquiries.filter(item => item.leadFollowup === todayStr);
+    currentPage = 1;
+    renderPage();
+  }
+
+  function filterTodayPaymentFollowups() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    filteredList = globalEnquiries.filter(item => item.paymentFollowup === todayStr);
+    currentPage = 1;
+    renderPage();
+  }
+
+  function clearReminderFilter() {
+    applyFilters();
+  }
+
+  function onSalespersonFilterChange() {
+    applyFilters();
+    loadSidebarTargetInfo();
+  }
+
+  function applyFilters() {
+    const fromDate = document.getElementById('filterFromDate').value;
+    const toDate = document.getElementById('filterToDate').value;
+    const st = document.getElementById('filterStatus').value;
+    const paySt = document.getElementById('filterPaymentStatus').value;
+    const sp = document.getElementById('filterSalesPerson') ? document.getElementById('filterSalesPerson').value : 'ALL';
+    const searchVal = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim().toLowerCase() : '';
+
+    filteredList = globalEnquiries;
+
+    if (searchVal) {
+      filteredList = filteredList.filter(item => {
+        return (
+          String(item.id || '').toLowerCase().indexOf(searchVal) > -1 ||
+          String(item.customer || '').toLowerCase().indexOf(searchVal) > -1 ||
+          String(item.salesPerson || '').toLowerCase().indexOf(searchVal) > -1 ||
+          String(item.brand || '').toLowerCase().indexOf(searchVal) > -1 ||
+          String(item.description || '').toLowerCase().indexOf(searchVal) > -1
+        );
+      });
+    }
+
+    if (fromDate) filteredList = filteredList.filter(e => e.date && e.date >= fromDate);
+    if (toDate) filteredList = filteredList.filter(e => e.date && e.date <= toDate);
+    if (st !== 'ALL') filteredList = filteredList.filter(e => String(e.status).toLowerCase() === st.toLowerCase());
+    if (paySt !== 'ALL') filteredList = filteredList.filter(e => String(e.paymentStatus).toLowerCase() === paySt.toLowerCase());
+    if (sp !== 'ALL' && sp !== '') filteredList = filteredList.filter(e => String(e.salesPerson || '').toLowerCase() === sp.toLowerCase());
+
+    currentPage = 1;
+    renderPage();
+  }
+
+  function renderPage() {
+    const start = (currentPage - 1) * pageSize;
+    const end = Math.min(start + pageSize, filteredList.length);
+    const items = filteredList.slice(start, end);
+
+    let html = '';
+    items.forEach(item => {
+      let bColor = 'bg-info';
+      if (item.status === 'Won') bColor = 'bg-success';
+      if (item.status === 'Lost') bColor = 'bg-danger';
+      if (item.status === 'Live') bColor = 'bg-primary';
+      if (item.status === 'Quoted') bColor = 'bg-dark text-white';
+      if (item.status === 'Hot lead') bColor = 'bg-warning text-dark';
+
+      let payBadge = 'bg-secondary';
+      if (item.paymentStatus === 'Fully Paid') payBadge = 'bg-success';
+      if (item.paymentStatus === 'Advance Received') payBadge = 'bg-info text-dark';
+      if (item.paymentStatus === 'Partial') payBadge = 'bg-warning text-dark';
+      if (item.paymentStatus === 'Pending') payBadge = 'bg-danger';
+      if (item.paymentStatus === 'Credit') payBadge = 'bg-dark text-white';
+
+      let leadFup = item.leadFollowup ? `<span class="badge bg-light text-primary border border-primary">${item.leadFollowup}</span>` : '<span class="badge bg-light text-muted border">Not Set</span>';
+      let payFup = item.paymentFollowup ? `<span class="badge bg-light text-success border border-success">${item.paymentFollowup}</span>` : '<span class="badge bg-light text-muted border">Not Set</span>';
+      let duplicateWarningIcon = item.isDuplicate ? `<span class="badge bg-warning text-dark ms-1">⚠️ Duplicate</span>` : '';
+
+      html += `
+        <div class="lead-card" onclick="openEditModal('${item.id}')">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-bold text-dark">${item.id} ${duplicateWarningIcon}</span>
+            <span class="badge ${bColor}">${item.status || 'New Lead'}</span>
+          </div>
+          <h6 class="fw-bold text-primary m-0 mb-1">${item.customer}</h6>
+          <div class="d-flex justify-content-between extra-small text-muted mb-1">
+            <span>👤 ${item.salesPerson}</span>
+            <span>📅 ${item.date}</span>
+          </div>
+          <div class="extra-small mb-2 d-flex justify-content-between gap-1">
+            <span>Lead F/Up: ${leadFup}</span>
+            <span>Pay F/Up: ${payFup}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center border-top pt-2">
+            <span class="badge ${payBadge}">${item.paymentStatus || 'Pending'}</span>
+            <span class="fw-bold text-success fs-6">₹${Number(item.value || 0).toLocaleString()}</span>
+          </div>
+        </div>`;
+    });
+
+    document.getElementById('mobileLeadsContainer').innerHTML = html || '<div class="text-center text-muted py-4">No enquiries found</div>';
+    document.getElementById('paginationInfo').innerText = `Showing ${filteredList.length > 0 ? start + 1 : 0}-${end} of ${filteredList.length}`;
+  }
+
+  function prevPage() { if (currentPage > 1) { currentPage--; renderPage(); } }
+  function nextPage() { if (currentPage * pageSize < filteredList.length) { currentPage++; renderPage(); } }
+
+  function openMemberExportModalMob() {
+    const modal = document.getElementById('mobExportModal');
+    bootstrap.Modal.getOrCreateInstance(modal).show();
+  }
+
+  function onMobExportPresetChange() {
+    const preset = document.getElementById('mobExportPresetSelect').value;
+    const row = document.getElementById('mobExportCustomDateRow');
+    if (preset === 'custom') row.classList.remove('d-none');
+    else row.classList.add('d-none');
+  }
+
+  async function submitMobExportDownload() {
+    const sp = document.getElementById('mobExportSpSelect').value;
+    const preset = document.getElementById('mobExportPresetSelect').value;
+    let fromDate = '', toDate = '';
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    if (preset === 'today') {
+      fromDate = todayStr; toDate = todayStr;
+    } else if (preset === 'week') {
+      const day = today.getDay();
+      const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(today.setDate(diff));
+      fromDate = monday.toISOString().split('T')[0];
+      toDate = todayStr;
+    } else if (preset === 'month') {
+      fromDate = `${yyyy}-${mm}-01`;
+      toDate = todayStr;
+    } else if (preset === 'custom') {
+      fromDate = document.getElementById('mobExportFromDate').value;
+      toDate = document.getElementById('mobExportToDate').value;
+    }
+
+    const btn = document.getElementById('mobExportBtn');
+    btn.disabled = true;
+    btn.innerText = 'Exporting...';
+
+    const res = await callAppsScriptApi("getEnquiriesExportData", { salesPerson: sp, fromDate: fromDate, toDate: toDate });
+    btn.disabled = false;
+    btn.innerText = 'Download CSV';
+
+    if (res && res.success) {
+      if (!res.rows || res.rows.length === 0) {
+        alert("No records match this criteria.");
+        return;
+      }
+
+      let csvRows = [];
+      csvRows.push(res.headers.map(h => `"${String(h).replace(/"/g, '""')}"`).join(","));
+      res.rows.forEach(r => {
+        csvRows.push(r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(","));
+      });
+
+      const csvBlob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(csvBlob);
+      link.download = `Enquiries_${sp.replace(/\s+/g, '_')}_${preset}.csv`;
+      link.click();
+
+      bootstrap.Modal.getInstance(document.getElementById('mobExportModal')).hide();
+    } else {
+      alert("Export failed: " + (res ? res.message : 'Error'));
+    }
+  }
+
+  function normalizeCustomerLookupValue(value) {
+    return String(value == null ? '' : value).trim().toLowerCase();
+  }
+
+  function findMasterCustomer(customerName, salesPerson) {
+    const name = normalizeCustomerLookupValue(customerName);
+    if (!name || !Array.isArray(rawCustomers)) return null;
+
+    let match = rawCustomers.find(c =>
+      normalizeCustomerLookupValue(c && c.name) === name &&
+      salesPerson && normalizeCustomerLookupValue(c && c.salesPerson) === normalizeCustomerLookupValue(salesPerson)
+    );
+
+    if (!match) {
+      match = rawCustomers.find(c =>
+        normalizeCustomerLookupValue(c && c.name) === name
+      );
+    }
+
+    if (!match) {
+      match = rawCustomers.find(c => {
+        const cName = normalizeCustomerLookupValue(c && c.name);
+        return cName && (cName.includes(name) || name.includes(cName));
+      });
+    }
+
+    return match || null;
+  }
+
+  function getCustomerField(customer, aliases) {
+    if (!customer || typeof customer !== 'object') return '-';
+    const wanted = aliases.map(a => String(a).toLowerCase().replace(/[^a-z0-9]/g, ''));
+
+    for (const key of Object.keys(customer)) {
+      const normalizedKey = String(key).toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (wanted.includes(normalizedKey)) {
+        const value = customer[key];
+        if (value !== null && value !== undefined && String(value).trim() !== '') {
+          return String(value).trim();
+        }
+      }
+    }
+    return '-';
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  function openEditModal(id) {
+    const item = globalEnquiries.find(e => String(e.id) === String(id));
+    if (!item) return;
+
+    currentLeadBrand = item.brand || 'Industrial Equipment';
+    document.getElementById('modalEnqTitle').innerText = "Lead Details - " + item.id;
+    document.getElementById('editEnqId').value = item.id;
+
+    document.getElementById('mCustName').innerText = item.customer || '-';
+    document.getElementById('mBrand').innerText = item.brand || '-';
+    document.getElementById('mMode').innerText = item.mode || '-';
+    document.getElementById('mSalesPerson').innerText = item.salesPerson || '-';
+    document.getElementById('mDescription').innerText = item.description || '-';
+
+    const masterCustomer = findMasterCustomer(item.customer, item.salesPerson);
+    const address = (masterCustomer ? getCustomerField(masterCustomer, ['address','completeaddress','fulladdress']) : '') || item.address || '-';
+    const contact = (masterCustomer ? getCustomerField(masterCustomer, ['contactPerson','contact person','contact']) : '') || item.contactPerson || '-';
+    const phone = (masterCustomer ? getCustomerField(masterCustomer, ['mobile','phone','mobileNumber']) : '') || item.mobile || '-';
+    const email = (masterCustomer ? getCustomerField(masterCustomer, ['email','emailId']) : '') || item.email || '-';
+    const city = (masterCustomer ? getCustomerField(masterCustomer, ['city','location']) : '') || item.city || '-';
+
+    document.getElementById('mCustAddress').innerText = address;
+    document.getElementById('mCustContact').innerText = contact;
+    document.getElementById('mCustPhone').innerText = phone;
+    document.getElementById('mCustEmail').innerText = email;
+    document.getElementById('mCustCity').innerText = city;
+    currentLeadPhone = (phone === '-' ? '' : phone);
+
+    document.getElementById('editApproxValue').value = item.value || 0;
+    document.getElementById('editStatus').value = item.status || 'New Lead';
+    document.getElementById('editPaymentStatus').value = item.paymentStatus || 'Pending';
+    document.getElementById('editLeadFollowup').value = item.leadFollowup || '';
+    document.getElementById('editPaymentTerms').value = item.paymentTerms || '';
+    document.getElementById('editPaymentFollowup').value = item.paymentFollowup || '';
+    document.getElementById('editDispatch').value = item.dispatch || '';
+    document.getElementById('editLostReason').value = item.lostReason || '';
+    document.getElementById('editRemark').value = item.remark || '';
+
+    const isWonAndPaid = String(item.status).toLowerCase() === 'won' && String(item.paymentStatus).toLowerCase() === 'fully paid';
+    const isLocked = isWonAndPaid && (Number(item.editCount) >= 2);
+    const lockNotice = document.getElementById('modalLockNotice');
+    const saveBtn = document.getElementById('saveUpdateBtn');
+
+    if (lockNotice && saveBtn) {
+      lockNotice.classList.toggle('d-none', !isLocked);
+      saveBtn.disabled = isLocked;
+      saveBtn.innerText = isLocked ? "🔒 Locked (Max 2 Edits Reached)" : "SAVE ALL UPDATES";
+    }
+
+    toggleModalLostReason();
+    fetchAndRenderDynamicCustomerDetails(item.customer, item.salesPerson, item);
+
+    const modalElement = document.getElementById('leadDetailsModal');
+    bootstrap.Modal.getOrCreateInstance(modalElement).show();
+  }
+
+  function fetchAndRenderDynamicCustomerDetails(customerName, salesPerson, enquiryItem) {
+    const detailsBox = document.getElementById('dynamicCustomerDetailsBox');
+    if (!detailsBox) return;
+
+    const customer = findMasterCustomer(customerName, salesPerson);
+    if (customer) {
+      let rendered = '<div class="fw-bold text-dark mb-1 border-bottom pb-1 extra-small"><i class="fa fa-database me-1"></i> Customer Sheet Record:</div><div class="row g-1">';
+      Object.keys(customer).forEach(key => {
+        const rawValue = customer[key];
+        const value = (rawValue !== null && rawValue !== undefined && String(rawValue).trim() !== '') ? String(rawValue) : 'N/A';
+        rendered += `<div class="col-6"><span class="text-secondary">${escapeHtml(key)}:</span> <b>${escapeHtml(value)}</b></div>`;
+      });
+      rendered += '</div>';
+      detailsBox.innerHTML = rendered;
+    } else {
+      let fallbackHtml = `
+        <div class="fw-bold text-primary mb-1 border-bottom pb-1 extra-small"><i class="fa fa-info-circle me-1"></i> Enquiry Customer Record:</div>
+        <div class="row g-1">
+          <div class="col-6"><span class="text-secondary">Customer:</span> <b>${escapeHtml(customerName)}</b></div>
+          <div class="col-6"><span class="text-secondary">City:</span> <b>${escapeHtml(enquiryItem && enquiryItem.city ? enquiryItem.city : 'N/A')}</b></div>
+          <div class="col-6"><span class="text-secondary">Phone:</span> <b>${escapeHtml(enquiryItem && enquiryItem.mobile ? enquiryItem.mobile : 'N/A')}</b></div>
+          <div class="col-6"><span class="text-secondary">Salesperson:</span> <b>${escapeHtml(salesPerson || 'N/A')}</b></div>
+        </div>
+      `;
+      detailsBox.innerHTML = fallbackHtml;
+    }
+  }
+
+  function modalSendWhatsApp() {
+    let phone = currentLeadPhone;
+    if (!phone || phone === '-') {
+      const phoneEl = document.getElementById('mCustPhone');
+      if (phoneEl) phone = phoneEl.innerText;
+    }
+
+    if (!phone || phone === '-' || phone.length < 5) {
+      alert("Phone number not available for this customer!");
+      return;
+    }
+
+    const spName = loggedInUser && loggedInUser.salesPerson ? loggedInUser.salesPerson : 'UCE Team';
+    const brandName = currentLeadBrand || document.getElementById('mBrand').innerText || 'Industrial Equipment';
+    const snoozeType = document.getElementById('modalSnoozeType') ? document.getElementById('modalSnoozeType').value : 'lead';
+
+    let customMsg = (snoozeType === 'payment')
+      ? `Hello, I am ${spName}. Following up regarding the payment status for ${brandName}. Please share an update.`
+      : `Hello, I am ${spName}. Following up on your requirement for ${brandName}. Please share your feedback.`;
+
+    window.open(`https://wa.me/91${phone.replace(/\D/g,'')}?text=${encodeURIComponent(customMsg)}`, '_blank');
+  }
+
+  async function modalExecuteSnooze() {
+    const activeId = document.getElementById('editEnqId') ? document.getElementById('editEnqId').value : '';
+    const snoozeType = document.getElementById('modalSnoozeType').value;
+    const snoozeDate = document.getElementById('modalSnoozeDate').value;
+
+    if (!activeId || !snoozeDate) { alert("Please select date!"); return; }
+
+    const res = await callAppsScriptApi("quickSnoozeEnquiry", { id: activeId, type: snoozeType, newDate: snoozeDate, user: loggedInUser ? loggedInUser.salesPerson : 'Admin' });
+    if (res && res.success) {
+      showFloatingNotification("Snooze Saved", res.message);
+      const modalEl = document.getElementById('leadDetailsModal');
+      if (modalEl) bootstrap.Modal.getInstance(modalEl).hide();
+      loadDashboard();
+    } else {
+      alert("Error: " + (res ? res.message : 'Snooze failed'));
+    }
+  }
+
+  async function modalExecuteTransfer() {
+    const activeId = document.getElementById('editEnqId') ? document.getElementById('editEnqId').value : '';
+    const targetSp = document.getElementById('modalTransferSp').value;
+
+    if (!activeId || !targetSp) { alert("Please select a salesperson!"); return; }
+
+    const res = await callAppsScriptApi("transferLeadOwner", { id: activeId, targetSp: targetSp, user: loggedInUser ? loggedInUser.salesPerson : 'Admin' });
+    if (res && res.success) {
+      showFloatingNotification("Lead Transferred", res.message);
+      const modalEl = document.getElementById('leadDetailsModal');
+      if (modalEl) bootstrap.Modal.getInstance(modalEl).hide();
+      loadDashboard();
+    } else {
+      alert("Error: " + (res ? res.message : 'Transfer failed'));
+    }
+  }
+
+  async function modalOpenCustomerLedger() {
+    const custName = document.getElementById('mCustName') ? document.getElementById('mCustName').innerText : '';
+    if (!custName || custName === '-') { alert("Customer name not found!"); return; }
+
+    let ledgerModalEl = document.getElementById('dynamicCustomerLedgerModal');
+    if (!ledgerModalEl) {
+      const modalDiv = document.createElement('div');
+      modalDiv.id = 'dynamicCustomerLedgerModal';
+      modalDiv.className = 'modal fade';
+      modalDiv.tabIndex = '-1';
+      modalDiv.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header bg-dark text-white py-2">
+              <h6 class="modal-title fw-bold">Customer Interaction Ledger: <span id="ledgerCustTitle"></span></h6>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="table-responsive" style="max-height: 380px;">
+                <table class="table table-sm table-bordered small">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Enq ID</th><th>Date</th><th>Customer</th><th>Description</th><th>Brand</th><th>Value (₹)</th><th>Status</th><th>Payment</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dynamicLedgerTbody"><tr><td colspan="8" class="text-center text-muted">Loading history...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalDiv);
+      ledgerModalEl = modalDiv;
+    }
+
+    document.getElementById('ledgerCustTitle').innerText = custName;
+    new bootstrap.Modal(ledgerModalEl).show();
+
+    const ledger = await callAppsScriptApi("getCustomerLedgerHistory", { customerName: custName });
+    const tbody = document.getElementById('dynamicLedgerTbody');
+    if (ledger && ledger.length > 0) {
+      let rows = '';
+      ledger.forEach(l => {
+        rows += `<tr><td><b>${escapeHtml(l.id)}</b></td><td>${escapeHtml(l.date)}</td><td><b>${escapeHtml(l.customer || custName)}</b></td><td>${escapeHtml(l.description)}</td><td>${escapeHtml(l.brand)}</td><td>₹${Number(l.value || 0).toLocaleString()}</td><td><span class="badge bg-primary">${escapeHtml(l.status)}</span></td><td><span class="badge bg-secondary">${escapeHtml(l.paymentStatus)}</span></td></tr>`;
+      });
+      tbody.innerHTML = rows;
+    } else {
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No prior history found.</td></tr>';
+    }
+  }
+
+  function toggleModalLostReason() {
+    const st = document.getElementById('editStatus').value;
+    const container = document.getElementById('modalLostReasonContainer');
+    if (st === 'Lost') container.classList.remove('d-none');
+    else container.classList.add('d-none');
+  }
+
+  async function saveLeadFullUpdate() {
+    const stVal = document.getElementById('editStatus').value;
+    const lostReasonVal = document.getElementById('editLostReason').value;
+
+    if (stVal === 'Lost' && !lostReasonVal.trim()) {
+      showAlert("Lost Reason is required!", "danger");
+      return;
+    }
+
+    const saveBtn = document.getElementById('saveUpdateBtn');
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Saving Updates...';
+    }
+
+    const payload = {
+      id: document.getElementById('editEnqId').value,
+      approxValue: document.getElementById('editApproxValue').value,
+      status: stVal,
+      paymentStatus: document.getElementById('editPaymentStatus').value,
+      leadFollowup: document.getElementById('editLeadFollowup').value,
+      paymentTerms: document.getElementById('editPaymentTerms').value,
+      paymentFollowup: document.getElementById('editPaymentFollowup').value,
+      dispatch: document.getElementById('editDispatch').value,
+      lostReason: lostReasonVal,
+      remark: document.getElementById('editRemark').value,
+      user: loggedInUser
+    };
+
+    const res = await callAppsScriptApi("updateEnquiryFull", payload);
+    
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = "SAVE ALL UPDATES";
+    }
+
+    if (res && res.success) {
+      showFloatingNotification("Updated Successfully", `Enquiry ${payload.id} updated to ${payload.status}`);
+      const modalEl = document.getElementById('leadDetailsModal');
+      if (modalEl) bootstrap.Modal.getInstance(modalEl).hide();
+      loadDashboard();
+    } else {
+      showAlert("Failed: " + (res ? res.message : 'Error'), "danger");
+    }
+  }
+
+  function changeMobileCalendarMonth(step) {
+    mobCalDate.setMonth(mobCalDate.getMonth() + step);
+    renderMobileCalendarAndSummary();
+  }
+
+  function renderMobileCalendarAndSummary() {
+    const year = mobCalDate.getFullYear();
+    const month = mobCalDate.getMonth();
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const monthLabel = document.getElementById('mobCalMonthLabel');
+    if (monthLabel) monthLabel.innerText = `${monthNames[month]} ${year}`;
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    const grid = document.getElementById('mobCalendarDays');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    for (let i = 0; i < firstDay; i++) {
+      grid.innerHTML += `<div class="cal-day-m empty"></div>`;
+    }
+
+    for (let d = 1; d <= totalDays; d++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const dayActs = globalActivities.filter(a => a.date === dateStr);
+      const calls = dayActs.filter(a => a.type === 'Call').length;
+      const visits = dayActs.filter(a => a.type === 'Visit').length;
+
+      let dots = '';
+      if (calls > 0) dots += `<span class="badge-dot bg-info" title="${calls} Calls"></span>`;
+      if (visits > 0) dots += `<span class="badge-dot bg-success" title="${visits} Visits"></span>`;
+
+      grid.innerHTML += `
+        <div class="cal-day-m" onclick="openMobDateActivityModal('${dateStr}')">
+          <div class="day-num-m">${d}</div>
+          <div>${dots}</div>
+        </div>
+      `;
+    }
+
+    renderMobileMonthlySummary();
+  }
+
+  function openMobDateActivityModal(dateStr) {
+    selectedMobDateStr = dateStr;
+    document.getElementById('mobModalDateTitle').innerText = `Date: ${dateStr}`;
+    document.getElementById('mobModalActCust').value = '';
+    document.getElementById('mobModalActRemark').value = '';
+
+    const spInput = document.getElementById('mobModalActSp');
+    if (spInput && loggedInUser && loggedInUser.salesPerson) {
+      spInput.value = loggedInUser.salesPerson;
+    }
+    filterMobCustomerDropdown();
+    renderMobModalEntries();
+
+    const modalEl = document.getElementById('mobDateActivityModal');
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+  }
+
+  function renderMobModalEntries() {
+    const acts = globalActivities.filter(a => a.date === selectedMobDateStr);
+    const container = document.getElementById('mobModalEntriesList');
+    if (!container) return;
+
+    if (acts.length === 0) {
+      container.innerHTML = '<div class="text-muted text-center py-2">No activity on this date</div>';
+      return;
+    }
+
+    container.innerHTML = acts.map(a => `
+      <div class="p-1 border-bottom d-flex justify-content-between align-items-center">
+        <div><b>${escapeHtml(a.customer)}</b><br><span class="text-muted">${escapeHtml(a.remark || '-')}</span></div>
+        <div><span class="badge ${a.type === 'Call' ? 'bg-info text-dark' : 'bg-success'}">${escapeHtml(a.type)}</span></div>
+      </div>
+    `).join('');
+  }
+
+  async function submitMobActivityRecord() {
+    const sp = document.getElementById('mobModalActSp').value.trim();
+    const cust = document.getElementById('mobModalActCust').value.trim();
+    const type = document.getElementById('mobModalActType').value;
+    const status = document.getElementById('mobModalActStatus').value;
+    const remark = document.getElementById('mobModalActRemark').value.trim();
+
+    if (!cust) {
+      alert("Please enter customer name!");
+      return;
+    }
+
+    const saveBtn = document.getElementById('mobSaveActBtn');
+    saveBtn.disabled = true;
+    saveBtn.innerText = 'Saving...';
+
+    const activityData = {
+      date: selectedMobDateStr,
+      salesPerson: sp || loggedInUser.salesPerson,
+      customer: cust,
+      type: type,
+      status: status,
+      remark: remark,
+      latitude: userGeoCoords ? userGeoCoords.latitude : '',
+      longitude: userGeoCoords ? userGeoCoords.longitude : ''
+    };
+
+    const res = await callAppsScriptApi("saveActivity", activityData);
+    saveBtn.disabled = false;
+    saveBtn.innerText = 'Save Activity';
+
+    if (res && res.success) {
+      showFloatingNotification("Activity Logged", `${type} recorded for ${cust}`);
+      document.getElementById('mobModalActCust').value = '';
+      document.getElementById('mobModalActRemark').value = '';
+      loadDashboard();
+      setTimeout(renderMobModalEntries, 500);
+    } else {
+      showAlert('Error: ' + (res ? res.message : 'Failed to save activity'), 'danger');
+    }
+  }
+
+  function renderMobileMonthlySummary() {
+    const year = mobCalDate.getFullYear();
+    const month = String(mobCalDate.getMonth() + 1).padStart(2, '0');
+    const monthPrefix = `${year}-${month}`;
+
+    const monthActs = globalActivities.filter(a => a.date.startsWith(monthPrefix));
+    const matrixMap = {};
+
+    monthActs.forEach(a => {
+      if (!matrixMap[a.customer]) {
+        matrixMap[a.customer] = { calls: 0, visits: 0 };
+      }
+      if (a.type === 'Call') matrixMap[a.customer].calls++;
+      if (a.type === 'Visit') matrixMap[a.customer].visits++;
+    });
+
+    const container = document.getElementById('mobMonthlySummaryContainer');
+    if (!container) return;
+    const keys = Object.keys(matrixMap);
+
+    if (keys.length === 0) {
+      container.innerHTML = '<div class="text-center text-muted py-3 extra-small">No activity records for this month</div>';
+      return;
+    }
+
+    container.innerHTML = keys.map(k => `
+      <div class="p-2 border-bottom d-flex justify-content-between align-items-center">
+        <div><b>${escapeHtml(k)}</b></div>
+        <div>
+          <span class="badge bg-info text-dark">${matrixMap[k].calls} Calls</span>
+          <span class="badge bg-success">${matrixMap[k].visits} Visits</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('loginBtn');
+    const errDiv = document.getElementById('loginError');
+    
+    btn.disabled = true;
+    btn.innerText = "LOGGING IN...";
+    errDiv.classList.add('d-none');
+
+    const u = document.getElementById('loginUsername').value.trim();
+    const p = document.getElementById('loginPassword').value.trim();
+
+    const res = await callAppsScriptApi("checkLogin", { username: u, password: p });
+    btn.disabled = false;
+    btn.innerText = "LOG IN";
+
+    if (res && res.success) {
+      loggedInUser = res.user;
+      localStorage.setItem('sales_portal_session', JSON.stringify(loggedInUser));
+      
+      const role = String(loggedInUser.role || '').toLowerCase();
+      if (role.indexOf('engineer') > -1 || role.indexOf('delivery') > -1 || role.indexOf('employee') > -1) {
+        window.location.replace("conveyance.html");
+        return;
+      }
+
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('loggedUserMobile').innerText = loggedInUser.salesPerson;
+      applyRoleNavigationRestrictions();
+      fetchMasterData();
+      checkNotificationSupport();
+      showFloatingNotification("Welcome", `Logged in as ${loggedInUser.salesPerson}`);
+    } else {
+      errDiv.innerText = (res && res.message) ? res.message : "Invalid Username or Password";
+      errDiv.classList.remove('d-none');
+    }
+  }
+
+  async function handleSaveEnquiry(e) {
+    e.preventDefault();
+    const custName = document.getElementById('customerInput').value;
+    const address = document.getElementById('custAddress').value;
+    const phone = document.getElementById('custMobile').value;
+    const email = document.getElementById('custEmail').value;
+
+    const saveBtn = document.getElementById('saveEnquiryBtn');
+    saveBtn.disabled = true; saveBtn.innerText = "Saving to Google Sheet...";
+
+    const brandValue = getSelectedBrandsListMob();
+    const termsSelect = document.getElementById('paymentTermsSelectMob');
+
+    const formData = {
+      customer: custName,
+      city: document.getElementById('custCity').value,
+      address: address,
+      contactPerson: document.getElementById('custContactPerson').value,
+      mobile: phone,
+      email: email,
+      salesPerson: document.getElementById('salesPersonInput').value || loggedInUser.salesPerson,
+      description: document.getElementById('description').value,
+      brand: brandValue,
+      approxValue: document.getElementById('approxValue').value,
+      mode: document.getElementById('mode').value,
+      enquiryDate: document.getElementById('enquiryDate').value,
+      expectedClose: document.getElementById('expectedClose').value,
+      paymentStatus: document.getElementById('paymentStatus').value,
+      leadFollowup: document.getElementById('leadFollowup').value,
+      paymentTerms: termsSelect.options[termsSelect.selectedIndex].text,
+      paymentTermsDays: termsSelect.value,
+      paymentFollowup: document.getElementById('paymentFollowupDateMob').value,
+      dispatch: document.getElementById('dispatch').value,
+      remark: document.getElementById('remark').value,
+      latitude: userGeoCoords ? userGeoCoords.latitude : '',
+      longitude: userGeoCoords ? userGeoCoords.longitude : ''
+    };
+
+    const res = await callAppsScriptApi("saveEnquiry", formData);
+    saveBtn.disabled = false; saveBtn.innerText = "SAVE";
+
+    if (res && res.success) {
+      showFloatingNotification(res.isDuplicate ? "Duplicate Warning" : "Lead Created", res.message);
+      resetMobileEnquiryForm();
+      switchTab('leads');
+      loadDashboard();
+    } else {
+      showAlert('Error: ' + (res ? res.message : 'Failed to save enquiry'), 'danger');
+    }
+  }
+
+  async function renderMobilePowerBiDashboard() {
+    if (!globalEnquiries) return;
+    const reportType = document.getElementById('powerBiReportSelect').value;
+
+    let wonVal = 0, pipelineVal = 0;
+    globalEnquiries.forEach(e => {
+      let v = Number(e.value) || 0, s = String(e.status).toLowerCase();
+      if (s === 'won') wonVal += v; else if (s !== 'lost') pipelineVal += v;
+    });
+
+    document.getElementById('statTotalEnq').innerText = globalEnquiries.length;
+    document.getElementById('statWonValue').innerText = '₹' + wonVal.toLocaleString();
+
+    const res = await callAppsScriptApi("getAdvancedAnalyticsData", { user: loggedInUser });
+    if (!res || !res.success) return;
+
+    const ctx = document.getElementById('powerBiCanvas');
+    if (powerBiMobileChartInstance) powerBiMobileChartInstance.destroy();
+
+    let chartConfig = { type: 'bar', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false } };
+
+    if (reportType === 'funnel') {
+      document.getElementById('powerBiChartTitle').innerText = "Sales Funnel & Pipeline Velocity";
+      const funnel = res.funnel;
+      chartConfig.data = {
+        labels: ['New', 'Hot', 'Live', 'Won', 'Lost'],
+        datasets: [{ label: 'Value (₹)', data: [funnel['New Lead'].value, funnel['Hot lead'].value, funnel['Live'].value, funnel['Won'].value, funnel['Lost'].value], backgroundColor: ['#6c757d', '#ffc107', '#0dcaf0', '#198754', '#dc3545'] }]
+      };
+    } else if (reportType === 'brands') {
+      document.getElementById('powerBiChartTitle').innerText = "Brand Performance Matrix";
+      const brands = res.brands;
+      const labels = Object.keys(brands);
+      chartConfig.data = {
+        labels: labels,
+        datasets: [{ label: 'Won (₹)', data: labels.map(l => brands[l].wonValue), backgroundColor: '#198754' }]
+      };
+    } else if (reportType === 'marketing') {
+      document.getElementById('powerBiChartTitle').innerText = "Lead Source / Marketing ROI";
+      const modes = res.modes;
+      const labels = Object.keys(modes);
+      chartConfig.type = 'doughnut';
+      chartConfig.data = {
+        labels: labels,
+        datasets: [{ data: labels.map(l => modes[l].wonValue), backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#0dcaf0', '#dc3545'] }]
+      };
+    } else if (reportType === 'productivity') {
+      document.getElementById('powerBiChartTitle').innerText = "Team Activity vs Revenue";
+      const sps = res.teamProductivity;
+      const labels = Object.keys(sps);
+      chartConfig.data = {
+        labels: labels,
+        datasets: [{ label: 'Won Revenue (₹)', data: labels.map(l => sps[l].wonRevenue), backgroundColor: '#198754' }]
+      };
+    } else if (reportType === 'cashflow') {
+      document.getElementById('powerBiChartTitle').innerText = "Cash Flow & Payment Aging";
+      const pays = res.payments;
+      chartConfig.type = 'pie';
+      chartConfig.data = {
+        labels: ['Paid', 'Advance', 'Partial', 'Pending', 'Credit'],
+        datasets: [{ data: [pays['Fully Paid'] ? pays['Fully Paid'].value : 0, pays['Advance Received'] ? pays['Advance Received'].value : 0, pays['Partial'] ? pays['Partial'].value : 0, pays['Pending'] ? pays['Pending'].value : 0, pays['Credit'] ? pays['Credit'].value : 0], backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545', '#0f172a'] }]
+      };
+    }
+
+    powerBiMobileChartInstance = new Chart(ctx, chartConfig);
+  }
+
+  function showAlert(msg, type) {
+    const alertBox = document.getElementById('alertBox');
+    const alertMsg = document.getElementById('alertMsg');
+    if (alertBox && alertMsg) {
+      alertBox.className = `alert alert-${type === 'warning' ? 'warning' : type} alert-dismissible fade show py-2 small mb-2`;
+      alertMsg.innerText = msg;
+      alertBox.classList.remove('d-none');
+    }
+  }
+
+  function hideAlert() {
+    const alertBox = document.getElementById('alertBox');
+    if (alertBox) alertBox.classList.add('d-none');
+  }
+
+  function logout() {
+    localStorage.clear();
+    location.reload();
+  }
+
+  async function loadSidebarTargetInfo() {
+    if (!loggedInUser) return;
+    let targetSp = loggedInUser.salesPerson;
+    const filterEl = document.getElementById('filterSalesPerson');
+    if (filterEl && filterEl.value) {
+      targetSp = (filterEl.value === 'ALL') ? 'ALL' : filterEl.value;
+    }
+
+    if (!targetSp) return;
+
+    const res = await callAppsScriptApi("getSalespersonTargetInfo", { targetSp: targetSp, user: loggedInUser });
+    if (res) {
+      const mTarget = res.monthlyTarget || 0;
+      const mAchieved = res.monthlyAchieved || 0;
+      const mBalance = res.monthlyBalance || 0;
+      const mPct = res.monthlyPct || 0;
+      document.getElementById('mTargetText').innerHTML = `₹${mAchieved.toLocaleString()} / ₹${mTarget.toLocaleString()}`;
+      document.getElementById('mProgressBar').style.width = Math.min(mPct, 100) + '%';
+      document.getElementById('mPctText').innerText = mPct + '% Done';
+      document.getElementById('mBalanceText').innerText = 'Bal: ₹' + mBalance.toLocaleString();
+
+      const qTarget = res.quarterlyTarget || 0;
+      const qAchieved = res.quarterlyAchieved || 0;
+      const qBalance = res.quarterlyBalance || 0;
+      const qPct = res.quarterlyPct || 0;
+      document.getElementById('qTargetText').innerHTML = `₹${qAchieved.toLocaleString()} / ₹${qTarget.toLocaleString()}`;
+      document.getElementById('qProgressBar').style.width = Math.min(qPct, 100) + '%';
+      document.getElementById('qPctText').innerText = qPct + '% Done';
+      document.getElementById('qBalanceText').innerText = 'Bal: ₹' + qBalance.toLocaleString();
+
+      const aTarget = res.annualTarget || 0;
+      const aAchieved = res.annualAchieved || 0;
+      const aBalance = res.annualBalance || 0;
+      const aPct = res.annualPct || 0;
+      document.getElementById('aTargetText').innerHTML = `₹${aAchieved.toLocaleString()} / ₹${aTarget.toLocaleString()}`;
+      document.getElementById('aProgressBar').style.width = Math.min(aPct, 100) + '%';
+      document.getElementById('aPctText').innerText = aPct + '% Done';
+      document.getElementById('aBalanceText').innerText = 'Bal: ₹' + aBalance.toLocaleString();
+    }
+  }
+
+  function normalizeDateForMatch(dStr) {
+    if (!dStr) return '';
+    dStr = String(dStr).trim();
+    if (dStr.indexOf('T') > -1) dStr = dStr.split('T')[0];
+    if (dStr.indexOf('/') > -1) {
+      var parts = dStr.split('/');
+      if (parts.length === 3) {
+        if (parts[2].length === 4) return parts[2] + '-' + parts[1].padStart(2, '0') + '-' + parts[0].padStart(2, '0');
+        if (parts[0].length === 4) return parts[0] + '-' + parts[1].padStart(2, '0') + '-' + parts[2].padStart(2, '0');
+      }
+    }
+    if (dStr.indexOf('-') > -1) {
+      var p = dStr.split('-');
+      if (p.length === 3 && p[0].length === 2 && p[2].length === 4) {
+        return p[2] + '-' + p[1].padStart(2, '0') + '-' + p[0].padStart(2, '0');
+      }
+    }
+    return dStr;
+  }
+
+  function changeMobTodoCalendarMonth(step) {
+    mobTodoCalDate.setMonth(mobTodoCalDate.getMonth() + step);
+    renderMobileTodoCalendarAndSummary();
+  }
+
+  function renderMobileTodoCalendarAndSummary() {
+    const year = mobTodoCalDate.getFullYear();
+    const month = mobTodoCalDate.getMonth();
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const monthLabel = document.getElementById('mobTodoCalMonthLabel');
+    if (monthLabel) monthLabel.innerText = `${monthNames[month]} ${year}`;
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    const grid = document.getElementById('mobTodoCalendarDays');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    for (let i = 0; i < firstDay; i++) {
+      grid.innerHTML += `<div class="cal-day-m empty"></div>`;
+    }
+
+    let monthPending = 0, monthCompleted = 0;
+
+    for (let d = 1; d <= totalDays; d++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const dayTasks = (globalTasks || []).filter(t => normalizeDateForMatch(t.dueDate) === dateStr);
+      
+      const pendingCount = dayTasks.filter(t => String(t.status).toLowerCase() !== 'completed').length;
+      const completedCount = dayTasks.filter(t => String(t.status).toLowerCase() === 'completed').length;
+
+      monthPending += pendingCount;
+      monthCompleted += completedCount;
+
+      let dots = '';
+      if (pendingCount > 0) dots += `<span class="badge-dot bg-warning" title="${pendingCount} Pending"></span>`;
+      if (completedCount > 0) dots += `<span class="badge-dot bg-success" title="${completedCount} Done"></span>`;
+
+      grid.innerHTML += `
+        <div class="cal-day-m" onclick="openMobDateTodoModal('${dateStr}')">
+          <div class="day-num-m">${d}</div>
+          <div class="d-flex justify-content-center gap-1 mt-1">${dots}</div>
+        </div>
+      `;
+    }
+
+    const summaryEl = document.getElementById('mobTodoTotalSummary');
+    if (summaryEl) summaryEl.innerText = `Pending: ${monthPending} | Done: ${monthCompleted}`;
+
+    renderMobileMonthlyTasksSummary();
+  }
+
+  function openMobDateTodoModal(dateStr) {
+    selectedMobTodoDateStr = dateStr;
+    const titleEl = document.getElementById('mobTodoModalDateTitle');
+    if (titleEl) titleEl.innerText = `Tasks for: ${dateStr}`;
+
+    const taskInput = document.getElementById('mobModalTodoTitle');
+    if (taskInput) taskInput.value = '';
+
+    const spInput = document.getElementById('mobModalTodoSp');
+    if (spInput && loggedInUser && loggedInUser.salesPerson) {
+      spInput.value = loggedInUser.salesPerson;
+    }
+
+    renderMobModalTasksList();
+    const modalEl = document.getElementById('mobTodoDateModal');
+    if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
+  }
+
+  function renderMobModalTasksList() {
+    const tasks = (globalTasks || []).filter(t => normalizeDateForMatch(t.dueDate) === selectedMobTodoDateStr);
+    const container = document.getElementById('mobModalTasksList');
+    if (!container) return;
+
+    if (tasks.length === 0) {
+      container.innerHTML = '<div class="text-muted text-center py-3">No tasks scheduled for this date</div>';
+      return;
+    }
+
+    container.innerHTML = tasks.map(t => {
+      const isDone = String(t.status).toLowerCase() === 'completed';
+      const badge = isDone 
+        ? '<span class="badge bg-success">Done</span>' 
+        : '<span class="badge bg-warning text-dark">Pending</span>';
+      const pColor = t.priority === 'High' ? 'text-danger fw-bold' : (t.priority === 'Low' ? 'text-success' : 'text-primary');
+
+      return `
+        <div class="p-2 mb-2 rounded border ${isDone ? 'bg-light' : 'bg-white shadow-sm'} d-flex justify-content-between align-items-center">
+          <div style="flex: 1; padding-right: 8px;">
+            <div class="${isDone ? 'text-decoration-line-through text-muted' : 'fw-bold text-dark'}">${escapeHtml(t.title)}</div>
+            <div class="extra-small text-muted mt-1">
+              <span>👤 ${escapeHtml(t.salesPerson)}</span> | 
+              <span class="${pColor}">Priority: ${escapeHtml(t.priority || 'Medium')}</span>
+            </div>
+          </div>
+          <div class="d-flex flex-column align-items-end gap-1">
+            ${badge}
+            <button class="btn btn-xs ${isDone ? 'btn-outline-secondary' : 'btn-success'} py-1 px-2 extra-small fw-bold" 
+                    onclick="toggleMobTaskStatus('${t.id}', '${isDone ? 'Pending' : 'Completed'}')">
+              ${isDone ? '↺ Mark Pending' : '✔ Complete'}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function submitMobTodoTask() {
+    const titleInput = document.getElementById('mobModalTodoTitle');
+    const title = titleInput ? titleInput.value.trim() : '';
+    const spInput = document.getElementById('mobModalTodoSp');
+    const sp = spInput ? spInput.value.trim() : '';
+    const priority = document.getElementById('mobModalTodoPriority').value;
+
+    if (!title) {
+      alert("Please enter task description!");
+      return;
+    }
+
+    const btn = document.getElementById('mobSaveTodoBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerText = 'Adding...';
+    }
+
+    const payload = {
+      salesPerson: sp || (loggedInUser ? loggedInUser.salesPerson : ''),
+      title: title,
+      dueDate: selectedMobTodoDateStr,
+      priority: priority
+    };
+
+    const res = await callAppsScriptApi("saveToDoTask", payload);
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = 'Add Task';
+    }
+
+    if (res && res.success) {
+      showFloatingNotification("Task Added", `Task scheduled for ${selectedMobTodoDateStr}`);
+      if (titleInput) titleInput.value = '';
+      await loadDashboard();
+      setTimeout(renderMobModalTasksList, 300);
+    } else {
+      showAlert('Error: ' + (res ? res.message : 'Failed to save task'), 'danger');
+    }
+  }
+
+  async function toggleMobTaskStatus(taskId, newStatus) {
+    const res = await callAppsScriptApi("toggleToDoTaskStatus", { taskId: taskId, newStatus: newStatus });
+    if (res && res.success) {
+      showFloatingNotification("Task Updated", `Task marked as ${newStatus}`);
+      await loadDashboard();
+      setTimeout(() => {
+        renderMobModalTasksList();
+        renderMobileMonthlyTasksSummary();
+      }, 300);
+    } else {
+      showAlert('Error: ' + (res ? res.message : 'Status update failed'), 'danger');
+    }
+  }
+
+  function filterMobTasksSummary(filterType) {
+    currentMobTaskFilter = filterType;
+    ['All', 'Pending', 'Done'].forEach(f => {
+      const btn = document.getElementById('btnMobFilter' + f);
+      if (btn) btn.classList.toggle('active', (f === 'All' && filterType === 'ALL') || (f === 'Done' && filterType === 'Completed') || f === filterType);
+    });
+    renderMobileMonthlyTasksSummary();
+  }
+
+  function renderMobileMonthlyTasksSummary() {
+    const year = mobTodoCalDate.getFullYear();
+    const month = String(mobTodoCalDate.getMonth() + 1).padStart(2, '0');
+    const monthPrefix = `${year}-${month}`;
+
+    let monthTasks = (globalTasks || []).filter(t => {
+      const normDate = normalizeDateForMatch(t.dueDate);
+      return normDate && normDate.startsWith(monthPrefix);
+    });
+
+    if (currentMobTaskFilter === 'Pending') monthTasks = monthTasks.filter(t => String(t.status).toLowerCase() !== 'completed');
+    if (currentMobTaskFilter === 'Completed') monthTasks = monthTasks.filter(t => String(t.status).toLowerCase() === 'completed');
+
+    const container = document.getElementById('mobMonthlyTaskSummaryContainer');
+    if (!container) return;
+
+    if (monthTasks.length === 0) {
+      container.innerHTML = '<div class="text-center text-muted py-3 extra-small">No tasks found for this filter</div>';
+      return;
+    }
+
+    container.innerHTML = monthTasks.map(t => {
+      const isDone = String(t.status).toLowerCase() === 'completed';
+      const badge = isDone 
+        ? '<span class="badge bg-success">Done</span>' 
+        : '<span class="badge bg-warning text-dark">Pending</span>';
+
+      return `
+        <div class="p-2 border-bottom d-flex justify-content-between align-items-center ${isDone ? 'bg-light' : ''}">
+          <div style="flex: 1; padding-right: 8px;">
+            <div class="${isDone ? 'text-decoration-line-through text-muted' : 'fw-bold text-dark'} extra-small">${escapeHtml(t.title)}</div>
+            <div class="extra-small text-muted">📅 ${escapeHtml(t.dueDate)} | 👤 ${escapeHtml(t.salesPerson)}</div>
+          </div>
+          <div class="d-flex align-items-center gap-1">
+            ${badge}
+            <button class="btn btn-xs ${isDone ? 'btn-outline-secondary' : 'btn-success'} py-0 px-2 extra-small" 
+                    onclick="toggleMobTaskStatus('${t.id}', '${isDone ? 'Pending' : 'Completed'}')">
+              ${isDone ? '↺' : '✔'}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+</script>
+
+</body>
+</html>
