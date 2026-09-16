@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UCE Quotation Generator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; padding: 0 !important; }
+      .card { border: none !important; box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-light p-3">
+
+<div class="container" style="max-width: 900px;">
+  <!-- HEADER & CONTROLS -->
+  <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded shadow-sm mb-3 no-print">
+    <div>
+      <h5 class="fw-bold text-primary mb-0"><i class="fa fa-file-invoice-dollar me-2"></i>Create Quotation</h5>
+      <small class="text-muted" id="quotationUserSubtitle">Loading session...</small>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-sm btn-outline-primary" onclick="window.print()"><i class="fa fa-print me-1"></i> Print / PDF</button>
+      <button class="btn btn-sm btn-outline-dark" onclick="goBack()"><i class="fa fa-arrow-left me-1"></i> Back</button>
+    </div>
+  </div>
+
+  <!-- QUOTATION FORM / INVOICE CARD -->
+  <div class="card p-4 shadow-sm border-0 rounded-4 bg-white">
+    <!-- COMPANY HEADER -->
+    <div class="row border-bottom pb-3 mb-3">
+      <div class="col-6">
+        <h4 class="fw-bold text-dark m-0">UCEIPL SALES</h4>
+        <small class="text-muted">Professional Quotation & Billing System</small>
+      </div>
+      <div class="col-6 text-end">
+        <div class="small"><b>Date:</b> <span id="lblCurrentDate"></span></div>
+        <div class="small"><b>Quote ID:</b> <span id="lblQuoteId">Q-AUTO</span></div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER DETAILS -->
+    <div class="row g-2 mb-4">
+      <div class="col-md-6">
+        <label class="form-label small fw-bold">Customer / Company Name *</label>
+        <input type="text" id="qtCustomerName" class="form-control form-control-sm" placeholder="Enter customer name" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label small fw-bold">Customer Contact / Phone</label>
+        <input type="text" id="qtCustomerPhone" class="form-control form-control-sm" placeholder="Phone number">
+      </div>
+      <div class="col-12">
+        <label class="form-label small fw-bold">Billing / Site Address</label>
+        <input type="text" id="qtCustomerAddress" class="form-control form-control-sm" placeholder="Complete address">
+      </div>
+    </div>
+
+    <!-- PRODUCTS / ITEMS TABLE -->
+    <h6 class="fw-bold text-dark mb-2"><i class="fa fa-boxes me-1 text-primary"></i> Line Items</h6>
+    <div class="table-responsive mb-3">
+      <table class="table table-sm table-bordered align-middle small">
+        <thead class="table-dark">
+          <tr>
+            <th style="width: 30%;">Product / Model</th>
+            <th style="width: 15%;">Price (₹)</th>
+            <th style="width: 12%;">Qty</th>
+            <th style="width: 12%;">Disc (%)</th>
+            <th style="width: 18%;">Total (₹)</th>
+            <th style="width: 13%" class="no-print text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody id="quotationItemsBody">
+          <!-- Dynamically added rows -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="no-print mb-4">
+      <button type="button" class="btn btn-sm btn-outline-success fw-bold" onclick="addProductRow()"><i class="fa fa-plus me-1"></i> Add Product Item</button>
+    </div>
+
+    <!-- CALCULATIONS & ADDITIONAL CHARGES -->
+    <div class="row justify-content-end">
+      <div class="col-md-5">
+        <table class="table table-sm table-borderless small">
+          <tr>
+            <td>Subtotal:</td>
+            <td class="text-end fw-bold">₹<span id="lblSubtotal">0.00</span></td>
+          </tr>
+          <tr>
+            <td>GST (%):</td>
+            <td class="text-end">
+              <input type="number" id="qtGstRate" class="form-control form-control-sm text-end d-inline-block" style="width: 80px;" value="18" oninput="calculateTotals()"> %
+            </td>
+          </tr>
+          <tr>
+            <td>GST Amount:</td>
+            <td class="text-end text-muted">₹<span id="lblGstAmount">0.00</span></td>
+          </tr>
+          <tr>
+            <td>Freight / Other Charges:</td>
+            <td class="text-end">
+              <input type="number" id="qtFreight" class="form-control form-control-sm text-end d-inline-block" style="width: 100px;" value="0" oninput="calculateTotals()">
+            </td>
+          </tr>
+          <tr class="border-top fw-bold fs-6 text-success">
+            <td>Grand Total:</td>
+            <td class="text-end">₹<span id="lblGrandTotal">0.00</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- REMARKS & SAVE BUTTON -->
+    <div class="mb-3">
+      <label class="form-label small fw-bold">Terms & Conditions / Remarks</label>
+      <textarea id="qtRemarks" class="form-control form-control-sm" rows="2" placeholder="e.g. 1. Validity 30 days, 2. Payment 50% advance..."></textarea>
+    </div>
+
+    <div class="text-end no-print">
+      <button type="button" id="saveQuoteBtn" class="btn btn-primary btn-sm fw-bold px-4" onclick="saveQuotation()"><i class="fa fa-save me-1"></i> Save Quotation</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxeS23zbPNegYQjszbE5-Iqcw4ySVUy8Yddi6HE3RcFInfYUvSJtMpeR1XdNbM_Lne8/exec";
+  
+  let loggedInUser = null;
+  try {
+    loggedInUser = JSON.parse(localStorage.getItem('sales_portal_session'));
+  } catch(e) {}
+
+  if (!loggedInUser || !loggedInUser.salesPerson) {
+    window.location.replace("index.html");
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('lblCurrentDate').innerText = new Date().toISOString().split('T')[0];
+    document.getElementById('quotationUserSubtitle').innerText = `${loggedInUser.salesPerson} (${loggedInUser.role || 'User'})`;
+    document.getElementById('lblQuoteId').innerText = 'Q-' + Math.floor(100000 + Math.random() * 900000);
+    addProductRow(); // Add default empty row
+  });
+
+  function goBack() {
+    window.location.href = "index.html";
+  }
+
+  function addProductRow(productName = '', price = 0, qty = 1, disc = 0) {
+    const tbody = document.getElementById('quotationItemsBody');
+    const rowId = 'row_' + Date.now() + Math.floor(Math.random()*1000);
+
+    const tr = document.createElement('tr');
+    tr.id = rowId;
+    tr.innerHTML = `
+      <td><input type="text" class="form-control form-control-sm item-name" placeholder="Product name/model" value="${productName}" required></td>
+      <td><input type="number" class="form-control form-control-sm item-price" placeholder="0" value="${price}" oninput="calculateTotals()" required></td>
+      <td><input type="number" class="form-control form-control-sm item-qty" placeholder="1" value="${qty}" oninput="calculateTotals()" required></td>
+      <td><input type="number" class="form-control form-control-sm item-disc" placeholder="0" value="${disc}" oninput="calculateTotals()"></td>
+      <td class="fw-bold text-end item-total">₹0.00</td>
+      <td class="no-print text-center">
+        <button type="button" class="btn btn-xs btn-outline-danger py-0 px-1" onclick="document.getElementById('${rowId}').remove(); calculateTotals();"><i class="fa fa-trash"></i></button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+    calculateTotals();
+  }
+
+  function calculateTotals() {
+    const rows = document.querySelectorAll('#quotationItemsBody tr');
+    let subtotal = 0;
+
+    rows.forEach(row => {
+      const price = parseFloat(row.querySelector('.item-price').value) || 0;
+      const qty = parseFloat(row.querySelector('.item-qty').value) || 1;
+      const disc = parseFloat(row.querySelector('.item-disc').value) || 0;
+
+      let netPrice = price - (price * (disc / 100));
+      let rowTotal = netPrice * qty;
+      row.querySelector('.item-total').innerText = '₹' + rowTotal.toFixed(2);
+      subtotal += rowTotal;
+    });
+
+    document.getElementById('lblSubtotal').innerText = subtotal.toFixed(2);
+
+    const gstRate = parseFloat(document.getElementById('qtGstRate').value) || 0;
+    const gstAmt = subtotal * (gstRate / 100);
+    document.getElementById('lblGstAmount').innerText = gstAmt.toFixed(2);
+
+    const freight = parseFloat(document.getElementById('qtFreight').value) || 0;
+    const grandTotal = subtotal + gstAmt + freight;
+    document.getElementById('lblGrandTotal').innerText = grandTotal.toFixed(2);
+  }
+
+  async function saveQuotation() {
+    const customer = document.getElementById('qtCustomerName').value.trim();
+    if (!customer) {
+      alert("Please enter customer name");
+      return;
+    }
+
+    const rows = document.querySelectorAll('#quotationItemsBody tr');
+    if (rows.length === 0) {
+      alert("Please add at least one product item");
+      return;
+    }
+
+    let items = [];
+    rows.forEach(row => {
+      items.push({
+        name: row.querySelector('.item-name').value,
+        price: row.querySelector('.item-price').value,
+        qty: row.querySelector('.item-qty').value,
+        disc: row.querySelector('.item-disc').value,
+        total: row.querySelector('.item-total').innerText.replace('₹','')
+      });
+    });
+
+    const payload = {
+      quoteId: document.getElementById('lblQuoteId').innerText,
+      date: document.getElementById('lblCurrentDate').innerText,
+      salesPerson: loggedInUser.salesPerson,
+      customerName: customer,
+      customerPhone: document.getElementById('qtCustomerPhone').value,
+      customerAddress: document.getElementById('qtCustomerAddress').value,
+      subtotal: document.getElementById('lblSubtotal').innerText,
+      gstRate: document.getElementById('qtGstRate').value,
+      gstAmount: document.getElementById('lblGstAmount').innerText,
+      freight: document.getElementById('qtFreight').value,
+      grandTotal: document.getElementById('lblGrandTotal').innerText,
+      remarks: document.getElementById('qtRemarks').value,
+      items: JSON.stringify(items)
+    };
+
+    const btn = document.getElementById('saveQuoteBtn');
+    btn.disabled = true; btn.innerText = 'Saving...';
+
+    try {
+      const response = await fetch(APPS_SCRIPT_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'saveQuotation', data: payload })
+      });
+      const res = await response.json();
+      btn.disabled = false; btn.innerText = 'Save Quotation';
+
+      if (res && res.success) {
+        alert("Quotation saved successfully!");
+      } else {
+        alert("Failed to save: " + (res ? res.message : 'Unknown error'));
+      }
+    } catch (e) {
+      btn.disabled = false; btn.innerText = 'Save Quotation';
+      alert("Error: " + e.toString());
+    }
+  }
+</script>
+
+</body>
+</html>
