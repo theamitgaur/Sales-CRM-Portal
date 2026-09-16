@@ -12,8 +12,6 @@
     .form-label { font-weight: 600; font-size: 0.78rem; color: #475569; }
     .form-control, .form-select { border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; padding: 6px 10px; }
     .form-control:focus, .form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-    
-    /* HIDE PRICE & DISCOUNT COLUMNS WHEN PRINTING / EXPORTING */
     @media print {
       .no-print { display: none !important; }
       .hide-on-export { display: none !important; }
@@ -32,6 +30,7 @@
       <small class="text-muted" id="quotationUserSubtitle">Loading session...</small>
     </div>
     <div class="d-flex gap-2">
+      <button class="btn btn-sm btn-outline-info fw-bold" onclick="openQuotationsHistoryModal()"><i class="fa fa-history me-1"></i> View Saved Quotes</button>
       <button class="btn btn-sm btn-outline-primary fw-bold" onclick="window.print()"><i class="fa fa-print me-1"></i> Print PDF</button>
       <button class="btn btn-sm btn-outline-success fw-bold" onclick="exportToExcel()"><i class="fa fa-file-excel me-1"></i> Export Excel</button>
       <button class="btn btn-sm btn-outline-dark fw-bold" onclick="goBack()"><i class="fa fa-arrow-left me-1"></i> Back</button>
@@ -69,7 +68,7 @@
 
     <!-- LINE ITEMS TABLE -->
     <div class="d-flex justify-content-between align-items-center mb-2">
-      <h6 class="fw-bold text-dark m-0"><i class="fa fa-boxes me-1 text-primary"></i> Line Items</h6>
+      <h6 class="fw-bold text-dark m-0"><i class="fa fa-boxes me-1 text-primary"></i> Line Items (Inventory Auto-Suggest)</h6>
       <button type="button" class="btn btn-xs btn-outline-success fw-bold py-1 px-2 no-print" style="font-size: 0.78rem;" onclick="addProductRow()"><i class="fa fa-plus me-1"></i> Add Product Item</button>
     </div>
 
@@ -135,8 +134,35 @@
   </div>
 </div>
 
-<!-- HIDDEN DATALISTS FOR BRANDS -->
+<!-- SAVED QUOTATIONS HISTORY MODAL -->
+<div class="modal fade" id="savedQuotesModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title fw-bold"><i class="fa fa-history me-2"></i>Saved Quotations History (View & Edit)</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3">
+        <div class="table-responsive" style="max-height: 400px;">
+          <table class="table table-sm table-hover align-middle small">
+            <thead class="table-light">
+              <tr>
+                <th>Quote ID</th><th>Date</th><th>Customer</th><th>SalesPerson</th><th>Grand Total</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="savedQuotesTbody">
+              <tr><td colspan="6" class="text-center text-muted py-3">Loading history...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HIDDEN DATALISTS -->
 <datalist id="masterBrandsDatalist"></datalist>
+<datalist id="inventoryModelsDatalist"></datalist>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -144,6 +170,7 @@
   
   let loggedInUser = null;
   let availableBrands = [];
+  let inventoryItems = [];
 
   try {
     loggedInUser = JSON.parse(localStorage.getItem('sales_portal_session'));
@@ -158,8 +185,7 @@
     document.getElementById('quotationUserSubtitle').innerText = `${loggedInUser.salesPerson} (${loggedInUser.role || 'User'})`;
     document.getElementById('lblQuoteId').innerText = 'Q-' + Math.floor(100000 + Math.random() * 900000);
     
-    // Fetch Master Brands for dropdown
-    await fetchBrandsList();
+    await fetchMasterDataCache();
 
     try {
       const prefill = JSON.parse(localStorage.getItem('active_quotation_prefill'));
@@ -174,16 +200,41 @@
     addProductRow();
   });
 
-  async function fetchBrandsList() {
+  async function fetchMasterDataCache() {
+    // Check localStorage cache to make loading instant & lightning fast
+    const cachedBrands = localStorage.getItem('cache_brands');
+    const cachedInv = localStorage.getItem('cache_inventory');
+
+    if (cachedBrands && cachedInv) {
+      availableBrands = JSON.parse(cachedBrands);
+      inventoryItems = JSON.parse(cachedInv);
+      populateDatalists();
+      return;
+    }
+
     try {
       const res = await callApi("getMasterData", { user: loggedInUser });
       if (res && res.brands) {
         availableBrands = res.brands;
-        let dHtml = '';
-        availableBrands.forEach(b => { dHtml += `<option value="${b}">`; });
-        document.getElementById('masterBrandsDatalist').innerHTML = dHtml;
+        localStorage.setItem('cache_brands', JSON.stringify(availableBrands));
       }
+      const invRes = await callApi("getInventory", { user: loggedInUser });
+      if (invRes && invRes.items) {
+        inventoryItems = invRes.items;
+        localStorage.setItem('cache_inventory', JSON.stringify(inventoryItems));
+      }
+      populateDatalists();
     } catch(e) {}
+  }
+
+  function populateDatalists() {
+    let bHtml = '';
+    availableBrands.forEach(b => { bHtml += `<option value="${b}">`; });
+    document.getElementById('masterBrandsDatalist').innerHTML = bHtml;
+
+    let iHtml = '';
+    inventoryItems.forEach(item => { iHtml += `<option value="${item.model}">${item.brand} - ${item.product}</option>`; });
+    document.getElementById('inventoryModelsDatalist').innerHTML = iHtml;
   }
 
   async function callApi(action, data = {}) {
@@ -210,9 +261,9 @@
     const tr = document.createElement('tr');
     tr.id = rowId;
     tr.innerHTML = `
-      <td><input type="text" class="form-control form-control-sm item-brand" list="masterBrandsDatalist" placeholder="Select or type brand" value="${brand}"></td>
+      <td><input type="text" class="form-control form-control-sm item-brand" list="masterBrandsDatalist" placeholder="Brand" value="${brand}"></td>
       <td><input type="text" class="form-control form-control-sm item-product" placeholder="Product/Category" value="${product}"></td>
-      <td><input type="text" class="form-control form-control-sm item-model" placeholder="Model/Part No." value="${model}" required></td>
+      <td><input type="text" class="form-control form-control-sm item-model" list="inventoryModelsDatalist" placeholder="Model No." value="${model}" onchange="onModelSelected(this)" required></td>
       <td class="hide-on-export"><input type="number" class="form-control form-control-sm item-price text-end" placeholder="0" value="${price}" oninput="calculateTotals()" required></td>
       <td><input type="number" class="form-control form-control-sm item-qty text-center" placeholder="1" value="${qty}" oninput="calculateTotals()" required></td>
       <td class="hide-on-export"><input type="number" class="form-control form-control-sm item-disc text-center" placeholder="0" value="${disc}" oninput="calculateTotals()"></td>
@@ -223,6 +274,16 @@
     `;
     tbody.appendChild(tr);
     calculateTotals();
+  }
+
+  function onModelSelected(inputEl) {
+    const val = inputEl.value.trim().toLowerCase();
+    const found = inventoryItems.find(i => String(i.model).trim().toLowerCase() === val);
+    if (found) {
+      const row = inputEl.closest('tr');
+      if (found.brand) row.querySelector('.item-brand').value = found.brand;
+      if (found.product) row.querySelector('.item-product').value = found.product;
+    }
   }
 
   function calculateTotals() {
@@ -249,6 +310,65 @@
     const freight = parseFloat(document.getElementById('qtFreight').value) || 0;
     const grandTotal = subtotal + gstAmt + freight;
     document.getElementById('lblGrandTotal').innerText = grandTotal.toFixed(2);
+  }
+
+  async function openQuotationsHistoryModal() {
+    const modalEl = document.getElementById('savedQuotesModal');
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+
+    const tbody = document.getElementById('savedQuotesTbody');
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3"><i class="fa fa-spinner fa-spin me-1"></i> Loading saved quotations...</td></tr>`;
+
+    const res = await callApi("getQuotations");
+    if (res && res.success && res.quotations) {
+      if (res.quotations.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">No saved quotations found.</td></tr>`;
+        return;
+      }
+      let html = '';
+      res.quotations.forEach(q => {
+        html += `
+          <tr>
+            <td><b>${q.quoteId}</b></td>
+            <td>${q.date}</td>
+            <td>${q.customerName}</td>
+            <td>${q.salesPerson}</td>
+            <td class="fw-bold text-success">₹${Number(q.grandTotal).toLocaleString()}</td>
+            <td>
+              <button class="btn btn-xs btn-outline-primary py-0 px-2" onclick='loadQuotationForEdit(${JSON.stringify(q)})'><i class="fa fa-edit"></i> Load/Edit</button>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    } else {
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-3">Failed to load quotations history.</td></tr>`;
+    }
+  }
+
+  function loadQuotationForEdit(q) {
+    document.getElementById('lblQuoteId').innerText = q.quoteId;
+    document.getElementById('lblCurrentDate').innerText = q.date;
+    document.getElementById('qtCustomerName').value = q.customerName || '';
+    document.getElementById('qtCustomerPhone').value = q.customerPhone || '';
+    document.getElementById('qtCustomerAddress').value = q.customerAddress || '';
+    document.getElementById('qtGstRate').value = q.gstRate || 18;
+    document.getElementById('qtFreight').value = q.freight || 0;
+    document.getElementById('qtRemarks').value = q.remarks || '';
+
+    const tbody = document.getElementById('quotationItemsBody');
+    tbody.innerHTML = '';
+
+    try {
+      const items = JSON.parse(q.items || '[]');
+      items.forEach(it => {
+        addProductRow(it.brand || '', it.product || '', it.model || '', it.price || 0, it.qty || 1, it.disc || 0);
+      });
+    } catch(e) {
+      addProductRow();
+    }
+
+    bootstrap.Modal.getInstance(document.getElementById('savedQuotesModal')).hide();
   }
 
   function exportToExcel() {
@@ -326,7 +446,8 @@
     btn.disabled = false; btn.innerText = 'Save Quotation';
 
     if (res && res.success) {
-      alert("Quotation saved successfully in Google Sheet!");
+      alert("Quotation saved & inventory updated successfully!");
+      localStorage.removeItem('cache_inventory'); // Clear cache to reload new products
     } else {
       alert("Failed to save: " + (res ? res.message : 'Unknown error'));
     }
