@@ -12,8 +12,11 @@
     .form-label { font-weight: 600; font-size: 0.78rem; color: #475569; }
     .form-control, .form-select { border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; padding: 6px 10px; }
     .form-control:focus, .form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    
+    /* HIDE PRICE & DISCOUNT COLUMNS WHEN PRINTING / EXPORTING */
     @media print {
       .no-print { display: none !important; }
+      .hide-on-export { display: none !important; }
       body { background: white !important; padding: 0 !important; }
       .card { border: none !important; box-shadow: none !important; }
     }
@@ -29,18 +32,18 @@
       <small class="text-muted" id="quotationUserSubtitle">Loading session...</small>
     </div>
     <div class="d-flex gap-2">
-      <button class="btn btn-sm btn-outline-primary fw-bold" onclick="window.print()"><i class="fa fa-print me-1"></i> Print / PDF</button>
+      <button class="btn btn-sm btn-outline-primary fw-bold" onclick="window.print()"><i class="fa fa-print me-1"></i> Print PDF</button>
+      <button class="btn btn-sm btn-outline-success fw-bold" onclick="exportToExcel()"><i class="fa fa-file-excel me-1"></i> Export Excel</button>
       <button class="btn btn-sm btn-outline-dark fw-bold" onclick="goBack()"><i class="fa fa-arrow-left me-1"></i> Back</button>
     </div>
   </div>
 
-  <!-- QUOTATION FORM / INVOICE CARD -->
+  <!-- QUOTATION FORM CARD -->
   <div class="card p-4 mb-4">
-    <!-- COMPANY HEADER -->
     <div class="row border-bottom pb-3 mb-3 align-items-center">
       <div class="col-6">
         <h3 class="fw-bold text-primary m-0">QUOTATION</h3>
-        <small class="text-muted">Professional Billing & Commercial Proposal</small>
+        <small class="text-muted">Professional Commercial Proposal</small>
       </div>
       <div class="col-6 text-end">
         <div class="small"><b>Date:</b> <span id="lblCurrentDate"></span></div>
@@ -64,33 +67,31 @@
       </div>
     </div>
 
-    <!-- PRODUCTS / ITEMS TABLE WITH BRAND, PRODUCT, MODEL -->
+    <!-- LINE ITEMS TABLE -->
     <div class="d-flex justify-content-between align-items-center mb-2">
-      <h6 class="fw-bold text-dark m-0"><i class="fa fa-boxes me-1 text-primary"></i> Line Items (Brand, Product & Model)</h6>
+      <h6 class="fw-bold text-dark m-0"><i class="fa fa-boxes me-1 text-primary"></i> Line Items</h6>
       <button type="button" class="btn btn-xs btn-outline-success fw-bold py-1 px-2 no-print" style="font-size: 0.78rem;" onclick="addProductRow()"><i class="fa fa-plus me-1"></i> Add Product Item</button>
     </div>
 
     <div class="table-responsive mb-3">
-      <table class="table table-sm table-bordered align-middle small">
+      <table class="table table-sm table-bordered align-middle small" id="quotationTable">
         <thead class="table-dark text-center">
           <tr>
             <th style="width: 18%;">Brand</th>
             <th style="width: 20%;">Product / Category</th>
-            <th style="width: 22%;">Model / Part No.</th>
-            <th style="width: 10%;">Price (₹)</th>
+            <th style="width: 20%;">Model / Part No.</th>
+            <th style="width: 10%;" class="hide-on-export">Price (₹)</th>
             <th style="width: 8%;">Qty</th>
-            <th style="width: 8%;">Disc (%)</th>
-            <th style="width: 11%;">Total (₹)</th>
+            <th style="width: 8%;" class="hide-on-export">Disc (%)</th>
+            <th style="width: 13%;">Total (₹)</th>
             <th style="width: 3%" class="no-print">Action</th>
           </tr>
         </thead>
-        <tbody id="quotationItemsBody">
-          <!-- Dynamically added rows -->
-        </tbody>
+        <tbody id="quotationItemsBody"></tbody>
       </table>
     </div>
 
-    <!-- CALCULATIONS & ADDITIONAL CHARGES -->
+    <!-- CALCULATIONS -->
     <div class="row justify-content-end">
       <div class="col-md-5 bg-light p-3 rounded-3 border">
         <table class="table table-sm table-borderless small mb-0">
@@ -134,11 +135,16 @@
   </div>
 </div>
 
+<!-- HIDDEN DATALISTS FOR BRANDS -->
+<datalist id="masterBrandsDatalist"></datalist>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbypRhN9mB2Casq9H3fYxQLzJHhz9T7B9up6OBVlupLI90GgN6vlYKvUzivWN41OCLKsMA/exec";
   
   let loggedInUser = null;
+  let availableBrands = [];
+
   try {
     loggedInUser = JSON.parse(localStorage.getItem('sales_portal_session'));
   } catch(e) {}
@@ -147,11 +153,14 @@
     window.location.replace("index.html");
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('lblCurrentDate').innerText = new Date().toISOString().split('T')[0];
     document.getElementById('quotationUserSubtitle').innerText = `${loggedInUser.salesPerson} (${loggedInUser.role || 'User'})`;
     document.getElementById('lblQuoteId').innerText = 'Q-' + Math.floor(100000 + Math.random() * 900000);
     
+    // Fetch Master Brands for dropdown
+    await fetchBrandsList();
+
     try {
       const prefill = JSON.parse(localStorage.getItem('active_quotation_prefill'));
       if (prefill) {
@@ -165,6 +174,31 @@
     addProductRow();
   });
 
+  async function fetchBrandsList() {
+    try {
+      const res = await callApi("getMasterData", { user: loggedInUser });
+      if (res && res.brands) {
+        availableBrands = res.brands;
+        let dHtml = '';
+        availableBrands.forEach(b => { dHtml += `<option value="${b}">`; });
+        document.getElementById('masterBrandsDatalist').innerHTML = dHtml;
+      }
+    } catch(e) {}
+  }
+
+  async function callApi(action, data = {}) {
+    try {
+      const response = await fetch(APPS_SCRIPT_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: action, data: data })
+      });
+      return await response.json();
+    } catch (e) {
+      return { success: false };
+    }
+  }
+
   function goBack() {
     window.location.href = "index.html";
   }
@@ -176,12 +210,12 @@
     const tr = document.createElement('tr');
     tr.id = rowId;
     tr.innerHTML = `
-      <td><input type="text" class="form-control form-control-sm item-brand" placeholder="Brand" value="${brand}"></td>
+      <td><input type="text" class="form-control form-control-sm item-brand" list="masterBrandsDatalist" placeholder="Select or type brand" value="${brand}"></td>
       <td><input type="text" class="form-control form-control-sm item-product" placeholder="Product/Category" value="${product}"></td>
       <td><input type="text" class="form-control form-control-sm item-model" placeholder="Model/Part No." value="${model}" required></td>
-      <td><input type="number" class="form-control form-control-sm item-price text-end" placeholder="0" value="${price}" oninput="calculateTotals()" required></td>
+      <td class="hide-on-export"><input type="number" class="form-control form-control-sm item-price text-end" placeholder="0" value="${price}" oninput="calculateTotals()" required></td>
       <td><input type="number" class="form-control form-control-sm item-qty text-center" placeholder="1" value="${qty}" oninput="calculateTotals()" required></td>
-      <td><input type="number" class="form-control form-control-sm item-disc text-center" placeholder="0" value="${disc}" oninput="calculateTotals()"></td>
+      <td class="hide-on-export"><input type="number" class="form-control form-control-sm item-disc text-center" placeholder="0" value="${disc}" oninput="calculateTotals()"></td>
       <td class="fw-bold text-end item-total align-middle">₹0.00</td>
       <td class="no-print text-center">
         <button type="button" class="btn btn-xs btn-outline-danger py-0 px-1" onclick="document.getElementById('${rowId}').remove(); calculateTotals();"><i class="fa fa-trash"></i></button>
@@ -217,18 +251,44 @@
     document.getElementById('lblGrandTotal').innerText = grandTotal.toFixed(2);
   }
 
-  async function saveQuotation() {
-    const customer = document.getElementById('qtCustomerName').value.trim();
-    if (!customer) {
-      alert("Please enter customer name");
-      return;
-    }
+  function exportToExcel() {
+    const customer = document.getElementById('qtCustomerName').value || 'Customer';
+    const quoteId = document.getElementById('lblQuoteId').innerText;
+    
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += `Quotation ID,${quoteId}\r\nCustomer,${customer}\r\nDate,${document.getElementById('lblCurrentDate').innerText}\r\n\r\n`;
+    csvContent += "Brand,Product/Category,Model/Part No.,Qty,Total (INR)\r\n";
 
     const rows = document.querySelectorAll('#quotationItemsBody tr');
-    if (rows.length === 0) {
-      alert("Please add at least one product item");
-      return;
-    }
+    rows.forEach(row => {
+      const brand = row.querySelector('.item-brand').value || '';
+      const product = row.querySelector('.item-product').value || '';
+      const model = row.querySelector('.item-model').value || '';
+      const qty = row.querySelector('.item-qty').value || '1';
+      const total = row.querySelector('.item-total').innerText.replace('₹','') || '0';
+      csvContent += `"${brand}","${product}","${model}",${qty},${total}\r\n`;
+    });
+
+    csvContent += `\r\nSubtotal,,,,,${document.getElementById('lblSubtotal').innerText}\r\n`;
+    csvContent += `GST Amount,,,,,${document.getElementById('lblGstAmount').innerText}\r\n`;
+    csvContent += `Freight,,,,,${document.getElementById('qtFreight').value}\r\n`;
+    csvContent += `Grand Total,,,,,${document.getElementById('lblGrandTotal').innerText}\r\n`;
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Quotation_${quoteId}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  async function saveQuotation() {
+    const customer = document.getElementById('qtCustomerName').value.trim();
+    if (!customer) { alert("Please enter customer name"); return; }
+
+    const rows = document.querySelectorAll('#quotationItemsBody tr');
+    if (rows.length === 0) { alert("Please add at least one product item"); return; }
 
     let items = [];
     rows.forEach(row => {
@@ -262,23 +322,13 @@
     const btn = document.getElementById('saveQuoteBtn');
     btn.disabled = true; btn.innerText = 'Saving...';
 
-    try {
-      const response = await fetch(APPS_SCRIPT_API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'saveQuotation', data: payload })
-      });
-      const res = await response.json();
-      btn.disabled = false; btn.innerText = 'Save Quotation';
+    const res = await callApi('saveQuotation', payload);
+    btn.disabled = false; btn.innerText = 'Save Quotation';
 
-      if (res && res.success) {
-        alert("Quotation saved successfully in Google Sheet!");
-      } else {
-        alert("Failed to save: " + (res ? res.message : 'Unknown error'));
-      }
-    } catch (e) {
-      btn.disabled = false; btn.innerText = 'Save Quotation';
-      alert("Error: " + e.toString());
+    if (res && res.success) {
+      alert("Quotation saved successfully in Google Sheet!");
+    } else {
+      alert("Failed to save: " + (res ? res.message : 'Unknown error'));
     }
   }
 </script>
