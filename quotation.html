@@ -7,139 +7,163 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 0.88rem; }
+    body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 0.88rem; display: flex; margin: 0; }
+    
+    /* SIDEBAR NAVIGATION STYLE */
+    .sidebar { width: 260px; background: #1e293b; color: white; min-height: 100vh; position: fixed; top: 0; left: 0; padding: 20px 15px; display: flex; flex-direction: column; z-index: 1000; }
+    .sidebar h5 { color: #38bdf8; font-weight: bold; margin-bottom: 25px; padding-left: 10px; }
+    .sidebar a { color: #94a3b8; text-decoration: none; padding: 10px 12px; border-radius: 8px; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; font-weight: 500; transition: all 0.2s; }
+    .sidebar a:hover, .sidebar a.active { background: #334155; color: white; }
+    
+    .main-content { margin-left: 260px; flex: 1; padding: 20px; max-width: calc(100% - 260px); }
     .card { border: none; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); background: #ffffff; }
     .form-label { font-weight: 600; font-size: 0.78rem; color: #475569; }
     .form-control, .form-select { border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; padding: 6px 10px; }
-    .form-control:focus, .form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    
     @media print {
+      .sidebar { display: none !important; }
+      .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 0 !important; }
       .no-print { display: none !important; }
       .hide-on-export { display: none !important; }
-      body { background: white !important; padding: 0 !important; }
+      body { background: white !important; }
       .card { border: none !important; box-shadow: none !important; }
     }
   </style>
 </head>
-<body class="p-3">
+<body>
 
-<div class="container" style="max-width: 1000px;">
-  <!-- HEADER & CONTROLS -->
-  <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-4 shadow-sm mb-3 no-print">
-    <div>
-      <h5 class="fw-bold text-primary mb-0"><i class="fa fa-file-invoice-dollar me-2"></i>Quotation Generator</h5>
-      <small class="text-muted" id="quotationUserSubtitle">Loading session...</small>
-    </div>
-    <div class="d-flex gap-2">
-      <button class="btn btn-sm btn-outline-info fw-bold" onclick="openQuotationsHistoryModal()"><i class="fa fa-history me-1"></i> View Saved Quotes</button>
-      <button class="btn btn-sm btn-outline-primary fw-bold" onclick="window.print()"><i class="fa fa-print me-1"></i> Print PDF</button>
-      <button class="btn btn-sm btn-outline-success fw-bold" onclick="exportToExcel()"><i class="fa fa-file-excel me-1"></i> Export Excel</button>
-      <button class="btn btn-sm btn-outline-dark fw-bold" onclick="goBack()"><i class="fa fa-arrow-left me-1"></i> Back</button>
-    </div>
-  </div>
+<!-- SIDEBAR NAVIGATION -->
+<div class="sidebar no-print">
+  <h5><i class="fa fa-chart-line me-2"></i>UCE Portal</h5>
+  <a href="web.html" onclick="navigateToPortal('enquiry')"><i class="fa fa-list"></i>Leads / Enquiries</a>
+  <a href="web.html" onclick="navigateToPortal('todo')"><i class="fa fa-calendar-check"></i>To-Do Tasks</a>
+  <a href="quotation.html" class="active"><i class="fa fa-file-invoice-dollar"></i>Quotation Generator</a>
+  <a href="conveyance.html"><i class="fa fa-motorcycle"></i>Conveyance</a>
+  <a href="web.html" onclick="navigateToPortal('analytics')"><i class="fa fa-chart-pie"></i>Analytics</a>
+  <hr style="border-color: #334155;">
+  <a href="#" onclick="openQuotationsHistoryModal()" class="text-info"><i class="fa fa-folder-open"></i>Saved Quotes History</a>
+</div>
 
-  <!-- QUOTATION FORM CARD -->
-  <div class="card p-4 mb-4">
-    <div class="row border-bottom pb-3 mb-3 align-items-center">
-      <div class="col-6">
-        <h3 class="fw-bold text-primary m-0">QUOTATION</h3>
-        <small class="text-muted">Professional Commercial Proposal</small>
+<!-- MAIN CONTENT AREA -->
+<div class="main-content">
+  <div class="container-fluid" style="max-width: 1000px;">
+    <!-- HEADER & CONTROLS -->
+    <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-4 shadow-sm mb-3 no-print">
+      <div>
+        <h5 class="fw-bold text-primary mb-0"><i class="fa fa-file-invoice-dollar me-2"></i>Quotation Generator</h5>
+        <small class="text-muted" id="quotationUserSubtitle">Loading session...</small>
       </div>
-      <div class="col-6 text-end">
-        <div class="small"><b>Date:</b> <span id="lblCurrentDate"></span></div>
-        <div class="small"><b>Quote ID:</b> <span id="lblQuoteId" class="text-primary fw-bold">Q-AUTO</span></div>
-      </div>
-    </div>
-
-    <!-- CUSTOMER DETAILS -->
-    <div class="row g-2 mb-4 bg-light p-3 rounded-3 border">
-      <div class="col-md-6">
-        <label class="form-label">Customer / Company Name *</label>
-        <input type="text" id="qtCustomerName" class="form-control form-control-sm fw-bold" placeholder="Enter customer name" required>
-      </div>
-      <div class="col-md-6">
-        <label class="form-label">Customer Contact / Phone</label>
-        <input type="text" id="qtCustomerPhone" class="form-control form-control-sm" placeholder="Phone number">
-      </div>
-      <div class="col-12">
-        <label class="form-label">Billing / Site Address</label>
-        <input type="text" id="qtCustomerAddress" class="form-control form-control-sm" placeholder="Complete address">
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-info fw-bold" onclick="openQuotationsHistoryModal()"><i class="fa fa-history me-1"></i> Saved Quotes</button>
+        <button class="btn btn-sm btn-outline-primary fw-bold" onclick="window.print()"><i class="fa fa-print me-1"></i> Print PDF</button>
+        <button class="btn btn-sm btn-outline-success fw-bold" onclick="exportToProfessionalExcel()"><i class="fa fa-file-excel me-1"></i> Export Excel</button>
       </div>
     </div>
 
-    <!-- LINE ITEMS TABLE -->
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <h6 class="fw-bold text-dark m-0"><i class="fa fa-boxes me-1 text-primary"></i> Line Items (Inventory Auto-Suggest)</h6>
-      <button type="button" class="btn btn-xs btn-outline-success fw-bold py-1 px-2 no-print" style="font-size: 0.78rem;" onclick="addProductRow()"><i class="fa fa-plus me-1"></i> Add Product Item</button>
-    </div>
+    <!-- QUOTATION FORM CARD -->
+    <div class="card p-4 mb-4">
+      <div class="row border-bottom pb-3 mb-3 align-items-center">
+        <div class="col-6">
+          <h3 class="fw-bold text-primary m-0">QUOTATION</h3>
+          <small class="text-muted">United Control Engineers India Pvt Ltd</small>
+        </div>
+        <div class="col-6 text-end">
+          <div class="small"><b>Date:</b> <span id="lblCurrentDate"></span></div>
+          <div class="small"><b>Quote ID:</b> <span id="lblQuoteId" class="text-primary fw-bold">Q-AUTO</span></div>
+        </div>
+      </div>
 
-    <div class="table-responsive mb-3">
-      <table class="table table-sm table-bordered align-middle small" id="quotationTable">
-        <thead class="table-dark text-center">
-          <tr>
-            <th style="width: 18%;">Brand</th>
-            <th style="width: 20%;">Product / Category</th>
-            <th style="width: 20%;">Model / Part No.</th>
-            <th style="width: 10%;" class="hide-on-export">Price (₹)</th>
-            <th style="width: 8%;">Qty</th>
-            <th style="width: 8%;" class="hide-on-export">Disc (%)</th>
-            <th style="width: 13%;">Total (₹)</th>
-            <th style="width: 3%" class="no-print">Action</th>
-          </tr>
-        </thead>
-        <tbody id="quotationItemsBody"></tbody>
-      </table>
-    </div>
+      <!-- CUSTOMER DETAILS -->
+      <div class="row g-2 mb-4 bg-light p-3 rounded-3 border">
+        <div class="col-md-6">
+          <label class="form-label">Customer / Company Name *</label>
+          <input type="text" id="qtCustomerName" class="form-control form-control-sm fw-bold" placeholder="Enter customer name" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Customer Contact / Phone</label>
+          <input type="text" id="qtCustomerPhone" class="form-control form-control-sm" placeholder="Phone number">
+        </div>
+        <div class="col-12">
+          <label class="form-label">Billing / Site Address</label>
+          <input type="text" id="qtCustomerAddress" class="form-control form-control-sm" placeholder="Complete address">
+        </div>
+      </div>
 
-    <!-- CALCULATIONS -->
-    <div class="row justify-content-end">
-      <div class="col-md-5 bg-light p-3 rounded-3 border">
-        <table class="table table-sm table-borderless small mb-0">
-          <tr>
-            <td>Subtotal:</td>
-            <td class="text-end fw-bold">₹<span id="lblSubtotal">0.00</span></td>
-          </tr>
-          <tr>
-            <td>GST (%):</td>
-            <td class="text-end">
-              <input type="number" id="qtGstRate" class="form-control form-control-sm text-end d-inline-block" style="width: 75px;" value="18" oninput="calculateTotals()"> %
-            </td>
-          </tr>
-          <tr>
-            <td>GST Amount:</td>
-            <td class="text-end text-muted">₹<span id="lblGstAmount">0.00</span></td>
-          </tr>
-          <tr>
-            <td>Freight / Other:</td>
-            <td class="text-end">
-              <input type="number" id="qtFreight" class="form-control form-control-sm text-end d-inline-block" style="width: 90px;" value="0" oninput="calculateTotals()">
-            </td>
-          </tr>
-          <tr class="border-top fw-bold fs-6 text-success pt-2">
-            <td>Grand Total:</td>
-            <td class="text-end">₹<span id="lblGrandTotal">0.00</span></td>
-          </tr>
+      <!-- LINE ITEMS TABLE -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="fw-bold text-dark m-0"><i class="fa fa-boxes me-1 text-primary"></i> Line Items</h6>
+        <button type="button" class="btn btn-xs btn-outline-success fw-bold py-1 px-2 no-print" style="font-size: 0.78rem;" onclick="addProductRow()"><i class="fa fa-plus me-1"></i> Add Product Item</button>
+      </div>
+
+      <div class="table-responsive mb-3">
+        <table class="table table-sm table-bordered align-middle small" id="quotationTable">
+          <thead class="table-dark text-center">
+            <tr>
+              <th style="width: 18%;">Brand</th>
+              <th style="width: 20%;">Product / Category</th>
+              <th style="width: 20%;">Model / Part No.</th>
+              <th style="width: 10%;" class="hide-on-export">Price (₹)</th>
+              <th style="width: 8%;">Qty</th>
+              <th style="width: 8%;" class="hide-on-export">Disc (%)</th>
+              <th style="width: 13%;">Total (₹)</th>
+              <th style="width: 3%" class="no-print">Action</th>
+            </tr>
+          </thead>
+          <tbody id="quotationItemsBody"></tbody>
         </table>
       </div>
-    </div>
 
-    <!-- REMARKS & SAVE BUTTON -->
-    <div class="mb-3 mt-3">
-      <label class="form-label">Terms & Conditions / Remarks</label>
-      <textarea id="qtRemarks" class="form-control form-control-sm" rows="2" placeholder="e.g. 1. Validity 30 days, 2. Payment 50% advance..."></textarea>
-    </div>
+      <!-- CALCULATIONS -->
+      <div class="row justify-content-end">
+        <div class="col-md-5 bg-light p-3 rounded-3 border">
+          <table class="table table-sm table-borderless small mb-0">
+            <tr>
+              <td>Subtotal:</td>
+              <td class="text-end fw-bold">₹<span id="lblSubtotal">0.00</span></td>
+            </tr>
+            <tr>
+              <td>GST (%):</td>
+              <td class="text-end">
+                <input type="number" id="qtGstRate" class="form-control form-control-sm text-end d-inline-block" style="width: 75px;" value="18" oninput="calculateTotals()"> %
+              </td>
+            </tr>
+            <tr>
+              <td>GST Amount:</td>
+              <td class="text-end text-muted">₹<span id="lblGstAmount">0.00</span></td>
+            </tr>
+            <tr>
+              <td>Freight / Other:</td>
+              <td class="text-end">
+                <input type="number" id="qtFreight" class="form-control form-control-sm text-end d-inline-block" style="width: 90px;" value="0" oninput="calculateTotals()">
+              </td>
+            </tr>
+            <tr class="border-top fw-bold fs-6 text-success pt-2">
+              <td>Grand Total:</td>
+              <td class="text-end">₹<span id="lblGrandTotal">0.00</span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
 
-    <div class="text-end no-print">
-      <button type="button" id="saveQuoteBtn" class="btn btn-primary btn-sm fw-bold px-5 py-2 shadow-sm" onclick="saveQuotation()"><i class="fa fa-save me-1"></i> Save Quotation</button>
+      <!-- REMARKS & SAVE BUTTON -->
+      <div class="mb-3 mt-3">
+        <label class="form-label">Terms & Conditions / Remarks</label>
+        <textarea id="qtRemarks" class="form-control form-control-sm" rows="2" placeholder="e.g. 1. Validity 30 days, 2. Payment 50% advance..."></textarea>
+      </div>
+
+      <div class="text-end no-print">
+        <button type="button" id="saveQuoteBtn" class="btn btn-primary btn-sm fw-bold px-5 py-2 shadow-sm" onclick="saveQuotation()"><i class="fa fa-save me-1"></i> Save Quotation</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- SAVED QUOTATIONS HISTORY MODAL -->
+<!-- SAVED QUOTATIONS MODAL -->
 <div class="modal fade" id="savedQuotesModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content border-0 rounded-4 shadow">
       <div class="modal-header bg-dark text-white py-2">
-        <h6 class="modal-title fw-bold"><i class="fa fa-history me-2"></i>Saved Quotations History (View & Edit)</h6>
+        <h6 class="modal-title fw-bold"><i class="fa fa-folder-open me-2"></i>Saved Quotations History</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-3">
@@ -160,7 +184,6 @@
   </div>
 </div>
 
-<!-- HIDDEN DATALISTS -->
 <datalist id="masterBrandsDatalist"></datalist>
 <datalist id="inventoryModelsDatalist"></datalist>
 
@@ -181,7 +204,11 @@
   }
 
   window.addEventListener('DOMContentLoaded', async () => {
-    document.getElementById('lblCurrentDate').innerText = new Date().toISOString().split('T')[0];
+    // Format Date to dd-MM-yyyy
+    const today = new Date();
+    const formattedDate = String(today.getDate()).padStart(2, '0') + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + today.getFullYear();
+    document.getElementById('lblCurrentDate').innerText = formattedDate;
+    
     document.getElementById('quotationUserSubtitle').innerText = `${loggedInUser.salesPerson} (${loggedInUser.role || 'User'})`;
     document.getElementById('lblQuoteId').innerText = 'Q-' + Math.floor(100000 + Math.random() * 900000);
     
@@ -200,8 +227,11 @@
     addProductRow();
   });
 
+  function navigateToPortal(tab) {
+    localStorage.setItem('active_portal_tab', tab);
+  }
+
   async function fetchMasterDataCache() {
-    // Check localStorage cache to make loading instant & lightning fast
     const cachedBrands = localStorage.getItem('cache_brands');
     const cachedInv = localStorage.getItem('cache_inventory');
 
@@ -233,7 +263,7 @@
     document.getElementById('masterBrandsDatalist').innerHTML = bHtml;
 
     let iHtml = '';
-    inventoryItems.forEach(item => { iHtml += `<option value="${item.model}">${item.brand} - ${item.product}</option>`; });
+    inventoryItems.forEach(item => { iHtml += `<option value="${item.model}">${item.brand} - ${item.product} (₹${item.price})</option>`; });
     document.getElementById('inventoryModelsDatalist').innerHTML = iHtml;
   }
 
@@ -248,10 +278,6 @@
     } catch (e) {
       return { success: false };
     }
-  }
-
-  function goBack() {
-    window.location.href = "index.html";
   }
 
   function addProductRow(brand = '', product = '', model = '', price = 0, qty = 1, disc = 0) {
@@ -283,6 +309,8 @@
       const row = inputEl.closest('tr');
       if (found.brand) row.querySelector('.item-brand').value = found.brand;
       if (found.product) row.querySelector('.item-product').value = found.product;
+      if (found.price) row.querySelector('.item-price').value = found.price;
+      calculateTotals();
     }
   }
 
@@ -335,14 +363,14 @@
             <td>${q.salesPerson}</td>
             <td class="fw-bold text-success">₹${Number(q.grandTotal).toLocaleString()}</td>
             <td>
-              <button class="btn btn-xs btn-outline-primary py-0 px-2" onclick='loadQuotationForEdit(${JSON.stringify(q)})'><i class="fa fa-edit"></i> Load/Edit</button>
+              <button class="btn btn-xs btn-outline-primary py-0 px-2" onclick='loadQuotationForEdit(${JSON.stringify(q)})'><i class="fa fa-edit"></i> Edit</button>
             </td>
           </tr>
         `;
       });
       tbody.innerHTML = html;
     } else {
-      tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-3">Failed to load quotations history.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-3">Failed to load history.</td></tr>`;
     }
   }
 
@@ -371,13 +399,18 @@
     bootstrap.Modal.getInstance(document.getElementById('savedQuotesModal')).hide();
   }
 
-  function exportToExcel() {
+  function exportToProfessionalExcel() {
     const customer = document.getElementById('qtCustomerName').value || 'Customer';
     const quoteId = document.getElementById('lblQuoteId').innerText;
-    
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += `Quotation ID,${quoteId}\r\nCustomer,${customer}\r\nDate,${document.getElementById('lblCurrentDate').innerText}\r\n\r\n`;
-    csvContent += "Brand,Product/Category,Model/Part No.,Qty,Total (INR)\r\n";
+    const dateStr = document.getElementById('lblCurrentDate').innerText;
+
+    let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">`;
+    html += `<head><meta charset="utf-8"/><style>table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; font-family: sans-serif; font-size: 11pt; } th { background-color: #1e293b; color: white; }</style></head>`;
+    html += `<body>`;
+    html += `<h2>United Control Engineers India Pvt Ltd</h2>`;
+    html += `<h4>Quotation ID: ${quoteId} | Date: ${dateStr}</h4>`;
+    html += `<p><b>Customer:</b> ${customer}</p><br>`;
+    html += `<table><tr><th>Brand</th><th>Product / Category</th><th>Model / Part No.</th><th>Qty</th><th>Total (INR)</th></tr>`;
 
     const rows = document.querySelectorAll('#quotationItemsBody tr');
     rows.forEach(row => {
@@ -386,21 +419,23 @@
       const model = row.querySelector('.item-model').value || '';
       const qty = row.querySelector('.item-qty').value || '1';
       const total = row.querySelector('.item-total').innerText.replace('₹','') || '0';
-      csvContent += `"${brand}","${product}","${model}",${qty},${total}\r\n`;
+      html += `<tr><td>${brand}</td><td>${product}</td><td>${model}</td><td>${qty}</td><td>${total}</td></tr>`;
     });
 
-    csvContent += `\r\nSubtotal,,,,,${document.getElementById('lblSubtotal').innerText}\r\n`;
-    csvContent += `GST Amount,,,,,${document.getElementById('lblGstAmount').innerText}\r\n`;
-    csvContent += `Freight,,,,,${document.getElementById('qtFreight').value}\r\n`;
-    csvContent += `Grand Total,,,,,${document.getElementById('lblGrandTotal').innerText}\r\n`;
+    html += `<tr><td colspan="4" align="right"><b>Subtotal</b></td><td><b>${document.getElementById('lblSubtotal').innerText}</b></td></tr>`;
+    html += `<tr><td colspan="4" align="right"><b>GST Amount</b></td><td><b>${document.getElementById('lblGstAmount').innerText}</b></td></tr>`;
+    html += `<tr><td colspan="4" align="right"><b>Freight / Other</b></td><td><b>${document.getElementById('qtFreight').value}</b></td></tr>`;
+    html += `<tr><td colspan="4" align="right"><b>Grand Total</b></td><td><b>${document.getElementById('lblGrandTotal').innerText}</b></td></tr>`;
+    html += `</table></body></html>`;
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Quotation_${quoteId}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quotation_${quoteId}.xls`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 
   async function saveQuotation() {
@@ -446,8 +481,8 @@
     btn.disabled = false; btn.innerText = 'Save Quotation';
 
     if (res && res.success) {
-      alert("Quotation saved & inventory updated successfully!");
-      localStorage.removeItem('cache_inventory'); // Clear cache to reload new products
+      alert("Quotation saved successfully without duplication!");
+      localStorage.removeItem('cache_inventory');
     } else {
       alert("Failed to save: " + (res ? res.message : 'Unknown error'));
     }
