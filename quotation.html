@@ -7,6 +7,11 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
+    body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 0.88rem; }
+    .card { border: none; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); background: #ffffff; }
+    .form-label { font-weight: 600; font-size: 0.78rem; color: #475569; }
+    .form-control, .form-select { border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; padding: 6px 10px; }
+    .form-control:focus, .form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
     @media print {
       .no-print { display: none !important; }
       body { background: white !important; padding: 0 !important; }
@@ -14,63 +19,69 @@
     }
   </style>
 </head>
-<body class="bg-light p-3">
+<body class="p-3">
 
-<div class="container" style="max-width: 900px;">
+<div class="container" style="max-width: 1000px;">
   <!-- HEADER & CONTROLS -->
-  <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded shadow-sm mb-3 no-print">
+  <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-4 shadow-sm mb-3 no-print">
     <div>
-      <h5 class="fw-bold text-primary mb-0"><i class="fa fa-file-invoice-dollar me-2"></i>Create Quotation</h5>
+      <h5 class="fw-bold text-primary mb-0"><i class="fa fa-file-invoice-dollar me-2"></i>Quotation Generator</h5>
       <small class="text-muted" id="quotationUserSubtitle">Loading session...</small>
     </div>
     <div class="d-flex gap-2">
-      <button class="btn btn-sm btn-outline-primary" onclick="window.print()"><i class="fa fa-print me-1"></i> Print / PDF</button>
-      <button class="btn btn-sm btn-outline-dark" onclick="goBack()"><i class="fa fa-arrow-left me-1"></i> Back</button>
+      <button class="btn btn-sm btn-outline-primary fw-bold" onclick="window.print()"><i class="fa fa-print me-1"></i> Print / PDF</button>
+      <button class="btn btn-sm btn-outline-dark fw-bold" onclick="goBack()"><i class="fa fa-arrow-left me-1"></i> Back</button>
     </div>
   </div>
 
   <!-- QUOTATION FORM / INVOICE CARD -->
-  <div class="card p-4 shadow-sm border-0 rounded-4 bg-white">
+  <div class="card p-4 mb-4">
     <!-- COMPANY HEADER -->
-    <div class="row border-bottom pb-3 mb-3">
+    <div class="row border-bottom pb-3 mb-3 align-items-center">
       <div class="col-6">
-        <h4 class="fw-bold text-dark m-0">UCEIPL SALES</h4>
-        <small class="text-muted">Professional Quotation & Billing System</small>
+        <h3 class="fw-bold text-primary m-0">QUOTATION</h3>
+        <small class="text-muted">Professional Billing & Commercial Proposal</small>
       </div>
       <div class="col-6 text-end">
         <div class="small"><b>Date:</b> <span id="lblCurrentDate"></span></div>
-        <div class="small"><b>Quote ID:</b> <span id="lblQuoteId">Q-AUTO</span></div>
+        <div class="small"><b>Quote ID:</b> <span id="lblQuoteId" class="text-primary fw-bold">Q-AUTO</span></div>
       </div>
     </div>
 
     <!-- CUSTOMER DETAILS -->
-    <div class="row g-2 mb-4">
+    <div class="row g-2 mb-4 bg-light p-3 rounded-3 border">
       <div class="col-md-6">
-        <label class="form-label small fw-bold">Customer / Company Name *</label>
-        <input type="text" id="qtCustomerName" class="form-control form-control-sm" placeholder="Enter customer name" required>
+        <label class="form-label">Customer / Company Name *</label>
+        <input type="text" id="qtCustomerName" class="form-control form-control-sm fw-bold" placeholder="Enter customer name" required>
       </div>
       <div class="col-md-6">
-        <label class="form-label small fw-bold">Customer Contact / Phone</label>
+        <label class="form-label">Customer Contact / Phone</label>
         <input type="text" id="qtCustomerPhone" class="form-control form-control-sm" placeholder="Phone number">
       </div>
       <div class="col-12">
-        <label class="form-label small fw-bold">Billing / Site Address</label>
+        <label class="form-label">Billing / Site Address</label>
         <input type="text" id="qtCustomerAddress" class="form-control form-control-sm" placeholder="Complete address">
       </div>
     </div>
 
-    <!-- PRODUCTS / ITEMS TABLE -->
-    <h6 class="fw-bold text-dark mb-2"><i class="fa fa-boxes me-1 text-primary"></i> Line Items</h6>
+    <!-- PRODUCTS / ITEMS TABLE WITH BRAND, PRODUCT, MODEL -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="fw-bold text-dark m-0"><i class="fa fa-boxes me-1 text-primary"></i> Line Items (Brand, Product & Model)</h6>
+      <button type="button" class="btn btn-xs btn-outline-success fw-bold py-1 px-2 no-print" style="font-size: 0.78rem;" onclick="addProductRow()"><i class="fa fa-plus me-1"></i> Add Product Item</button>
+    </div>
+
     <div class="table-responsive mb-3">
       <table class="table table-sm table-bordered align-middle small">
-        <thead class="table-dark">
+        <thead class="table-dark text-center">
           <tr>
-            <th style="width: 30%;">Product / Model</th>
-            <th style="width: 15%;">Price (₹)</th>
-            <th style="width: 12%;">Qty</th>
-            <th style="width: 12%;">Disc (%)</th>
-            <th style="width: 18%;">Total (₹)</th>
-            <th style="width: 13%" class="no-print text-center">Action</th>
+            <th style="width: 18%;">Brand</th>
+            <th style="width: 20%;">Product / Category</th>
+            <th style="width: 22%;">Model / Part No.</th>
+            <th style="width: 10%;">Price (₹)</th>
+            <th style="width: 8%;">Qty</th>
+            <th style="width: 8%;">Disc (%)</th>
+            <th style="width: 11%;">Total (₹)</th>
+            <th style="width: 3%" class="no-print">Action</th>
           </tr>
         </thead>
         <tbody id="quotationItemsBody">
@@ -79,14 +90,10 @@
       </table>
     </div>
 
-    <div class="no-print mb-4">
-      <button type="button" class="btn btn-sm btn-outline-success fw-bold" onclick="addProductRow()"><i class="fa fa-plus me-1"></i> Add Product Item</button>
-    </div>
-
     <!-- CALCULATIONS & ADDITIONAL CHARGES -->
     <div class="row justify-content-end">
-      <div class="col-md-5">
-        <table class="table table-sm table-borderless small">
+      <div class="col-md-5 bg-light p-3 rounded-3 border">
+        <table class="table table-sm table-borderless small mb-0">
           <tr>
             <td>Subtotal:</td>
             <td class="text-end fw-bold">₹<span id="lblSubtotal">0.00</span></td>
@@ -94,7 +101,7 @@
           <tr>
             <td>GST (%):</td>
             <td class="text-end">
-              <input type="number" id="qtGstRate" class="form-control form-control-sm text-end d-inline-block" style="width: 80px;" value="18" oninput="calculateTotals()"> %
+              <input type="number" id="qtGstRate" class="form-control form-control-sm text-end d-inline-block" style="width: 75px;" value="18" oninput="calculateTotals()"> %
             </td>
           </tr>
           <tr>
@@ -102,12 +109,12 @@
             <td class="text-end text-muted">₹<span id="lblGstAmount">0.00</span></td>
           </tr>
           <tr>
-            <td>Freight / Other Charges:</td>
+            <td>Freight / Other:</td>
             <td class="text-end">
-              <input type="number" id="qtFreight" class="form-control form-control-sm text-end d-inline-block" style="width: 100px;" value="0" oninput="calculateTotals()">
+              <input type="number" id="qtFreight" class="form-control form-control-sm text-end d-inline-block" style="width: 90px;" value="0" oninput="calculateTotals()">
             </td>
           </tr>
-          <tr class="border-top fw-bold fs-6 text-success">
+          <tr class="border-top fw-bold fs-6 text-success pt-2">
             <td>Grand Total:</td>
             <td class="text-end">₹<span id="lblGrandTotal">0.00</span></td>
           </tr>
@@ -116,13 +123,13 @@
     </div>
 
     <!-- REMARKS & SAVE BUTTON -->
-    <div class="mb-3">
-      <label class="form-label small fw-bold">Terms & Conditions / Remarks</label>
+    <div class="mb-3 mt-3">
+      <label class="form-label">Terms & Conditions / Remarks</label>
       <textarea id="qtRemarks" class="form-control form-control-sm" rows="2" placeholder="e.g. 1. Validity 30 days, 2. Payment 50% advance..."></textarea>
     </div>
 
     <div class="text-end no-print">
-      <button type="button" id="saveQuoteBtn" class="btn btn-primary btn-sm fw-bold px-4" onclick="saveQuotation()"><i class="fa fa-save me-1"></i> Save Quotation</button>
+      <button type="button" id="saveQuoteBtn" class="btn btn-primary btn-sm fw-bold px-5 py-2 shadow-sm" onclick="saveQuotation()"><i class="fa fa-save me-1"></i> Save Quotation</button>
     </div>
   </div>
 </div>
@@ -145,36 +152,37 @@
     document.getElementById('quotationUserSubtitle').innerText = `${loggedInUser.salesPerson} (${loggedInUser.role || 'User'})`;
     document.getElementById('lblQuoteId').innerText = 'Q-' + Math.floor(100000 + Math.random() * 900000);
     
-    // Auto-fill customer data if coming from enquiry details
     try {
       const prefill = JSON.parse(localStorage.getItem('active_quotation_prefill'));
       if (prefill) {
         if (prefill.customerName) document.getElementById('qtCustomerName').value = prefill.customerName;
         if (prefill.customerPhone) document.getElementById('qtCustomerPhone').value = prefill.customerPhone;
         if (prefill.customerAddress) document.getElementById('qtCustomerAddress').value = prefill.customerAddress;
-        localStorage.removeItem('active_quotation_prefill'); // Clear after loading
+        localStorage.removeItem('active_quotation_prefill');
       }
     } catch(e) {}
 
-    addProductRow(); // Add default empty row
+    addProductRow();
   });
 
   function goBack() {
     window.location.href = "index.html";
   }
 
-  function addProductRow(productName = '', price = 0, qty = 1, disc = 0) {
+  function addProductRow(brand = '', product = '', model = '', price = 0, qty = 1, disc = 0) {
     const tbody = document.getElementById('quotationItemsBody');
     const rowId = 'row_' + Date.now() + Math.floor(Math.random()*1000);
 
     const tr = document.createElement('tr');
     tr.id = rowId;
     tr.innerHTML = `
-      <td><input type="text" class="form-control form-control-sm item-name" placeholder="Product name/model" value="${productName}" required></td>
-      <td><input type="number" class="form-control form-control-sm item-price" placeholder="0" value="${price}" oninput="calculateTotals()" required></td>
-      <td><input type="number" class="form-control form-control-sm item-qty" placeholder="1" value="${qty}" oninput="calculateTotals()" required></td>
-      <td><input type="number" class="form-control form-control-sm item-disc" placeholder="0" value="${disc}" oninput="calculateTotals()"></td>
-      <td class="fw-bold text-end item-total">₹0.00</td>
+      <td><input type="text" class="form-control form-control-sm item-brand" placeholder="Brand" value="${brand}"></td>
+      <td><input type="text" class="form-control form-control-sm item-product" placeholder="Product/Category" value="${product}"></td>
+      <td><input type="text" class="form-control form-control-sm item-model" placeholder="Model/Part No." value="${model}" required></td>
+      <td><input type="number" class="form-control form-control-sm item-price text-end" placeholder="0" value="${price}" oninput="calculateTotals()" required></td>
+      <td><input type="number" class="form-control form-control-sm item-qty text-center" placeholder="1" value="${qty}" oninput="calculateTotals()" required></td>
+      <td><input type="number" class="form-control form-control-sm item-disc text-center" placeholder="0" value="${disc}" oninput="calculateTotals()"></td>
+      <td class="fw-bold text-end item-total align-middle">₹0.00</td>
       <td class="no-print text-center">
         <button type="button" class="btn btn-xs btn-outline-danger py-0 px-1" onclick="document.getElementById('${rowId}').remove(); calculateTotals();"><i class="fa fa-trash"></i></button>
       </td>
@@ -225,7 +233,9 @@
     let items = [];
     rows.forEach(row => {
       items.push({
-        name: row.querySelector('.item-name').value,
+        brand: row.querySelector('.item-brand').value,
+        product: row.querySelector('.item-product').value,
+        model: row.querySelector('.item-model').value,
         price: row.querySelector('.item-price').value,
         qty: row.querySelector('.item-qty').value,
         disc: row.querySelector('.item-disc').value,
@@ -262,7 +272,7 @@
       btn.disabled = false; btn.innerText = 'Save Quotation';
 
       if (res && res.success) {
-        alert("Quotation saved successfully!");
+        alert("Quotation saved successfully in Google Sheet!");
       } else {
         alert("Failed to save: " + (res ? res.message : 'Unknown error'));
       }
