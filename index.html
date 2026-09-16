@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UCE Sales Portal</title>
+  <script>
+    function routeUser() {
+      const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) {
+        window.location.replace('mobile.html');
+      } else {
+        window.location.replace('web.html');
+      }
+    }
+    window.onload = routeUser;
+  </script>
+</head>
+<body style="background: #0f172a; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+  <div style="text-align: center;">
+    <h5>Loading UCE Sales Portal...</h5>
+  </div>
+</body>
+</html>
