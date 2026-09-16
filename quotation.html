@@ -145,7 +145,17 @@
     document.getElementById('quotationUserSubtitle').innerText = `${loggedInUser.salesPerson} (${loggedInUser.role || 'User'})`;
     document.getElementById('lblQuoteId').innerText = 'Q-' + Math.floor(100000 + Math.random() * 900000);
     addProductRow(); // Add default empty row
-  });
+    });
+  // Pre-fill customer data if coming from enquiry details
+  try {
+    const prefill = JSON.parse(localStorage.getItem('active_quotation_prefill'));
+    if (prefill) {
+      if (prefill.customerName) document.getElementById('qtCustomerName').value = prefill.customerName;
+      if (prefill.customerPhone) document.getElementById('qtCustomerPhone').value = prefill.customerPhone;
+      if (prefill.customerAddress) document.getElementById('qtCustomerAddress').value = prefill.customerAddress;
+      localStorage.removeItem('active_quotation_prefill'); // Clear after loading
+    }
+  } catch(e) {}
 
   function goBack() {
     window.location.href = "index.html";
@@ -258,7 +268,23 @@
       btn.disabled = false; btn.innerText = 'Save Quotation';
       alert("Error: " + e.toString());
     }
+    function openQuotationGenerator() {
+  const custName = document.getElementById('mCustName').innerText;
+  const custPhone = currentLeadPhone || '';
+  const custAddress = document.getElementById('custModalAddress') ? document.getElementById('custModalAddress').value : '';
+
+  // Quotation page par data pass karne ke liye URL params ya localStorage use kar sakte hain
+  const quoteData = {
+    customerName: custName !== '-' ? custName : '',
+    customerPhone: custPhone,
+    customerAddress: custAddress
+  };
+
+  localStorage.setItem('active_quotation_prefill', JSON.stringify(quoteData));
+  window.location.href = 'quotation.html';
+}
   }
+  
 </script>
 
 </body>
