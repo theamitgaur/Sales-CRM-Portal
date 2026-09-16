@@ -950,10 +950,10 @@
               </button>
             </div>
             <div class="col-12 col-md-6">
-              <button type="button" class="btn btn-sm btn-warning text-dark w-100 fw-bold py-1" onclick="openQuotationGenerator()">
-                <i class="fa fa-file-invoice-dollar me-1"></i> Create Quotation
-              </button>
-            </div>
+            <button type="button" class="btn btn-sm btn-warning text-dark w-100 fw-bold py-1" onclick="openQuotationFromModal()">
+              <i class="fa fa-file-invoice-dollar me-1"></i> Create Quotation
+                 </button>
+                </div>
         
             <div class="col-12">
               <div class="input-group input-group-sm">
@@ -2493,6 +2493,20 @@
       if (aBalanceText) aBalanceText.innerText = 'Bal: ₹' + aBalance.toLocaleString();
     }
   }
+  function openQuotationFromModal() {
+  const custName = document.getElementById('mCustName') ? document.getElementById('mCustName').innerText : '';
+  const custPhone = currentLeadPhone || (document.getElementById('mCustPhone') ? document.getElementById('mCustPhone').innerText : '');
+  const custAddress = document.getElementById('custModalAddress') ? document.getElementById('custModalAddress').value : '';
+
+  const quoteData = {
+    customerName: (custName && custName !== '-') ? custName : '',
+    customerPhone: (custPhone && custPhone !== '-') ? custPhone : '',
+    customerAddress: custAddress || ''
+  };
+
+  localStorage.setItem('active_quotation_prefill', JSON.stringify(quoteData));
+  window.location.href = 'quotation.html';
+}
 </script>
 
 </body>
