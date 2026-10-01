@@ -1634,8 +1634,9 @@
       paymentTerms: termsSelect.options[termsSelect.selectedIndex].text,
       paymentTermsDays: termsSelect.value,
       paymentFollowup: document.getElementById('paymentFollowupDate').value,
-      // Dispatch/Delivery Status is intentionally not collected on Add Lead.
-      // It can be updated later from View Details when the lead is Won.
+      // New leads must never start as Dispatched. Delivery status is only
+      // applicable after the lead becomes Won, so send it explicitly blank.
+      dispatch: '',
       remark: document.getElementById('remark').value,
       latitude: userGeoCoords ? userGeoCoords.latitude : '',
       longitude: userGeoCoords ? userGeoCoords.longitude : ''
@@ -2153,7 +2154,11 @@
     const leadFupVal = document.getElementById('editLeadFollowup').value;
     const payTermsVal = document.getElementById('editPaymentTerms').value;
     const payFupVal = document.getElementById('editPaymentFollowup').value;
-    const dispatchVal = (stVal.toLowerCase() === 'won') ? document.getElementById('editDispatchStatus').value : 'Pending';
+    // Delivery/Dispatch status is only applicable when the lead is Won.
+    // For New Lead / Live / Lost etc., keep the Google Sheet cell blank.
+    const dispatchVal = (stVal.toLowerCase() === 'won')
+      ? (document.getElementById('editDispatchStatus').value || 'Pending')
+      : '';
     const remarkVal = document.getElementById('editRemark').value;
 
     const payload = {
