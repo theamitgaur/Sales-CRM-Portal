@@ -38,7 +38,6 @@
     .add-hint-icon { position: absolute; bottom: 6px; right: 8px; color: #cbd5e1; font-size: 0.75rem; }
     .cal-day:hover .add-hint-icon { color: #2563eb; }
     
-/* Advanced Micro-Interactions & Skeleton Loaders */
     @keyframes shimmerLoading {
       0% { background-position: -200px 0; }
       100% { background-position: calc(200px + 100%) 0; }
@@ -52,7 +51,6 @@
       user-select: none;
     }
 
-    /* Clean Floating Multi-Brand Dropdown Menu */
     .brand-dropdown-menu {
       position: absolute !important;
       top: 100% !important;
@@ -67,7 +65,6 @@
     }
     .brand-item-hover:hover { background-color: #f1f5f9; }
 
-    /* TOAST NOTIFICATION STACK CONTAINER */
     #toastNotificationContainer {
       position: fixed;
       top: 20px;
@@ -109,10 +106,8 @@
   </style>
 </head>
 <body>
-<!-- TOAST CONTAINER -->
 <div id="toastNotificationContainer"></div>
 
-<!-- LOGIN OVERLAY -->
 <div id="loginScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 15px;">
   <div class="card p-4 shadow-lg w-100" style="max-width: 400px; border-radius: 14px;">
     <h3 class="text-center fw-bold text-primary mb-3 fs-4">UCE Sales Portal Login</h3>
@@ -133,21 +128,20 @@
 
 <div class="container-fluid p-0">
   <div class="row g-0">
-    <!-- Sidebar -->
     <div class="col-md-3 col-lg-2 sidebar p-3 d-flex flex-column" id="sidebarContainer">
       <h4 class="text-white mb-4 ps-2 fw-bold fs-5">
         <img src="https://unitedcontrolengg.com/wp-content/uploads/2025/06/United-Logo.png" alt="Logo" style="height: 35px; width: auto; margin-right: 8px; vertical-align: middle;">
         <span style="vertical-align: middle;">UCEIPL SALES</span>
       </h4>
       <ul class="nav nav-pills flex-column mb-auto" id="sidebarNavList">
-        <li class="nav-item" id="navItemDashboard"><a class="nav-link active" id="tab-enquiry-btn" onclick="showTab('enquiry')">📋 Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link active" id="tab-enquiry-btn" onclick="showTab('enquiry')">📋 Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" id="tab-add-lead-btn" onclick="showTab('add-lead')">➕ Add Lead</a></li>
         <li class="nav-item" id="navItemTodo"><a class="nav-link" id="tab-todo-btn" onclick="showTab('todo')">✅ To-Do List</a></li>
         <li class="nav-item" id="navItemAnalytics"><a class="nav-link" id="tab-analytics-btn" onclick="showTab('analytics')">📊 Visual Analytics</a></li>
         <li class="nav-item" id="navItemLost"><a class="nav-link" id="tab-lost-btn" onclick="showTab('lost')">❌ Lost Enquiries</a></li>
         <li class="nav-item" id="navItemActivity"><a class="nav-link" id="tab-activity-btn" onclick="showTab('activity')">📞 Calls & Visits</a></li>
       </ul>
 
-      <!-- SIDEBAR TARGET WIDGET -->
       <div class="p-2 mb-2 bg-dark rounded border border-secondary text-white small shadow-sm" id="sidebarTargetWidget">
         <div class="fw-bold text-info mb-2 d-flex justify-content-between align-items-center">
           <span><i class="fa fa-bullseye me-1"></i> Targets & Goals</span>
@@ -201,10 +195,7 @@
       </div>
     </div>
 
-    <!-- Main Content -->
     <div class="col-md-9 col-lg-10 p-4">
-      
-      <!-- TOP-RIGHT NOTIFICATION BELL ICON & DROPDOWN -->
       <div class="d-flex justify-content-end mb-3">
         <div class="dropdown position-relative">
           <button class="btn btn-outline-secondary btn-sm rounded-circle position-relative bg-white" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 38px; height: 38px;" title="Notification History">
@@ -223,16 +214,13 @@
         </div>
       </div>
 
-      <!-- ALERT BOX -->
       <div id="alertBox" class="alert alert-success d-none alert-dismissible fade show mb-3 py-2 fw-bold" role="alert">
         <span id="alertMsg"></span>
         <button type="button" class="btn-close py-2" onclick="hideAlert()"></button>
       </div>
 
-      <!-- MODULE 1: DASHBOARD -->
+      <!-- MODULE: DASHBOARD -->
       <div id="enquiryModule">
-        
-        <!-- TODAY'S REMINDERS BANNER -->
         <div id="reminderBanner" class="card p-3 mb-4 border-start border-warning border-4 bg-light d-none">
           <div class="d-flex justify-content-between align-items-center">
             <div>
@@ -247,7 +235,6 @@
           </div>
         </div>
 
-        <!-- ADMIN TARGET UPDATE CARD -->
         <div class="card p-3 mb-4 bg-light border d-none" id="adminTargetCard">
           <h6 class="fw-bold text-primary mb-2"><i class="fa fa-edit me-1"></i> Manage / Set Salesperson Target (Admin)</h6>
           <div class="row g-2">
@@ -282,172 +269,11 @@
           </div>
         </div>
 
-        <!-- CREATE ENQUIRY FORM -->
-        <div class="card p-4 mb-4" id="createEnquiryCardWrapper">
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 text-primary fw-bold"><i class="fa fa-plus-circle me-1"></i> Create New Enquiry</h5>
-            <button type="button" class="btn btn-sm btn-outline-primary fw-bold" id="toggleEnquiryFormBtn" onclick="toggleEnquiryForm()">
-              <i class="fa fa-eye-slash me-1"></i> Hide Form
-            </button>
-          </div>
-          
-          <div id="enquiryFormCollapseWrapper" class="mt-3">
-            <hr class="mb-3 mt-0">
-
-            <form id="enquiryForm">
-              <div class="row g-2 mb-3 p-2 bg-light rounded border">
-                <div class="col-12 col-md-4">
-                  <label class="form-label">1. Sales Person *</label>
-                  <input class="form-control form-control-sm fw-bold" list="salesPersonsList" id="salesPersonInput" placeholder="Select or type salesperson..." required oninput="filterCustomersBySalesPerson()">
-                  <datalist id="salesPersonsList"></datalist>
-                </div>
-
-                <div class="col-12 col-md-8">
-                  <label class="form-label">2. Select Customer *</label>
-                  <input class="form-control form-control-sm" list="customersList" id="customerInput" placeholder="Select or type customer..." required onchange="autoFillCustomerInfo()">
-                  <datalist id="customersList"></datalist>
-                </div>
-
-                <div class="col-6 col-md-3">
-                  <label class="form-label">City</label>
-                  <input type="text" class="form-control form-control-sm" id="custCity" placeholder="City">
-                </div>
-                <div class="col-6 col-md-3">
-                  <label class="form-label small fw-bold">Complete Address</label>
-                  <input type="text" class="form-control form-control-sm" id="custModalAddress" placeholder="Full address...">
-                </div>
-                <div class="col-6 col-md-3">
-                  <label class="form-label">Contact Person</label>
-                  <input type="text" class="form-control form-control-sm" id="custContactPerson" placeholder="Name">
-                </div>
-                <div class="col-6 col-md-3">
-                  <label class="form-label">Phone</label>
-                  <input type="text" class="form-control form-control-sm" id="custMobile" placeholder="Phone">
-                </div>
-                <div class="col-6 col-md-3">
-                  <label class="form-label">Email</label>
-                  <input type="email" class="form-control form-control-sm" id="custEmail" placeholder="Email">
-                </div>
-              </div>
-
-              <div class="row g-2">
-                <div class="col-12 col-md-6">
-                  <label class="form-label">Description *</label>
-                  <textarea class="form-control form-control-sm" id="description" rows="1" required placeholder="Requirement details..." style="height: 31px; resize: none;"></textarea>
-                </div>
-
-                <div class="col-12 col-md-6 position-relative">
-                  <div class="d-flex justify-content-between align-items-center mb-1">
-                    <label class="form-label m-0">Select Brands (Multiple Allowed) *</label>
-                    <button type="button" class="btn btn-xs btn-link text-primary p-0 text-decoration-none fw-bold small" onclick="toggleAddNewBrandInput()">+ Add New Brand</button>
-                  </div>
-                  
-                  <div class="dropdown">
-                    <button class="btn btn-outline-secondary btn-sm w-100 text-start d-flex justify-content-between align-items-center bg-white" type="button" id="brandDropdownBtn" data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                      <span id="brandDropdownLabel" class="text-truncate">Select Brands...</span>
-                      <i class="fa fa-chevron-down text-muted" style="font-size: 0.7rem;"></i>
-                    </button>
-                    <div class="dropdown-menu w-100 p-2 brand-dropdown-menu" id="brandCheckboxContainer">
-                      <div class="text-muted extra-small py-1">Loading brands...</div>
-                    </div>
-                  </div>
-
-                  <div class="input-group input-group-sm mt-1 d-none" id="newBrandRow">
-                    <input type="text" class="form-control" id="newCustomBrandInput" placeholder="Enter new brand name...">
-                    <button class="btn btn-primary fw-bold" type="button" onclick="submitNewBrandPermanently()">Save Brand</button>
-                  </div>
-                </div>
-
-                <div class="col-6 col-md-3">
-                  <label class="form-label">Approx Value (₹) *</label>
-                  <input type="number" class="form-control form-control-sm fw-bold text-success" id="approxValue" placeholder="0.00" required>
-                </div>
-
-                <div class="col-6 col-md-3">
-                  <label class="form-label">Mode</label>
-                  <select class="form-select form-select-sm" id="mode">
-                    <option value="Email">Email</option>
-                    <option value="Phone Call">Phone Call</option>
-                    <option value="Visit">Direct Visit</option>
-                    <option value="WhatsApp">WhatsApp</option>
-                    <option value="Website">Website</option>
-                    <option value="IndiaMart">IndiaMart</option>
-                    <option value="Digital Marketing">Digital Marketing</option>
-                    <option value="Tradeindia">Tradeindia</option>
-                    <option value="JustDial">JustDial</option>
-                  </select>
-                </div>
-
-                <div class="col-6 col-md-3">
-                  <label class="form-label">Enquiry Date *</label>
-                  <input type="date" class="form-control form-control-sm" id="enquiryDate" required onchange="calculatePaymentFollowupDate()">
-                </div>
-
-                <div class="col-6 col-md-3">
-                  <label class="form-label">Expected Close Date</label>
-                  <input type="date" class="form-control form-control-sm" id="expectedClose">
-                </div>
-
-                <div class="col-6 col-md-3">
-                  <label class="form-label text-primary">Lead Follow-Up Date</label>
-                  <input type="date" class="form-control form-control-sm fw-bold border-primary" id="leadFollowup">
-                </div>
-
-                <div class="col-6 col-md-3">
-                  <label class="form-label">Payment Status</label>
-                  <select class="form-select form-select-sm" id="paymentStatus">
-                    <option value="Pending" selected>Pending</option>
-                    <option value="Advance Received">Advance Received</option>
-                    <option value="Fully Paid">Fully Paid</option>
-                    <option value="Partial">Partial Payment</option>
-                    <option value="Credit">Credit</option>
-                  </select>
-                </div>
-
-                <div class="col-6 col-md-3">
-                  <label class="form-label text-dark fw-bold">Payment Terms *</label>
-                  <select class="form-select form-select-sm fw-bold border-primary" id="paymentTermsSelect" onchange="calculatePaymentFollowupDate()">
-                    <option value="0" selected>100% Advance (0 Days)</option>
-                    <option value="7">7 Days Credit</option>
-                    <option value="15">15 Days Credit</option>
-                    <option value="30">30 Days Credit</option>
-                    <option value="45">45 Days Credit</option>
-                    <option value="60">60 Days Credit</option>
-                    <option value="90">90 Days Credit</option>
-                  </select>
-                </div>
-
-                <div class="col-6 col-md-3">
-                  <label class="form-label text-success fw-bold">Payment Follow-Up Date</label>
-                  <input type="date" class="form-control form-control-sm fw-bold border-success bg-light" id="paymentFollowupDate">
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <label class="form-label">Dispatch Info</label>
-                  <input type="text" class="form-control form-control-sm" id="dispatch" placeholder="Dispatch details...">
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <label class="form-label">Internal Remark / Notes</label>
-                  <input type="text" class="form-control form-control-sm" id="remark" placeholder="Any internal notes...">
-                </div>
-              </div>
-
-              <div class="mt-3 text-end d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-outline-secondary px-4 fw-bold" onclick="resetEnquiryForm()"><i class="fa fa-undo me-1"></i> Reset Form</button>
-                <button type="submit" class="btn btn-primary px-5 fw-bold" id="saveEnquiryBtn"><i class="fa fa-save me-1"></i> Save Enquiry</button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <!-- Dashboard Table Card -->
         <div class="card p-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h6 class="fw-bold text-dark mb-0 fs-6"><i class="fa fa-list me-1"></i> Recent Enquiries Dashboard</h6>
             <button class="btn btn-sm btn-success fw-bold" onclick="openMemberExportModal()"><i class="fa fa-file-excel me-1"></i> Download Member Report</button>
           </div>
-          <!-- Quick Filter Pills -->
           <div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
             <span class="small fw-bold text-muted"><i class="fa fa-filter me-1"></i> Quick Filter:</span>
             <button type="button" class="btn btn-sm btn-primary active filter-pill-btn" onclick="filterByPill('ALL', this)">All</button>
@@ -501,12 +327,21 @@
                 </select>
               </div>
               <div class="col-md-3">
+                <label class="form-label mb-1">Delivery Status</label>
+                <select id="filterDispatchStatus" onchange="applyDashboardFilters()" class="form-select form-select-sm">
+                  <option value="ALL">All Delivery Status</option>
+                  <option value="Dispatched">Dispatched</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Delivered">Delivered</option>
+                </select>
+              </div>
+              <div class="col-md-3">
                 <label class="form-label mb-1">Sales Person</label>
                 <select id="filterSalesPerson" onchange="onSalespersonFilterChange()" class="form-select form-select-sm">
                   <option value="ALL">All Team Member</option>
                 </select>
               </div>
-              <div class="col-md-9 d-flex align-items-end justify-content-end gap-1">
+              <div class="col-md-6 d-flex align-items-end justify-content-end gap-1">
                 <button class="btn btn-sm btn-outline-secondary" onclick="clearDateRangeFilter()" title="Clear Dates">Clear Dates</button>
                 <button class="btn btn-sm btn-outline-primary" onclick="loadDashboardData()" title="Refresh">🔄 Refresh</button>
               </div>
@@ -525,12 +360,13 @@
                   <th>Lead Followup</th>
                   <th>Payment Status</th>
                   <th>Payment Due Date</th>
+                  <th>Delivery Status</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody id="enquiryTableBody">
-                <tr><td colspan="10" class="text-center text-muted py-3">Loading data...</td></tr>
+                <tr><td colspan="11" class="text-center text-muted py-3">Loading data...</td></tr>
               </tbody>
             </table>
           </div>
@@ -545,7 +381,166 @@
         </div>
       </div>
 
-      <!-- MODULE: TO-DO LIST (CALENDAR VIEW) -->
+      <!-- MODULE: ADD LEAD (STANDALONE PAGE) -->
+      <div id="addLeadModule" class="d-none">
+        <div class="card p-4 mb-4" id="createEnquiryCardWrapper">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0 text-primary fw-bold"><i class="fa fa-plus-circle me-1"></i> Create New Enquiry / Add Lead</h5>
+            <button type="button" class="btn btn-sm btn-outline-secondary fw-bold" onclick="showTab('enquiry')">
+              <i class="fa fa-arrow-left me-1"></i> Back to Dashboard
+            </button>
+          </div>
+          
+          <hr class="mb-3 mt-0">
+
+          <form id="enquiryForm">
+            <div class="row g-2 mb-3 p-2 bg-light rounded border">
+              <div class="col-12 col-md-4">
+                <label class="form-label">1. Sales Person *</label>
+                <input class="form-control form-control-sm fw-bold" list="salesPersonsList" id="salesPersonInput" placeholder="Select or type salesperson..." required oninput="filterCustomersBySalesPerson()">
+                <datalist id="salesPersonsList"></datalist>
+              </div>
+
+              <div class="col-12 col-md-8">
+                <label class="form-label">2. Select Customer *</label>
+                <input class="form-control form-control-sm" list="customersList" id="customerInput" placeholder="Select or type customer..." required onchange="autoFillCustomerInfo()">
+                <datalist id="customersList"></datalist>
+              </div>
+
+              <div class="col-6 col-md-3">
+                <label class="form-label">City</label>
+                <input type="text" class="form-control form-control-sm" id="custCity" placeholder="City">
+              </div>
+              <div class="col-6 col-md-3">
+                <label class="form-label small fw-bold">Complete Address</label>
+                <input type="text" class="form-control form-control-sm" id="custModalAddress" placeholder="Full address...">
+              </div>
+              <div class="col-6 col-md-3">
+                <label class="form-label">Contact Person</label>
+                <input type="text" class="form-control form-control-sm" id="custContactPerson" placeholder="Name">
+              </div>
+              <div class="col-6 col-md-3">
+                <label class="form-label">Phone</label>
+                <input type="text" class="form-control form-control-sm" id="custMobile" placeholder="Phone">
+              </div>
+              <div class="col-6 col-md-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control form-control-sm" id="custEmail" placeholder="Email">
+              </div>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-12 col-md-6">
+                <label class="form-label">Description *</label>
+                <textarea class="form-control form-control-sm" id="description" rows="2" required placeholder="Requirement details..."></textarea>
+              </div>
+
+              <div class="col-12 col-md-6 position-relative">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label class="form-label m-0">Select Brands (Multiple Allowed) *</label>
+                  <button type="button" class="btn btn-xs btn-link text-primary p-0 text-decoration-none fw-bold small" onclick="toggleAddNewBrandInput()">+ Add New Brand</button>
+                </div>
+                
+                <div class="dropdown">
+                  <button class="btn btn-outline-secondary btn-sm w-100 text-start d-flex justify-content-between align-items-center bg-white" type="button" id="brandDropdownBtn" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                    <span id="brandDropdownLabel" class="text-truncate">Select Brands...</span>
+                    <i class="fa fa-chevron-down text-muted" style="font-size: 0.7rem;"></i>
+                  </button>
+                  <div class="dropdown-menu w-100 p-2 brand-dropdown-menu" id="brandCheckboxContainer">
+                    <div class="text-muted extra-small py-1">Loading brands...</div>
+                  </div>
+                </div>
+
+                <div class="input-group input-group-sm mt-1 d-none" id="newBrandRow">
+                  <input type="text" class="form-control" id="newCustomBrandInput" placeholder="Enter new brand name...">
+                  <button class="btn btn-primary fw-bold" type="button" onclick="submitNewBrandPermanently()">Save Brand</button>
+                </div>
+              </div>
+
+              <div class="col-6 col-md-3">
+                <label class="form-label">Approx Value (₹) *</label>
+                <input type="number" class="form-control form-control-sm fw-bold text-success" id="approxValue" placeholder="0.00" required>
+              </div>
+
+              <div class="col-6 col-md-3">
+                <label class="form-label">Mode</label>
+                <select class="form-select form-select-sm" id="mode">
+                  <option value="Email">Email</option>
+                  <option value="Phone Call">Phone Call</option>
+                  <option value="Visit">Direct Visit</option>
+                  <option value="WhatsApp">WhatsApp</option>
+                  <option value="Website">Website</option>
+                  <option value="IndiaMart">IndiaMart</option>
+                  <option value="Digital Marketing">Digital Marketing</option>
+                  <option value="Tradeindia">Tradeindia</option>
+                  <option value="JustDial">JustDial</option>
+                </select>
+              </div>
+
+              <div class="col-6 col-md-3">
+                <label class="form-label">Enquiry Date *</label>
+                <input type="date" class="form-control form-control-sm" id="enquiryDate" required onchange="calculatePaymentFollowupDate()">
+              </div>
+
+              <div class="col-6 col-md-3">
+                <label class="form-label">Expected Close Date</label>
+                <input type="date" class="form-control form-control-sm" id="expectedClose">
+              </div>
+
+              <div class="col-6 col-md-3">
+                <label class="form-label text-primary">Lead Follow-Up Date</label>
+                <input type="date" class="form-control form-control-sm fw-bold border-primary" id="leadFollowup">
+              </div>
+
+              <div class="col-6 col-md-3">
+                <label class="form-label">Payment Status</label>
+                <select class="form-select form-select-sm" id="paymentStatus">
+                  <option value="Pending" selected>Pending</option>
+                  <option value="Advance Received">Advance Received</option>
+                  <option value="Fully Paid">Fully Paid</option>
+                  <option value="Partial">Partial Payment</option>
+                  <option value="Credit">Credit</option>
+                </select>
+              </div>
+
+              <div class="col-6 col-md-3">
+                <label class="form-label text-dark fw-bold">Payment Terms *</label>
+                <select class="form-select form-select-sm fw-bold border-primary" id="paymentTermsSelect" onchange="calculatePaymentFollowupDate()">
+                  <option value="0" selected>100% Advance (0 Days)</option>
+                  <option value="7">7 Days Credit</option>
+                  <option value="15">15 Days Credit</option>
+                  <option value="30">30 Days Credit</option>
+                  <option value="45">45 Days Credit</option>
+                  <option value="60">60 Days Credit</option>
+                  <option value="90">90 Days Credit</option>
+                </select>
+              </div>
+
+              <div class="col-6 col-md-3">
+                <label class="form-label text-success fw-bold">Payment Follow-Up Date</label>
+                <input type="date" class="form-control form-control-sm fw-bold border-success bg-light" id="paymentFollowupDate">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label">Dispatch Info</label>
+                <input type="text" class="form-control form-control-sm" id="dispatch" placeholder="Dispatch details...">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label">Internal Remark / Notes</label>
+                <input type="text" class="form-control form-control-sm" id="remark" placeholder="Any internal notes...">
+              </div>
+            </div>
+
+            <div class="mt-3 text-end d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-outline-secondary px-4 fw-bold" onclick="resetEnquiryForm()"><i class="fa fa-undo me-1"></i> Reset Form</button>
+              <button type="submit" class="btn btn-primary px-5 fw-bold" id="saveEnquiryBtn"><i class="fa fa-save me-1"></i> Save Enquiry</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- MODULE: TO-DO LIST -->
       <div id="todoModule" class="d-none">
         <div class="card p-3 mb-3">
           <div class="row align-items-center g-2">
@@ -559,7 +554,7 @@
                 <button class="btn btn-sm btn-link text-dark p-0" onclick="changeTodoCalendarMonth(1)"><i class="fa fa-chevron-right"></i></button>
               </div>
             </div>
-            <div class="col-md-4 text-md-end">
+            <div class="col-md-4 text-md-end" id="todoSalespersonFilterWrapper">
               <label class="small text-muted me-1">Sales Person:</label>
               <select id="todoFilterSalesPerson" onchange="renderTodoCalendar()" class="form-select form-select-sm d-inline-block w-auto">
                 <option value="ALL">All Team Member</option>
@@ -580,7 +575,7 @@
         </div>
       </div>
 
-      <!-- MODULE 3: VISUAL ANALYTICS -->
+      <!-- MODULE: ANALYTICS -->
       <div id="analyticsModule" class="d-none">
         <div class="card p-4 mb-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -639,7 +634,7 @@
         </div>
       </div>
 
-      <!-- MODULE 4: LOST ENQUIRIES -->
+      <!-- MODULE: LOST ENQUIRIES -->
       <div id="lostModule" class="d-none">
         <div class="card p-4">
           <h5 class="fw-bold text-danger mb-3">❌ Lost Enquiries Log</h5>
@@ -663,7 +658,7 @@
         </div>
       </div>
 
-      <!-- MODULE 5: CALLS & VISITS -->
+      <!-- MODULE: CALLS & VISITS -->
       <div id="activityModule" class="d-none">
         <div class="card p-3 mb-3">
           <div class="row align-items-center g-2">
@@ -690,7 +685,7 @@
           <div class="col-12">
             <div class="card p-3">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="small text-muted"><i class="fa fa-info-circle me-1"></i> Kisi bhi date par click karke direct Call/Visit log karein.</span>
+                <span class="small text-muted"><i class="fa fa-info-circle me-1"></i> Kisi bhi date par click karke direct task add ya complete karein.</span>
                 <span class="badge bg-light text-dark border" id="matrixTotalSummary">Total: 0 Calls | 0 Visits</span>
               </div>
               <div class="cal-header">
@@ -733,7 +728,7 @@
   </div>
 </div>
 
-<!-- TO-DO DATE POPUP MODAL -->
+<!-- TO-DO MODAL -->
 <div class="modal fade" id="todoDateModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content border-0 rounded-4 shadow">
@@ -794,7 +789,7 @@
   </div>
 </div>
 
-<!-- MEMBER-WISE ADVANCED DATA EXPORT MODAL -->
+<!-- EXPORT MODAL -->
 <div class="modal fade" id="exportReportModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 rounded-4 shadow">
@@ -830,7 +825,7 @@
         </div>
 
         <div class="p-2 bg-light rounded border extra-small text-muted mb-2">
-          <i class="fa fa-info-circle me-1 text-primary"></i> Data will be exported in exact Google Sheet 20-columns structure including Follow-up dates and values.
+          <i class="fa fa-info-circle me-1 text-primary"></i> Data will be exported in exact Google Sheet structure including Follow-up dates and values.
         </div>
       </div>
       <div class="modal-footer py-2">
@@ -843,7 +838,7 @@
   </div>
 </div>
 
-<!-- ACTIVITY MODAL POPUP -->
+<!-- ACTIVITY MODAL -->
 <div class="modal fade" id="dateActivityModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content border-0 rounded-4 shadow">
@@ -925,7 +920,7 @@
   </div>
 </div>
 
-<!-- EDIT LEAD DETAILS MODAL -->
+<!-- LEAD DETAILS MODAL -->
 <div class="modal fade" id="leadDetailsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
@@ -949,12 +944,6 @@
                 <i class="fa fa-history me-1"></i> Customer Ledger
               </button>
             </div>
-            <div class="col-12 col-md-6">
-            <button type="button" class="btn btn-sm btn-warning text-dark w-100 fw-bold py-1" onclick="openQuotationFromModal()">
-              <i class="fa fa-file-invoice-dollar me-1"></i> Create Quotation
-                 </button>
-                </div>
-        
             <div class="col-12">
               <div class="input-group input-group-sm">
                 <select class="form-select" id="modalSnoozeType">
@@ -1006,7 +995,7 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">Status *</label>
-            <select id="editStatus" class="form-select form-select-sm fw-bold" onchange="toggleModalLostReason()">
+            <select id="editStatus" class="form-select form-select-sm fw-bold" onchange="toggleModalLostReason(); checkDeliveryStatusCondition();">
               <option value="New Lead">New Lead</option>
               <option value="Hot lead">Hot lead</option>
               <option value="Live">Live</option>
@@ -1041,6 +1030,14 @@
             <label class="form-label">Dispatch Info</label>
             <input type="text" id="editDispatch" class="form-control form-control-sm">
           </div>
+          <div class="col-md-4" id="deliveryStatusWrapper">
+            <label class="form-label text-info fw-bold" id="deliveryStatusLabel">Delivery Status</label>
+            <select id="editDispatchStatus" class="form-select form-select-sm fw-bold border-info">
+              <option value="Dispatched">Dispatched</option>
+              <option value="Pending">Pending</option>
+              <option value="Delivered">Delivered</option>
+            </select>
+          </div>
           <div id="modalLostReasonContainer" class="col-12 d-none">
             <label class="form-label text-danger">Lost Reason Details *</label>
             <input type="text" id="editLostReason" class="form-control form-control-sm border-danger" placeholder="Why was this enquiry lost?">
@@ -1060,7 +1057,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbypRhN9mB2Casq9H3fYxQLzJHhz9T7B9up6OBVlupLI90GgN6vlYKvUzivWN41OCLKsMA/exec";
+  const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxeS23zbPNegYQjszbE5-Iqcw4ySVUy8Yddi6HE3RcFInfYUvSJtMpeR1XdNbM_Lne8/exec";
 
   async function callAppsScriptApi(action, data = {}) {
     try {
@@ -1114,7 +1111,6 @@
     return dStr;
   }
 
-  // --- COMBINED NOTIFICATION SYSTEM (Toast + Bell History Inbox) ---
   function showFloatingNotification(title, message, type = 'success') {
     const container = document.getElementById('toastNotificationContainer');
     if (container) {
@@ -1286,21 +1282,6 @@
     initGeolocation();
   });
 
-  function toggleEnquiryForm() {
-    const wrapper = document.getElementById('enquiryFormCollapseWrapper');
-    const btn = document.getElementById('toggleEnquiryFormBtn');
-    if (!wrapper || !btn) return;
-    if (wrapper.classList.contains('d-none')) {
-      wrapper.classList.remove('d-none');
-      btn.innerHTML = '<i class="fa fa-eye-slash me-1"></i> Hide Form';
-      btn.classList.replace('btn-primary', 'btn-outline-primary');
-    } else {
-      wrapper.classList.add('d-none');
-      btn.innerHTML = '<i class="fa fa-plus me-1"></i> Show / Create Enquiry';
-      btn.classList.replace('btn-outline-primary', 'btn-primary');
-    }
-  }
-
   function resetEnquiryForm() {
     const form = document.getElementById('enquiryForm');
     if (form) form.reset();
@@ -1408,12 +1389,6 @@
         document.getElementById('loggedUser').innerText = loggedInUser.salesPerson + " (" + loggedInUser.role + ")";
         applyRoleSidebarRestrictions();
 
-        const role = String(loggedInUser.role || '').toLowerCase();
-        if (role.indexOf('engineer') > -1 || role.indexOf('delivery') > -1 || role.indexOf('employee') > -1) {
-          window.location.replace("?page=conveyance");
-          return;
-        }
-
         fetchMasterData();
         checkNotificationSupport();
       } catch (err) {
@@ -1425,8 +1400,20 @@
   }
 
   async function fetchMasterData() {
+    const cached = sessionStorage.getItem('portal_master_data');
+    if (cached) {
+      try {
+        onMasterDataLoaded(JSON.parse(cached));
+      } catch (e) {
+        sessionStorage.removeItem('portal_master_data');
+      }
+    }
+
     const data = await callAppsScriptApi("getMasterData", { user: loggedInUser });
-    if (data) onMasterDataLoaded(data);
+    if (data && data.success) {
+      sessionStorage.setItem('portal_master_data', JSON.stringify(data));
+      onMasterDataLoaded(data);
+    }
   }
 
   function onMasterDataLoaded(data) {
@@ -1435,8 +1422,20 @@
     masterSalesPersons = data.salesPersons || [];
     renderBrandCheckboxes(data.brands || []);
 
-    let spOptionsHtml = '', filterOpts = '<option value="ALL">All Team Member</option>';
-    let adminTargetOpts = '', exportSpOpts = '<option value="ALL">All Team Members</option>';
+    const role = loggedInUser && loggedInUser.role ? String(loggedInUser.role).toLowerCase() : '';
+    const isAdmin = role.indexOf('admin') > -1;
+    const isManager = role.indexOf('manager') > -1;
+    const isMgmt = isAdmin || isManager;
+
+    let spOptionsHtml = '';
+    let filterOpts = '';
+    let adminTargetOpts = '';
+    let exportSpOpts = '';
+
+    if (isMgmt) {
+      filterOpts += '<option value="ALL">All Team Member</option>';
+      exportSpOpts += '<option value="ALL">All Team Members</option>';
+    }
 
     masterSalesPersons.forEach(sp => {
       spOptionsHtml += `<option value="${sp}">`;
@@ -1446,16 +1445,30 @@
     });
 
     document.getElementById('salesPersonsList').innerHTML = spOptionsHtml;
-    document.getElementById('filterSalesPerson').innerHTML = filterOpts;
-    document.getElementById('actFilterSalesPerson').innerHTML = filterOpts;
-    if (document.getElementById('todoFilterSalesPerson')) document.getElementById('todoFilterSalesPerson').innerHTML = filterOpts;
-    if (document.getElementById('adminTargetSp')) document.getElementById('adminTargetSp').innerHTML = adminTargetOpts;
-    document.getElementById('exportSpSelect').innerHTML = exportSpOpts;
+    
+    const filterSalesPersonEl = document.getElementById('filterSalesPerson');
+    filterSalesPersonEl.innerHTML = filterOpts;
 
-    const role = loggedInUser && loggedInUser.role ? loggedInUser.role.toLowerCase() : '';
-    const isAdmin = role.indexOf('admin') > -1;
-    const isManager = role.indexOf('manager') > -1;
-    const isMgmt = isAdmin || isManager;
+    const exportSpSelectEl = document.getElementById('exportSpSelect');
+    exportSpSelectEl.innerHTML = exportSpOpts;
+
+    document.getElementById('actFilterSalesPerson').innerHTML = filterOpts;
+    
+    // STRICT TO-DO LIST ROLE RESTRICTION (User sees ONLY their tasks unless Admin/Manager)
+    const todoFilterEl = document.getElementById('todoFilterSalesPerson');
+    const todoWrapper = document.getElementById('todoSalespersonFilterWrapper');
+    if (todoFilterEl) {
+      if (isMgmt) {
+        todoFilterEl.innerHTML = filterOpts;
+        if (todoWrapper) todoWrapper.style.display = 'block';
+      } else {
+        todoFilterEl.innerHTML = `<option value="${loggedInUser.salesPerson}">${loggedInUser.salesPerson}</option>`;
+        todoFilterEl.value = loggedInUser.salesPerson;
+        if (todoWrapper) todoWrapper.style.display = 'none'; // Hide filter for regular users
+      }
+    }
+
+    if (document.getElementById('adminTargetSp')) document.getElementById('adminTargetSp').innerHTML = adminTargetOpts;
 
     const adminTargetCard = document.getElementById('adminTargetCard');
     if (adminTargetCard) {
@@ -1467,7 +1480,18 @@
     const transferWrapper = document.getElementById('transferActionWrapper');
 
     if (!isMgmt) {
-      if (spInputEl) { spInputEl.value = loggedInUser ? loggedInUser.salesPerson : ''; spInputEl.readOnly = true; }
+      if (spInputEl) { 
+        spInputEl.value = loggedInUser ? loggedInUser.salesPerson : ''; 
+        spInputEl.readOnly = true; 
+      }
+      if (filterSalesPersonEl) {
+        filterSalesPersonEl.value = loggedInUser ? loggedInUser.salesPerson : '';
+        filterSalesPersonEl.disabled = true;
+      }
+      if (exportSpSelectEl) {
+        exportSpSelectEl.value = loggedInUser ? loggedInUser.salesPerson : '';
+        exportSpSelectEl.disabled = true;
+      }
       if (transferWrapper) transferWrapper.classList.add('d-none');
     } else {
       if (transferWrapper) transferWrapper.classList.remove('d-none');
@@ -1590,7 +1614,7 @@
   async function handleEnquirySubmit(e) {
     e.preventDefault();
     const custName = document.getElementById('customerInput').value;
-    const saveBtn = document.getElementById('saveEnquiryBtn');
+    const saveBtn = document.getElementById('saveEnquiryBtn'); 
     saveBtn.disabled = true; saveBtn.innerText = "Saving to Google Sheet...";
 
     const brandValue = getSelectedBrandsList();
@@ -1640,14 +1664,20 @@
     };
     
     globalEnquiries.unshift(optimisticItem);
+    sessionStorage.removeItem('portal_dashboard_data');
     applyDashboardFilters();
     resetEnquiryForm();
     saveBtn.disabled = false; saveBtn.innerText = "Save Enquiry";
 
     const res = await callAppsScriptApi("saveEnquiry", formData);
+    saveBtn.disabled = false; 
+    saveBtn.innerText = "Save Enquiry";
+    
     if (res && res.success) {
       showFloatingNotification("Success", res.message);
+      sessionStorage.removeItem('portal_dashboard_data');
       loadDashboardData();
+      showTab('enquiry'); // Redirect back to dashboard after successful save
     } else {
       showAlert('Error: ' + (res ? res.message : 'Failed'), 'danger');
       loadDashboardData();
@@ -1656,8 +1686,21 @@
 
   async function loadDashboardData() {
     if (!loggedInUser) return;
+    
+    const cached = sessionStorage.getItem('portal_dashboard_data');
+    if (cached) {
+      try {
+        renderDashboardData(JSON.parse(cached));
+      } catch (e) {
+        sessionStorage.removeItem('portal_dashboard_data');
+      }
+    }
+
     const data = await callAppsScriptApi("getDashboardData", { user: loggedInUser });
-    if (data) renderDashboardData(data);
+    if (data && data.success) {
+      sessionStorage.setItem('portal_dashboard_data', JSON.stringify(data));
+      renderDashboardData(data);
+    }
   }
 
   function renderDashboardData(data) {
@@ -1732,6 +1775,7 @@
     const spFilter = document.getElementById('filterSalesPerson').value;
     const stFilter = document.getElementById('filterStatus').value;
     const payFilter = document.getElementById('filterPaymentStatus').value;
+    const dispatchFilter = document.getElementById('filterDispatchStatus').value;
     const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
 
     filteredEnquiriesList = globalEnquiries || [];
@@ -1753,6 +1797,7 @@
     if (spFilter !== 'ALL' && spFilter !== '') filteredEnquiriesList = filteredEnquiriesList.filter(item => String(item.salesPerson || '').toLowerCase() === spFilter.toLowerCase());
     if (stFilter !== 'ALL') filteredEnquiriesList = filteredEnquiriesList.filter(item => String(item.status || '').toLowerCase() === stFilter.toLowerCase());
     if (payFilter !== 'ALL') filteredEnquiriesList = filteredEnquiriesList.filter(item => String(item.paymentStatus || '').toLowerCase() === payFilter.toLowerCase());
+    if (dispatchFilter !== 'ALL') filteredEnquiriesList = filteredEnquiriesList.filter(item => String(item.dispatch || '').toLowerCase() === dispatchFilter.toLowerCase());
 
     currentPage = 1;
     renderPaginatedTable();
@@ -1826,6 +1871,17 @@
 
         let leadFup = item.leadFollowup ? `<span class="badge bg-light text-primary border border-primary">${escapeHtml(item.leadFollowup)}</span>` : '<span class="badge bg-light text-muted border">Not Set</span>';
         let payFup = item.paymentFollowup ? `<span class="badge bg-light text-success border border-success">${escapeHtml(item.paymentFollowup)}</span>` : '<span class="badge bg-light text-muted border">Not Set</span>';
+        
+        let dispatchHtml = '<span class="text-muted">-</span>';
+        if (String(item.status).toLowerCase() === 'won') {
+          let dispatchVal = item.dispatch || 'Pending';
+          let dispatchBadgeColor = 'bg-secondary';
+          if (dispatchVal === 'Dispatched') dispatchBadgeColor = 'bg-info text-dark';
+          if (dispatchVal === 'Pending') dispatchBadgeColor = 'bg-warning text-dark';
+          if (dispatchVal === 'Delivered') dispatchBadgeColor = 'bg-success';
+          dispatchHtml = `<span class="badge ${dispatchBadgeColor}">${escapeHtml(dispatchVal)}</span>`;
+        }
+
         let duplicateWarningIcon = item.isDuplicate ? `<span class="badge bg-warning text-dark ms-1" title="${escapeHtml(item.isDuplicate)}">⚠️ Duplicate</span>` : '';
 
         rows += `
@@ -1838,6 +1894,7 @@
             <td>${leadFup}</td>
             <td><span class="badge ${payBadgeColor}">${escapeHtml(item.paymentStatus || 'Pending')}</span></td>
             <td>${payFup}</td>
+            <td>${dispatchHtml}</td>
             <td><span class="badge ${badgeColor}">${escapeHtml(item.status || 'New Lead')}</span></td>
             <td><button type="button" class="btn btn-sm btn-primary py-0 px-2" onclick="openEditModal('${escapeHtml(item.id)}')">👁️ Details</button></td>
           </tr>
@@ -1845,7 +1902,7 @@
       });
       enqTbody.innerHTML = rows;
     } else {
-      enqTbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-3">No Enquiries Found</td></tr>';
+      enqTbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted py-3">No Enquiries Found</td></tr>';
     }
   }
 
@@ -1910,6 +1967,16 @@
     document.getElementById('modalLostReasonContainer').classList.toggle('d-none', stVal !== 'Lost');
   }
 
+  function checkDeliveryStatusCondition() {
+    const stVal = document.getElementById('editStatus').value;
+    const deliveryWrapper = document.getElementById('deliveryStatusWrapper');
+    if (stVal.toLowerCase() === 'won') {
+      deliveryWrapper.classList.remove('d-none');
+    } else {
+      deliveryWrapper.classList.add('d-none');
+    }
+  }
+
   function openEditModal(id) {
     const item = globalEnquiries.find(e => String(e.id) === String(id));
     if (!item) return;
@@ -1922,6 +1989,7 @@
     document.getElementById('mMode').innerText = item.mode || '-';
     document.getElementById('mSalesPerson').innerText = item.salesPerson || '-';
     document.getElementById('mDescription').innerText = item.description || '-';
+    document.getElementById('editDispatchStatus').value = item.dispatch || 'Pending';
 
     const masterCustomer = findMasterCustomer(item.customer, item.salesPerson);
     document.getElementById('mCustContact').innerText = masterCustomer ? getCustomerField(masterCustomer, ['contactPerson', 'contact']) : '-';
@@ -1941,6 +2009,7 @@
     document.getElementById('editRemark').value = item.remark || '';
 
     toggleModalLostReason();
+    checkDeliveryStatusCondition();
     fetchAndRenderDynamicCustomerDetails(item.customer, item.salesPerson);
     bootstrap.Modal.getOrCreateInstance(document.getElementById('leadDetailsModal')).show();
   }
@@ -1984,6 +2053,7 @@
     const res = await callAppsScriptApi("quickSnoozeEnquiry", { id, type, newDate: date, user: loggedInUser.salesPerson });
     if (res && res.success) {
       showFloatingNotification("Snooze Saved", res.message);
+      sessionStorage.removeItem('portal_dashboard_data');
       bootstrap.Modal.getInstance(document.getElementById('leadDetailsModal')).hide();
       loadDashboardData();
     }
@@ -1997,6 +2067,7 @@
     const res = await callAppsScriptApi("transferLeadOwner", { id, targetSp, user: loggedInUser.salesPerson });
     if (res && res.success) {
       showFloatingNotification("Transferred", res.message);
+      sessionStorage.removeItem('portal_dashboard_data');
       bootstrap.Modal.getInstance(document.getElementById('leadDetailsModal')).hide();
       loadDashboardData();
     }
@@ -2069,7 +2140,7 @@
     const leadFupVal = document.getElementById('editLeadFollowup').value;
     const payTermsVal = document.getElementById('editPaymentTerms').value;
     const payFupVal = document.getElementById('editPaymentFollowup').value;
-    const dispatchVal = document.getElementById('editDispatch').value;
+    const dispatchVal = (stVal.toLowerCase() === 'won') ? document.getElementById('editDispatchStatus').value : 'Pending';
     const remarkVal = document.getElementById('editRemark').value;
 
     const payload = {
@@ -2098,6 +2169,7 @@
       localLead.lostReason = lostReasonVal;
       localLead.remark = remarkVal;
     }
+    sessionStorage.removeItem('portal_dashboard_data');
     applyDashboardFilters();
 
     const modalEl = document.getElementById('leadDetailsModal');
@@ -2115,6 +2187,7 @@
 
     if (res && res.success) {
       showFloatingNotification("Updated Successfully", `Enquiry ${enqId} updated to ${stVal}`);
+      sessionStorage.removeItem('portal_dashboard_data');
       loadDashboardData();
     } else {
       showAlert("Failed: " + (res ? res.message : 'Error'), "danger");
@@ -2171,6 +2244,11 @@
   }
 
   async function submitModalActivityRecord() {
+    const actBtn = document.getElementById('saveActivityBtn');
+    if (actBtn.disabled) return;
+    actBtn.disabled = true;
+    actBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Saving...';
+
     const payload = {
       date: selectedActivityDateStr,
       salesPerson: document.getElementById('modalActSalesPerson').value.trim() || loggedInUser.salesPerson,
@@ -2179,9 +2257,17 @@
       status: document.querySelector('input[name="modalInteractionStatus"]:checked').value,
       remark: document.getElementById('modalActRemark').value.trim()
     };
-    if (!payload.customer) return alert("Customer required");
+    if (!payload.customer) {
+      alert("Customer required");
+      actBtn.disabled = false;
+      actBtn.innerHTML = '<i class="fa fa-save me-1"></i> Save Entry';
+      return;
+    }
 
     const res = await callAppsScriptApi("saveActivity", payload);
+    actBtn.disabled = false;
+    actBtn.innerHTML = '<i class="fa fa-save me-1"></i> Save Entry';
+
     if (res && res.success) {
       showFloatingNotification("Saved", res.message);
       document.getElementById('modalActCustomer').value = '';
@@ -2278,7 +2364,11 @@
 
     const firstDay = new Date(year, month, 1).getDay();
     const totalDays = new Date(year, month + 1, 0).getDate();
-    const selectedSp = document.getElementById('todoFilterSalesPerson') ? document.getElementById('todoFilterSalesPerson').value : 'ALL';
+    
+    // STRICT ROLE FILTER FOR TASKS
+    const role = loggedInUser && loggedInUser.role ? String(loggedInUser.role).toLowerCase() : '';
+    const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
+    const selectedSp = (isMgmt && document.getElementById('todoFilterSalesPerson')) ? document.getElementById('todoFilterSalesPerson').value : (loggedInUser ? loggedInUser.salesPerson : 'ALL');
 
     const grid = document.getElementById('todoCalendarDays');
     if (!grid) return;
@@ -2290,7 +2380,16 @@
 
     for (let d = 1; d <= totalDays; d++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-      const dayTasks = (globalTasks || []).filter(t => normalizeDateForMatch(t.dueDate) === dateStr && (selectedSp === 'ALL' || t.salesPerson === selectedSp));
+      const dayTasks = (globalTasks || []).filter(t => {
+        const matchDate = normalizeDateForMatch(t.dueDate) === dateStr;
+        if (!matchDate) return false;
+        if (isMgmt) {
+          return selectedSp === 'ALL' || String(t.salesPerson || '').toLowerCase() === String(selectedSp).toLowerCase();
+        } else {
+          // Regular user sees ONLY their tasks
+          return String(t.salesPerson || '').toLowerCase().trim() === String(loggedInUser.salesPerson || '').toLowerCase().trim();
+        }
+      });
       
       const pendingCount = dayTasks.filter(t => String(t.status).toLowerCase() !== 'completed').length;
       const completedCount = dayTasks.filter(t => String(t.status).toLowerCase() === 'completed').length;
@@ -2321,10 +2420,17 @@
     document.getElementById('modalTodoTitle').value = '';
     
     const spInput = document.getElementById('modalTodoSalesPerson');
-    const activeSpFilter = document.getElementById('todoFilterSalesPerson') ? document.getElementById('todoFilterSalesPerson').value : 'ALL';
+    const role = loggedInUser && loggedInUser.role ? String(loggedInUser.role).toLowerCase() : '';
+    const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
+
     if (spInput) {
-      if (activeSpFilter !== 'ALL') spInput.value = activeSpFilter;
-      else if (loggedInUser && loggedInUser.salesPerson) spInput.value = loggedInUser.salesPerson;
+      if (isMgmt) {
+        const activeSpFilter = document.getElementById('todoFilterSalesPerson') ? document.getElementById('todoFilterSalesPerson').value : 'ALL';
+        spInput.value = (activeSpFilter !== 'ALL') ? activeSpFilter : (loggedInUser ? loggedInUser.salesPerson : '');
+      } else {
+        spInput.value = loggedInUser ? loggedInUser.salesPerson : '';
+        spInput.readOnly = true;
+      }
     }
 
     renderModalTodoList();
@@ -2332,8 +2438,20 @@
   }
 
   function renderModalTodoList() {
-    const selectedSp = document.getElementById('todoFilterSalesPerson') ? document.getElementById('todoFilterSalesPerson').value : 'ALL';
-    const tasks = (globalTasks || []).filter(t => normalizeDateForMatch(t.dueDate) === selectedTodoDateStr && (selectedSp === 'ALL' || t.salesPerson === selectedSp));
+    const role = loggedInUser && loggedInUser.role ? String(loggedInUser.role).toLowerCase() : '';
+    const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
+    const selectedSp = (isMgmt && document.getElementById('todoFilterSalesPerson')) ? document.getElementById('todoFilterSalesPerson').value : (loggedInUser ? loggedInUser.salesPerson : 'ALL');
+
+    const tasks = (globalTasks || []).filter(t => {
+      const matchDate = normalizeDateForMatch(t.dueDate) === selectedTodoDateStr;
+      if (!matchDate) return false;
+      if (isMgmt) {
+        return selectedSp === 'ALL' || String(t.salesPerson || '').toLowerCase() === String(selectedSp).toLowerCase();
+      } else {
+        return String(t.salesPerson || '').toLowerCase().trim() === String(loggedInUser.salesPerson || '').toLowerCase().trim();
+      }
+    });
+
     const tbody = document.getElementById('modalTodoTableBody');
     if (!tbody) return;
 
@@ -2371,7 +2489,9 @@
     if (!title) { alert("Please enter task description!"); return; }
 
     const btn = document.getElementById('modalTodoSaveBtn');
-    if (btn) { btn.disabled = true; btn.innerText = 'Adding...'; }
+    if (btn.disabled) return;
+    btn.disabled = true; 
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Adding...';
 
     const payload = {
       salesPerson: sp || (loggedInUser ? loggedInUser.salesPerson : ''),
@@ -2381,11 +2501,13 @@
     };
 
     const res = await callAppsScriptApi("saveToDoTask", payload);
-    if (btn) { btn.disabled = false; btn.innerText = 'Add Task'; }
+    btn.disabled = false; 
+    btn.innerHTML = '<i class="fa fa-save me-1"></i> Add Task';
 
     if (res && res.success) {
       showFloatingNotification("Task Added", `Task scheduled for ${selectedTodoDateStr}`);
       document.getElementById('modalTodoTitle').value = '';
+      sessionStorage.removeItem('portal_dashboard_data');
       await loadDashboardData();
       setTimeout(renderModalTodoList, 400);
     } else {
@@ -2397,6 +2519,7 @@
     const res = await callAppsScriptApi("toggleToDoTaskStatus", { taskId: taskId, newStatus: newStatus });
     if (res && res.success) {
       showFloatingNotification("Task Updated", `Task marked as ${newStatus}`);
+      sessionStorage.removeItem('portal_dashboard_data');
       await loadDashboardData();
       setTimeout(renderModalTodoList, 400);
     } else {
@@ -2413,7 +2536,7 @@
       return;
     }
 
-    ['enquiry', 'todo', 'analytics', 'lost', 'activity'].forEach(t => {
+    ['enquiry', 'add-lead', 'todo', 'analytics', 'lost', 'activity'].forEach(t => {
       const mod = document.getElementById(t + 'Module');
       const btn = document.getElementById('tab-' + t + '-btn');
       if (mod) mod.classList.toggle('d-none', t !== tabName);
@@ -2425,7 +2548,7 @@
     if (saveState) localStorage.setItem('active_portal_tab', tabName);
   }
 
-  function logout() { localStorage.clear(); location.reload(); }
+  function logout() { localStorage.clear(); sessionStorage.clear(); location.reload(); }
 
   function showAlert(msg, type) {
     const alertBox = document.getElementById('alertBox');
@@ -2493,20 +2616,6 @@
       if (aBalanceText) aBalanceText.innerText = 'Bal: ₹' + aBalance.toLocaleString();
     }
   }
-  function openQuotationFromModal() {
-  const custName = document.getElementById('mCustName') ? document.getElementById('mCustName').innerText : '';
-  const custPhone = currentLeadPhone || (document.getElementById('mCustPhone') ? document.getElementById('mCustPhone').innerText : '');
-  const custAddress = document.getElementById('custModalAddress') ? document.getElementById('custModalAddress').value : '';
-
-  const quoteData = {
-    customerName: (custName && custName !== '-') ? custName : '',
-    customerPhone: (custPhone && custPhone !== '-') ? custPhone : '',
-    customerAddress: custAddress || ''
-  };
-
-  localStorage.setItem('active_quotation_prefill', JSON.stringify(quoteData));
-  window.location.href = 'quotation.html';
-}
 </script>
 
 </body>
