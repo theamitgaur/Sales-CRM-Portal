@@ -1968,14 +1968,20 @@
   }
 
   function openEditModal(id) {
+    console.log("Opening edit modal for ID:", id);
+    console.log("Global Enquiries array length:", globalEnquiries ? globalEnquiries.length : 0);
+
     const targetId = String(id || '').trim().toLowerCase();
     const item = globalEnquiries.find(e => String(e.id || '').trim().toLowerCase() === targetId);
+    
     if (!item) {
-      alert("Lead details not found!");
+      console.error("Lead not found in globalEnquiries for ID:", targetId);
+      alert("Lead details not found in current data! Please refresh dashboard.");
       return;
     }
 
-    currentLeadBrand = item.brand || 'Industrial Equipment';
+    console.log("Found item:", item);
+
     document.getElementById('modalEnqTitle').innerText = "Lead Details - " + item.id;
     document.getElementById('editEnqId').value = item.id;
     document.getElementById('mCustName').innerText = item.customer || '-';
@@ -2005,7 +2011,16 @@
     toggleModalLostReason();
     checkDeliveryStatusCondition();
     fetchAndRenderDynamicCustomerDetails(item.customer, item.salesPerson);
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('leadDetailsModal')).show();
+
+    // Safe Bootstrap Modal Opening
+    const modalEl = document.getElementById('leadDetailsModal');
+    if (modalEl) {
+      let modalInstance = bootstrap.Modal.getInstance(modalEl);
+      if (!modalInstance) {
+        modalInstance = new bootstrap.Modal(modalEl);
+      }
+      modalInstance.show();
+    }
   }
   function findMasterCustomer(customerName, salesPerson) {
     const name = String(customerName || '').trim().toLowerCase();
