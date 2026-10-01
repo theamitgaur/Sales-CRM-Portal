@@ -134,7 +134,7 @@
         <span style="vertical-align: middle;">UCEIPL SALES</span>
       </h4>
       <ul class="nav nav-pills flex-column mb-auto" id="sidebarNavList">
-        <li class="nav-item"><a class="nav-link active" id="tab-enquiry-btn" onclick="showTab('enquiry')">📋 Dashboard</a></li>
+        <li class="nav-item" id="navItemDashboard"><a class="nav-link active" id="tab-enquiry-btn" onclick="showTab('enquiry')">📋 Dashboard</a></li>
         <li class="nav-item"><a class="nav-link" id="tab-add-lead-btn" onclick="showTab('add-lead')">➕ Add Lead</a></li>
         <li class="nav-item" id="navItemTodo"><a class="nav-link" id="tab-todo-btn" onclick="showTab('todo')">✅ To-Do List</a></li>
         <li class="nav-item" id="navItemAnalytics"><a class="nav-link" id="tab-analytics-btn" onclick="showTab('analytics')">📊 Visual Analytics</a></li>
@@ -381,8 +381,8 @@
         </div>
       </div>
 
-      <!-- MODULE: ADD LEAD (STANDALONE PAGE) -->
-      <div id="addLeadModule" class="d-none">
+      <!-- MODULE: ADD LEAD (STANDALONE PAGE ID FIXED) -->
+      <div id="add-leadModule" class="d-none">
         <div class="card p-4 mb-4" id="createEnquiryCardWrapper">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="mb-0 text-primary fw-bold"><i class="fa fa-plus-circle me-1"></i> Create New Enquiry / Add Lead</h5>
@@ -1454,7 +1454,6 @@
 
     document.getElementById('actFilterSalesPerson').innerHTML = filterOpts;
     
-    // STRICT TO-DO LIST ROLE RESTRICTION (User sees ONLY their tasks unless Admin/Manager)
     const todoFilterEl = document.getElementById('todoFilterSalesPerson');
     const todoWrapper = document.getElementById('todoSalespersonFilterWrapper');
     if (todoFilterEl) {
@@ -1464,7 +1463,7 @@
       } else {
         todoFilterEl.innerHTML = `<option value="${loggedInUser.salesPerson}">${loggedInUser.salesPerson}</option>`;
         todoFilterEl.value = loggedInUser.salesPerson;
-        if (todoWrapper) todoWrapper.style.display = 'none'; // Hide filter for regular users
+        if (todoWrapper) todoWrapper.style.display = 'none';
       }
     }
 
@@ -1667,7 +1666,6 @@
     sessionStorage.removeItem('portal_dashboard_data');
     applyDashboardFilters();
     resetEnquiryForm();
-    saveBtn.disabled = false; saveBtn.innerText = "Save Enquiry";
 
     const res = await callAppsScriptApi("saveEnquiry", formData);
     saveBtn.disabled = false; 
@@ -1677,7 +1675,7 @@
       showFloatingNotification("Success", res.message);
       sessionStorage.removeItem('portal_dashboard_data');
       loadDashboardData();
-      showTab('enquiry'); // Redirect back to dashboard after successful save
+      showTab('enquiry');
     } else {
       showAlert('Error: ' + (res ? res.message : 'Failed'), 'danger');
       loadDashboardData();
@@ -1896,7 +1894,7 @@
             <td>${payFup}</td>
             <td>${dispatchHtml}</td>
             <td><span class="badge ${badgeColor}">${escapeHtml(item.status || 'New Lead')}</span></td>
-            <td><button type="button" class="btn btn-sm btn-primary py-0 px-2" onclick="openEditModal('${escapeHtml(item.id)}')">👁️ Details</button></td>
+            <td><button type="button" class="btn btn-sm btn-primary py-0 px-2" onclick="openEditModal('${escapeHtml(item.id)}')">👁️️ Details</button></td>
           </tr>
         `;
       });
@@ -2365,7 +2363,6 @@
     const firstDay = new Date(year, month, 1).getDay();
     const totalDays = new Date(year, month + 1, 0).getDate();
     
-    // STRICT ROLE FILTER FOR TASKS
     const role = loggedInUser && loggedInUser.role ? String(loggedInUser.role).toLowerCase() : '';
     const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
     const selectedSp = (isMgmt && document.getElementById('todoFilterSalesPerson')) ? document.getElementById('todoFilterSalesPerson').value : (loggedInUser ? loggedInUser.salesPerson : 'ALL');
@@ -2386,7 +2383,6 @@
         if (isMgmt) {
           return selectedSp === 'ALL' || String(t.salesPerson || '').toLowerCase() === String(selectedSp).toLowerCase();
         } else {
-          // Regular user sees ONLY their tasks
           return String(t.salesPerson || '').toLowerCase().trim() === String(loggedInUser.salesPerson || '').toLowerCase().trim();
         }
       });
@@ -2536,7 +2532,6 @@
       return;
     }
 
-    // 'add-lead' module ko yahan list mein include kar diya hai
     ['enquiry', 'add-lead', 'todo', 'analytics', 'lost', 'activity'].forEach(t => {
       const mod = document.getElementById(t + 'Module');
       const btn = document.getElementById('tab-' + t + '-btn');
@@ -2549,6 +2544,7 @@
     if (tabName === 'todo') renderTodoCalendar();
     if (saveState) localStorage.setItem('active_portal_tab', tabName);
   }
+
   function logout() { localStorage.clear(); sessionStorage.clear(); location.reload(); }
 
   function showAlert(msg, type) {
