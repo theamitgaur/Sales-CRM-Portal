@@ -1968,8 +1968,12 @@
   }
 
   function openEditModal(id) {
-    const item = globalEnquiries.find(e => String(e.id) === String(id));
-    if (!item) return;
+    const targetId = String(id || '').trim().toLowerCase();
+    const item = globalEnquiries.find(e => String(e.id || '').trim().toLowerCase() === targetId);
+    if (!item) {
+      alert("Lead details not found!");
+      return;
+    }
 
     currentLeadBrand = item.brand || 'Industrial Equipment';
     document.getElementById('modalEnqTitle').innerText = "Lead Details - " + item.id;
@@ -2003,7 +2007,6 @@
     fetchAndRenderDynamicCustomerDetails(item.customer, item.salesPerson);
     bootstrap.Modal.getOrCreateInstance(document.getElementById('leadDetailsModal')).show();
   }
-
   function findMasterCustomer(customerName, salesPerson) {
     const name = String(customerName || '').trim().toLowerCase();
     if (!name || !Array.isArray(rawCustomers)) return null;
