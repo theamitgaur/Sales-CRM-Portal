@@ -1634,7 +1634,8 @@
       paymentTerms: termsSelect.options[termsSelect.selectedIndex].text,
       paymentTermsDays: termsSelect.value,
       paymentFollowup: document.getElementById('paymentFollowupDate').value,
-      dispatch: document.getElementById('dispatch').value,
+      // Dispatch/Delivery Status is intentionally not collected on Add Lead.
+      // It can be updated later from View Details when the lead is Won.
       remark: document.getElementById('remark').value,
       latitude: userGeoCoords ? userGeoCoords.latitude : '',
       longitude: userGeoCoords ? userGeoCoords.longitude : ''
@@ -1664,9 +1665,11 @@
     saveBtn.innerText = "Save Enquiry";
     
     if (res && res.success) {
-      showFloatingNotification("Success", res.message);
+      showFloatingNotification("Success", res.message || "Lead saved successfully.");
       sessionStorage.removeItem('portal_dashboard_data');
-      loadDashboardData();
+      // Wait for the fresh Google Sheets data before opening the dashboard,
+      // so the newly saved lead is immediately available to View Details.
+      await loadDashboardData();
       showTab('enquiry');
     } else {
       showAlert('Error: ' + (res ? res.message : 'Failed'), 'danger');
@@ -1989,7 +1992,10 @@
     document.getElementById('mMode').innerText = item.mode || '-';
     document.getElementById('mSalesPerson').innerText = item.salesPerson || '-';
     document.getElementById('mDescription').innerText = item.description || '-';
-    document.getElementById('editDispatchStatus').value = item.dispatch || 'Pending';
+    const editDispatchStatusEl = document.getElementById('editDispatchStatus');
+    if (editDispatchStatusEl) {
+      editDispatchStatusEl.value = item.dispatch || 'Pending';
+    }
 
     const masterCustomer = findMasterCustomer(item.customer, item.salesPerson);
     document.getElementById('mCustContact').innerText = masterCustomer ? getCustomerField(masterCustomer, ['contactPerson', 'contact']) : '-';
@@ -2004,7 +2010,6 @@
     document.getElementById('editLeadFollowup').value = item.leadFollowup || '';
     document.getElementById('editPaymentTerms').value = item.paymentTerms || '';
     document.getElementById('editPaymentFollowup').value = item.paymentFollowup || '';
-    document.getElementById('editDispatch').value = item.dispatch || '';
     document.getElementById('editLostReason').value = item.lostReason || '';
     document.getElementById('editRemark').value = item.remark || '';
 
