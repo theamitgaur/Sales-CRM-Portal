@@ -2536,18 +2536,19 @@
       return;
     }
 
+    // 'add-lead' module ko yahan list mein include kar diya hai
     ['enquiry', 'add-lead', 'todo', 'analytics', 'lost', 'activity'].forEach(t => {
       const mod = document.getElementById(t + 'Module');
       const btn = document.getElementById('tab-' + t + '-btn');
       if (mod) mod.classList.toggle('d-none', t !== tabName);
       if (btn) btn.classList.toggle('active', t === tabName);
     });
+
     if (tabName === 'analytics') renderPowerBiDashboard();
     if (tabName === 'activity') renderActivityCalendarAndMatrix();
     if (tabName === 'todo') renderTodoCalendar();
     if (saveState) localStorage.setItem('active_portal_tab', tabName);
   }
-
   function logout() { localStorage.clear(); sessionStorage.clear(); location.reload(); }
 
   function showAlert(msg, type) {
