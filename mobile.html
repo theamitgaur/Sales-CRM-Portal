@@ -33,7 +33,7 @@
       color: #fff;
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
       z-index: 100;
     }
     .app-main-content {
@@ -43,18 +43,12 @@
       padding: 12px;
       position: relative;
     }
-    .scroll-buttons-container {
+    .refresh-floating-btn {
       position: fixed;
-      right: 12px;
+      right: 14px;
       bottom: 75px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      z-index: 999;
-    }
-    .btn-scroll {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: #0f172a;
       color: #ffffff;
@@ -62,11 +56,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
       cursor: pointer;
-      font-size: 0.95rem;
-      opacity: 0.9;
+      font-size: 1rem;
+      z-index: 999;
+      transition: transform 0.15s ease;
     }
+    .refresh-floating-btn:active { transform: scale(0.90); }
+    .refresh-floating-btn.spinning i { animation: fa-spin 0.8s infinite linear; }
+
     .app-bottom-nav {
       flex: 0 0 60px;
       background: #ffffff;
@@ -79,33 +77,35 @@
       text-align: center; color: #64748b; font-size: 0.72rem; font-weight: 600;
       text-decoration: none; flex: 1; padding: 6px 0; cursor: pointer;
     }
-    .nav-btn i { font-size: 1.2rem; display: block; margin-bottom: 2px; }
+    .nav-btn i { font-size: 1.15rem; display: block; margin-bottom: 2px; }
     .nav-btn.active { color: #2563eb; }
     .app-card {
-      background: #ffffff; border-radius: 14px; padding: 14px;
-      border: 1px solid #e2e8f0; margin-bottom: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      background: #ffffff; border-radius: 12px; padding: 12px;
+      border: 1px solid #e2e8f0; margin-bottom: 10px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
     }
     .form-control, .form-select {
-      font-size: 0.85rem !important; padding: 8px 10px;
+      font-size: 0.84rem !important; padding: 7px 10px;
       border-radius: 8px; border: 1px solid #cbd5e1;
     }
-    .form-label { font-weight: 600; font-size: 0.76rem; color: #475569; margin-bottom: 3px; }
+    .form-label { font-weight: 600; font-size: 0.75rem; color: #475569; margin-bottom: 2px; }
     .lead-card {
       background: #fff; border-radius: 12px; padding: 12px 14px;
       border-left: 4px solid #2563eb; margin-bottom: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
       border: 1px solid #e2e8f0; border-left-width: 4px;
+      cursor: pointer;
     }
+    .lead-card:active { background: #f8fafc; }
     .extra-small { font-size: 0.74rem; }
     .modal-body { 
-      max-height: 70vh; 
+      max-height: 72vh; 
       overflow-y: scroll !important; 
       -webkit-overflow-scrolling: touch !important; 
       position: relative;
     }
 
-    /* Mobile KPI Tiles */
+    /* Mobile KPI Cards */
     .mob-kpi-card {
       background: #ffffff;
       border: 1px solid #e2e8f0;
@@ -114,11 +114,10 @@
       position: relative;
       overflow: hidden;
       cursor: pointer;
-      transition: transform 0.15s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+      transition: transform 0.1s ease, border-color 0.15s ease;
     }
-    .mob-kpi-card:active {
-      transform: scale(0.97);
-    }
+    .mob-kpi-card:active { transform: scale(0.97); }
     .mob-kpi-card::before {
       content: '';
       position: absolute;
@@ -139,7 +138,7 @@
       background: #e0e7ff;
       color: #3730a3;
       font-weight: 700;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       display: inline-flex;
       align-items: center; justify-content: center;
       margin-right: 6px;
@@ -175,9 +174,7 @@
       background: #ffffff;
       padding: 8px 12px 8px 16px !important;
     }
-    .brand-item-hover:hover {
-      background-color: #f1f5f9;
-    }
+    .brand-item-hover:hover { background-color: #f1f5f9; }
 
     #floatingNotificationBanner {
       position: fixed;
@@ -187,26 +184,24 @@
       z-index: 10000;
       background: #0f172a;
       color: #ffffff;
-      border-radius: 16px;
-      padding: 12px 14px;
+      border-radius: 14px;
+      padding: 10px 14px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.4);
       border: 1px solid rgba(255,255,255,0.15);
       display: flex;
       align-items: center;
-      gap: 12px;
-      transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      gap: 10px;
+      transition: top 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       cursor: pointer;
     }
-    #floatingNotificationBanner.show {
-      top: 12px;
-    }
+    #floatingNotificationBanner.show { top: 12px; }
   </style>
 </head>
 <body>
 
 <div id="floatingNotificationBanner" onclick="dismissFloatingBanner()">
-  <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; min-width: 38px;">
-    <i class="fa fa-bell fa-lg"></i>
+  <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; min-width: 34px;">
+    <i class="fa fa-bell fa-sm"></i>
   </div>
   <div class="flex-grow-1 text-truncate">
     <div class="fw-bold extra-small text-warning" id="floatBannerTitle">Notification</div>
@@ -232,22 +227,18 @@
   </div>
 </div>
 
-<div class="scroll-buttons-container">
-  <div class="btn-scroll" onclick="scrollPage('up')"><i class="fa fa-chevron-up"></i></div>
-  <div class="btn-scroll" onclick="scrollPage('down')"><i class="fa fa-chevron-down"></i></div>
+<!-- FLOATING REFRESH BUTTON WITH LOADER -->
+<div class="refresh-floating-btn" id="refreshBtnMob" onclick="triggerManualRefresh()" title="Refresh Data">
+  <i class="fa fa-rotate"></i>
 </div>
 
 <div class="app-shell">
   <div class="app-top-bar">
     <div class="d-flex align-items-center gap-2">
-      <img src="https://unitedcontrolengg.com/wp-content/uploads/2025/06/United-Logo.png" alt="Logo" style="height: 32px; width: auto; margin-right: 4px; vertical-align: middle;">
+      <img src="https://unitedcontrolengg.com/wp-content/uploads/2025/06/United-Logo.png" alt="Logo" style="height: 32px; width: auto; vertical-align: middle;">
       <span class="fw-bold fs-6">UCE SALES</span>
     </div>
     <div class="d-flex align-items-center gap-1">
-      <!-- TOP REFRESH BUTTON -->
-      <button id="topRefreshBtn" onclick="triggerMobileDataRefresh(this)" class="btn btn-sm btn-outline-light py-0 px-2" title="Refresh Data">
-        <i class="fa fa-rotate"></i>
-      </button>
       <button id="notifEnableBtn" onclick="requestNotificationPermission()" class="btn btn-sm btn-outline-warning py-0 px-2 d-none" title="Enable Notifications"><i class="fa fa-bell"></i></button>
       <span id="loggedUserMobile" class="badge bg-secondary extra-small">User</span>
       <button onclick="logout()" class="btn btn-sm btn-outline-light py-0 px-2"><i class="fa fa-power-off"></i></button>
@@ -272,10 +263,11 @@
         </div>
       </div>
       
-      <!-- TARGETS & GOALS WIDGET -->
+      <!-- TARGETS & GOALS WIDGET (DYNAMIC MANAGER / TEAM & INDIVIDUAL TARGETS) -->
       <div class="app-card p-2 mb-2 bg-light border-start border-primary border-4" id="sidebarTargetWidget">
         <div class="d-flex justify-content-between align-items-center mb-1">
-          <span class="fw-bold text-primary extra-small"><i class="fa fa-bullseye me-1"></i> Targets & Goals</span>
+          <span class="fw-bold text-primary extra-small" id="targetWidgetScopeLabel"><i class="fa fa-bullseye me-1"></i> Targets & Goals</span>
+          <span class="badge bg-white text-muted border extra-small" id="targetSelectedPersonBadge">Team View</span>
         </div>
         <div class="d-flex justify-content-between extra-small text-muted mb-1">
           <span>Monthly: <b id="mTargetText" class="text-dark">₹0 / ₹0</b></span>
@@ -311,10 +303,10 @@
         </div>
       </div>
 
-      <!-- 1. DYNAMIC CLICKABLE KPI TILES (WEB MATCHING) -->
+      <!-- 1. DYNAMIC INTERACTIVE KPI TILES -->
       <div class="app-card p-2 mb-2 bg-white">
         <div class="d-flex justify-content-between align-items-center mb-2 px-1">
-          <span class="fw-bold text-dark extra-small"><i class="fa fa-chart-line text-primary me-1"></i> Performance Overview</span>
+          <span class="fw-bold text-dark extra-small"><i class="fa fa-chart-line text-primary me-1"></i> Live Performance Metrics</span>
           <span class="text-muted extra-small" id="mobSummaryIndicator">Filtered</span>
         </div>
 
@@ -359,20 +351,30 @@
             </div>
           </div>
 
-          <div class="col-6" onclick="filterByMobPill('Pending', null)">
-            <div class="mob-kpi-card mob-kpi-pay">
-              <div class="text-muted extra-small fw-bold">PAY PENDING</div>
+          <div class="col-6" onclick="filterByMobPill('Lost', null)">
+            <div class="mob-kpi-card mob-kpi-lost">
+              <div class="text-muted extra-small fw-bold">LOST DEALS</div>
+              <h5 class="fw-bold mb-0 text-dark" id="mobKpiLostCount">0</h5>
+              <div class="fw-bold text-danger extra-small text-truncate" id="mobKpiLostVal">₹0</div>
+            </div>
+          </div>
+
+          <div class="col-12" onclick="filterByMobPill('Pending', null)">
+            <div class="mob-kpi-card mob-kpi-pay d-flex justify-content-between align-items-center">
+              <div>
+                <div class="text-muted extra-small fw-bold">PAYMENT PENDING</div>
+                <div class="fw-bold text-danger extra-small" id="mobKpiPayVal">₹0</div>
+              </div>
               <h5 class="fw-bold mb-0 text-dark" id="mobKpiPayCount">0</h5>
-              <div class="fw-bold text-danger extra-small text-truncate" id="mobKpiPayVal">₹0</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 2. MEMBER-WISE BREAKDOWN ACCORDION (WEB MATCHING) -->
+      <!-- 2. MEMBER-WISE PERFORMANCE BREAKDOWN ACCORDION -->
       <div class="app-card p-2 mb-2 bg-white">
         <div class="d-flex justify-content-between align-items-center mb-1 px-1">
-          <span class="fw-bold text-dark extra-small"><i class="fa fa-users me-1 text-primary"></i> Team Member Breakdown</span>
+          <span class="fw-bold text-dark extra-small"><i class="fa fa-users me-1 text-primary"></i> Team Member Performance</span>
           <button class="btn btn-xs btn-light border py-0 px-2 extra-small text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#mobMemberCollapse" aria-expanded="true">
             Toggle
           </button>
@@ -409,6 +411,7 @@
         <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('Pending', this)">⏳ Pending</button>
         <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('Advance Received', this)">💵 Advance</button>
         <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('Fully Paid', this)">✅ Paid</button>
+        <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('Credit', this)">💳 Credit</button>
       </div>
 
       <!-- 4. ADVANCED FILTER ACCORDION -->
@@ -416,7 +419,7 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
           <span class="fw-bold extra-small text-dark">Filter Enquiries</span>
           <div class="d-flex gap-1">
-            <button class="btn btn-xs btn-outline-primary fw-bold py-0 px-2 extra-small" onclick="loadDashboard()" title="Refresh Enquiries">
+            <button class="btn btn-xs btn-outline-primary fw-bold py-0 px-2 extra-small" onclick="triggerManualRefresh()" title="Refresh Enquiries">
               <i class="fa fa-rotate me-1"></i> Refresh
             </button>
             <button class="btn btn-xs btn-success fw-bold py-0 px-2 extra-small" onclick="openMemberExportModalMob()">
@@ -459,7 +462,16 @@
               <option value="Credit">Credit</option>
             </select>
           </div>
-          <div class="col-12">
+          <div class="col-6">
+            <label class="form-label extra-small mb-0">Delivery Status</label>
+            <select id="filterDispatchStatus" onchange="applyFilters()" class="form-select form-select-sm bg-white">
+              <option value="ALL">All Delivery</option>
+              <option value="Dispatched">Dispatched</option>
+              <option value="Intransit">Intransit</option>
+              <option value="Delivered">Delivered</option>
+            </select>
+          </div>
+          <div class="col-6">
             <label class="form-label extra-small mb-0">Sales Person</label>
             <select id="filterSalesPerson" onchange="onSalespersonFilterChange()" class="form-select form-select-sm bg-white">
               <option value="ALL">All Team Member</option>
@@ -792,11 +804,6 @@
         <h6 class="modal-title fw-bold" id="modalEnqTitle">Lead Details & Update</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      
-      <div style="position: absolute; right: 10px; top: 60px; z-index: 1050; display: flex; flex-direction: column; gap: 5px;">
-        <button class="btn btn-sm btn-dark py-1 px-2 opacity-75" onclick="scrollModal('up')"><i class="fa fa-chevron-up"></i></button>
-        <button class="btn btn-sm btn-dark py-1 px-2 opacity-75" onclick="scrollModal('down')"><i class="fa fa-chevron-down"></i></button>
-      </div>
 
       <div class="modal-body p-3" id="modalScrollBody">
         <input type="hidden" id="editEnqId">
@@ -855,7 +862,7 @@
         </div>
 
         <div id="modalLockNotice" class="alert alert-warning py-1 px-2 extra-small fw-bold d-none mb-2">
-          🔒 This completed enquiry is locked because the maximum 2 edit limit has been reached.
+          🔒 This completed enquiry is locked because the maximum 4 edit limit has been reached.
         </div>
 
         <h6 class="fw-bold text-primary mb-2 extra-small">Update Lead Status & Values</h6>
@@ -867,7 +874,7 @@
           </div>
           <div class="col-6">
             <label class="form-label">Status *</label>
-            <select id="editStatus" class="form-select" onchange="toggleModalLostReason()">
+            <select id="editStatus" class="form-select" onchange="toggleModalWonStatusFields()">
               <option value="New Lead">New Lead</option>
               <option value="Hot lead">Hot lead</option>
               <option value="Quoted">Quoted</option>
@@ -902,6 +909,15 @@
             <label class="form-label">Dispatch Info</label>
             <input type="text" id="editDispatch" class="form-control" placeholder="Dispatch details...">
           </div>
+          <!-- Delivery Status Box (Only visible when Won) -->
+          <div class="col-12 d-none" id="wonDeliveryStatusWrapper">
+            <label class="form-label text-info fw-bold">Delivery Status (Won Leads)</label>
+            <select id="editDispatchStatus" class="form-select fw-bold border-info">
+              <option value="Dispatched">Dispatched</option>
+              <option value="Intransit">Intransit</option>
+              <option value="Delivered">Delivered</option>
+            </select>
+          </div>
           <div id="modalLostReasonContainer" class="col-12 d-none">
             <label class="form-label text-danger">Lost Reason Details *</label>
             <input type="text" id="editLostReason" class="form-control border-danger" placeholder="Reason for deal loss...">
@@ -920,19 +936,22 @@
 
 <!-- ACTIVITY MODAL -->
 <div class="modal fade" id="mobDateActivityModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content border-0 rounded-4">
       <div class="modal-header bg-primary text-white py-2">
         <h6 class="modal-title fw-bold extra-small" id="mobModalDateTitle">Log Activity</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-3">
-        <div class="p-2 mb-2 bg-light rounded border">
-          <input class="form-control fw-bold mb-2 extra-small" list="salesPersonsList" id="mobModalActSp" placeholder="Salesperson..." oninput="filterMobCustomerDropdown()">
-          <input class="form-control mb-2 extra-small" list="mobActCustList" id="mobModalActCust" placeholder="Customer Name...">
-          <datalist id="mobActCustList"></datalist>
-
+        <div class="p-2 mb-3 bg-light rounded border">
           <div class="row g-1 mb-2">
+            <div class="col-6">
+              <input class="form-control fw-bold extra-small" list="salesPersonsList" id="mobModalActSp" placeholder="Salesperson..." oninput="filterMobCustomerDropdown()">
+            </div>
+            <div class="col-6">
+              <input class="form-control extra-small" list="mobActCustList" id="mobModalActCust" placeholder="Customer Name...">
+              <datalist id="mobActCustList"></datalist>
+            </div>
             <div class="col-6">
               <select class="form-select extra-small" id="mobModalActType">
                 <option value="Call">📞 Call</option>
@@ -945,13 +964,30 @@
                 <option value="No">Failed / Later</option>
               </select>
             </div>
+            <div class="col-12 mt-1">
+              <input type="text" class="form-control extra-small" id="mobModalActRemark" placeholder="Remarks / discussion outcome...">
+            </div>
           </div>
-          <input type="text" class="form-control mb-2 extra-small" id="mobModalActRemark" placeholder="Remarks / outcome...">
           <button class="btn btn-sm btn-success w-100 fw-bold py-1 extra-small" id="mobSaveActBtn" onclick="submitMobActivityRecord()">Save Activity</button>
         </div>
 
-        <h6 class="fw-bold extra-small text-muted mb-1">Entries Logged</h6>
-        <div id="mobModalEntriesList" class="extra-small"></div>
+        <h6 class="fw-bold extra-small text-dark mb-2"><i class="fa fa-list me-1"></i> Activities Logged for this Day</h6>
+        <div class="table-responsive" style="max-height: 220px;">
+          <table class="table table-sm table-bordered table-striped align-middle extra-small mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Customer</th>
+                <th>Salesperson</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Remark</th>
+              </tr>
+            </thead>
+            <tbody id="mobModalEntriesList">
+              <tr><td colspan="5" class="text-center text-muted py-2">No activity on this date</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -998,7 +1034,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbypRhN9mB2Casq9H3fYxQLzJHhz9T7B9up6OBVlupLI90GgN6vlYKvUzivWN41OCLKsMA/exec";
+  const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxeS23zbPNegYQjszbE5-Iqcw4ySVUy8Yddi6HE3RcFInfYUvSJtMpeR1XdNbM_Lne8/exec";
 
   async function callAppsScriptApi(action, data = {}) {
     try {
@@ -1026,7 +1062,7 @@
       msgEl.innerText = message;
       banner.classList.add('show');
       if (bannerTimer) clearTimeout(bannerTimer);
-      bannerTimer = setTimeout(() => { banner.classList.remove('show'); }, 5000);
+      bannerTimer = setTimeout(() => { banner.classList.remove('show'); }, 4000);
     }
   }
 
@@ -1091,26 +1127,18 @@
     }
   }
 
-  function scrollPage(direction) {
-    const scroller = document.getElementById('mainScrollContainer');
-    if (!scroller) return;
-    scroller.scrollBy({ top: direction === 'up' ? -250 : 250, behavior: 'smooth' });
-  }
-
-  function scrollModal(direction) {
-    const modalBody = document.getElementById('modalScrollBody');
-    if (!modalBody) return;
-    modalBody.scrollBy({ top: direction === 'up' ? -180 : 180, behavior: 'smooth' });
-  }
-
-  // TRIGGER MOBILE DATA REFRESH (WITH ANIMATION)
-  async function triggerMobileDataRefresh(btnEl) {
-    const icon = btnEl ? btnEl.querySelector('i') : null;
-    if (icon) icon.classList.add('fa-spin');
-    showFloatingNotification("Syncing", "Refreshing latest records...");
+  async function triggerManualRefresh() {
+    const btn = document.getElementById('refreshBtnMob');
+    if (btn) btn.classList.add('spinning');
+    
+    sessionStorage.removeItem('portal_dashboard_data');
+    sessionStorage.removeItem('portal_master_data');
+    
+    await fetchMasterData();
     await loadDashboard();
-    if (icon) icon.classList.remove('fa-spin');
-    showFloatingNotification("Refreshed", "Data updated successfully!");
+
+    if (btn) btn.classList.remove('spinning');
+    showFloatingNotification("Refreshed", "Latest data loaded successfully.");
   }
 
   function applyRoleNavigationRestrictions() {
@@ -1266,7 +1294,7 @@
 
       input.value = '';
       toggleAddNewBrandInputMob();
-      showFloatingNotification("New Brand Added", `Brand "${res.brand}" is now active in master catalog.`);
+      showFloatingNotification("New Brand Added", `Brand "${res.brand}" is now active.`);
     } else {
       alert("Error: " + (res ? res.message : 'Failed to add brand'));
     }
@@ -1309,15 +1337,35 @@
   }
 
   async function fetchMasterData() {
+    const cached = sessionStorage.getItem('portal_master_data');
+    if (cached) {
+      try {
+        onMasterDataLoaded(JSON.parse(cached));
+      } catch (e) {
+        sessionStorage.removeItem('portal_master_data');
+      }
+    }
+
     const data = await callAppsScriptApi("getMasterData", { user: loggedInUser });
     if (!data || !data.success) return;
 
+    sessionStorage.setItem('portal_master_data', JSON.stringify(data));
+    onMasterDataLoaded(data);
+  }
+
+  function onMasterDataLoaded(data) {
     rawCustomers = data.customers || [];
     masterSalesPersons = data.salesPersons || [];
     renderBrandCheckboxesMob(data.brands || []);
 
-    let spOptionsHtml = '', filterOpts = '<option value="ALL">All Team Member</option>';
-    let mobExportSpOpts = '<option value="ALL">All Team Members</option>';
+    const role = loggedInUser && loggedInUser.role ? String(loggedInUser.role).toLowerCase() : '';
+    const isAdmin = role.indexOf('admin') > -1;
+    const isManager = role.indexOf('manager') > -1;
+    const isMgmt = isAdmin || isManager;
+
+    let spOptionsHtml = '';
+    let filterOpts = isMgmt ? '<option value="ALL">All Team Member</option>' : '';
+    let mobExportSpOpts = isMgmt ? '<option value="ALL">All Team Members</option>' : '';
 
     masterSalesPersons.forEach(sp => {
       spOptionsHtml += `<option value="${sp}">`;
@@ -1334,16 +1382,13 @@
     const mobExportSpSelect = document.getElementById('mobExportSpSelect');
     if (mobExportSpSelect) mobExportSpSelect.innerHTML = mobExportSpOpts;
 
-    const role = loggedInUser && loggedInUser.role ? loggedInUser.role.toLowerCase() : '';
-    const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
-
     const spInputEl = document.getElementById('salesPersonInput');
     const transferWrapper = document.getElementById('transferActionWrapper');
 
     if (!isMgmt) {
       if (spInputEl) { spInputEl.value = loggedInUser ? loggedInUser.salesPerson : ''; spInputEl.readOnly = true; }
-      if (spFilter) { spFilter.value = loggedInUser ? loggedInUser.salesPerson : 'ALL'; spFilter.disabled = true; }
-      if (mobExportSpSelect) { mobExportSpSelect.value = loggedInUser ? loggedInUser.salesPerson : 'ALL'; mobExportSpSelect.disabled = true; }
+      if (spFilter) { spFilter.value = loggedInUser ? loggedInUser.salesPerson : ''; spFilter.disabled = true; }
+      if (mobExportSpSelect) { mobExportSpSelect.value = loggedInUser ? loggedInUser.salesPerson : ''; mobExportSpSelect.disabled = true; }
       if (transferWrapper) transferWrapper.classList.add('d-none');
     } else {
       if (spInputEl) spInputEl.readOnly = false;
@@ -1366,7 +1411,7 @@
     filterCustomersBySalesPerson();
     filterMobCustomerDropdown();
     loadDashboard();
-    setTimeout(loadSidebarTargetInfo, 600);
+    setTimeout(loadSidebarTargetInfo, 400);
   }
 
   function filterCustomersBySalesPerson() {
@@ -1417,9 +1462,23 @@
   }
 
   async function loadDashboard() {
+    const cached = sessionStorage.getItem('portal_dashboard_data');
+    if (cached) {
+      try {
+        renderDashboardData(JSON.parse(cached));
+      } catch (e) {
+        sessionStorage.removeItem('portal_dashboard_data');
+      }
+    }
+
     const data = await callAppsScriptApi("getDashboardData", { user: loggedInUser });
     if (!data || !data.success) return;
 
+    sessionStorage.setItem('portal_dashboard_data', JSON.stringify(data));
+    renderDashboardData(data);
+  }
+
+  function renderDashboardData(data) {
     globalEnquiries = data.enquiries || [];
     globalActivities = data.activities || [];
     globalTasks = data.tasks || [];
@@ -1500,6 +1559,7 @@
     let hotCount = 0, hotVal = 0;
     let quotedCount = 0, quotedVal = 0;
     let wonCount = 0, wonVal = 0;
+    let lostCount = 0, lostVal = 0;
     let payPendingCount = 0, payPendingVal = 0;
 
     list.forEach(item => {
@@ -1512,6 +1572,7 @@
       else if (s === 'hot lead') { hotCount++; hotVal += v; }
       else if (s === 'quoted' || s === 'live') { quotedCount++; quotedVal += v; }
       else if (s === 'won') { wonCount++; wonVal += v; }
+      else if (s === 'lost') { lostCount++; lostVal += v; }
 
       if (p === 'pending') { payPendingCount++; payPendingVal += v; }
     });
@@ -1528,6 +1589,8 @@
     setEl('mobKpiQuotedVal', '₹' + quotedVal.toLocaleString());
     setEl('mobKpiWonCount', wonCount);
     setEl('mobKpiWonVal', '₹' + wonVal.toLocaleString());
+    setEl('mobKpiLostCount', lostCount);
+    setEl('mobKpiLostVal', '₹' + lostVal.toLocaleString());
     setEl('mobKpiPayCount', payPendingCount);
     setEl('mobKpiPayVal', '₹' + payPendingVal.toLocaleString());
 
@@ -1537,7 +1600,7 @@
     }
   }
 
-  // MEMBER-WISE BREAKDOWN GENERATOR (MOBILE)
+  // MEMBER-WISE PERFORMANCE BREAKDOWN (MOBILE)
   function renderMobileMemberWiseBreakdown(list) {
     const tbody = document.getElementById('mobMemberBreakdownTbody');
     if (!tbody) return;
@@ -1638,6 +1701,7 @@
     const toDate = document.getElementById('filterToDate').value;
     const st = document.getElementById('filterStatus').value;
     const paySt = document.getElementById('filterPaymentStatus').value;
+    const dispatchSt = document.getElementById('filterDispatchStatus').value;
     const sp = document.getElementById('filterSalesPerson') ? document.getElementById('filterSalesPerson').value : 'ALL';
     const searchVal = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim().toLowerCase() : '';
 
@@ -1659,6 +1723,7 @@
     if (toDate) filteredList = filteredList.filter(e => e.date && e.date <= toDate);
     if (st !== 'ALL') filteredList = filteredList.filter(e => String(e.status).toLowerCase() === st.toLowerCase());
     if (paySt !== 'ALL') filteredList = filteredList.filter(e => String(e.paymentStatus).toLowerCase() === paySt.toLowerCase());
+    if (dispatchSt !== 'ALL') filteredList = filteredList.filter(e => String(e.dispatch || '').toLowerCase() === dispatchSt.toLowerCase());
     if (sp !== 'ALL' && sp !== '') filteredList = filteredList.filter(e => String(e.salesPerson || '').toLowerCase() === sp.toLowerCase());
 
     // Update Live Metrics & Breakdown on mobile
@@ -1692,13 +1757,27 @@
 
       let leadFup = item.leadFollowup ? `<span class="badge bg-light text-primary border border-primary">${item.leadFollowup}</span>` : '<span class="badge bg-light text-muted border">Not Set</span>';
       let payFup = item.paymentFollowup ? `<span class="badge bg-light text-success border border-success">${item.paymentFollowup}</span>` : '<span class="badge bg-light text-muted border">Not Set</span>';
+      
+      let deliveryBadge = '';
+      if (String(item.status).toLowerCase() === 'won') {
+        let dVal = item.dispatch || 'Pending';
+        let dColor = 'bg-secondary';
+        if (dVal === 'Dispatched') dColor = 'bg-info text-dark';
+        if (dVal === 'Intransit') dColor = 'bg-warning text-dark';
+        if (dVal === 'Delivered') dColor = 'bg-success';
+        deliveryBadge = `<span class="badge ${dColor} ms-1">Delivery: ${escapeHtml(dVal)}</span>`;
+      }
+
       let duplicateWarningIcon = item.isDuplicate ? `<span class="badge bg-warning text-dark ms-1">⚠️ Duplicate</span>` : '';
 
       html += `
         <div class="lead-card" onclick="openEditModal('${item.id}')">
           <div class="d-flex justify-content-between align-items-center mb-1">
             <span class="fw-bold text-dark">${item.id} ${duplicateWarningIcon}</span>
-            <span class="badge ${bColor}">${item.status || 'New Lead'}</span>
+            <div>
+              ${deliveryBadge}
+              <span class="badge ${bColor}">${item.status || 'New Lead'}</span>
+            </div>
           </div>
           <h6 class="fw-bold text-primary m-0 mb-1">${escapeHtml(item.customer)}</h6>
           <div class="d-flex justify-content-between extra-small text-muted mb-1">
@@ -1844,6 +1923,23 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
   }
 
+  function toggleModalWonStatusFields() {
+    const st = document.getElementById('editStatus').value;
+    const container = document.getElementById('modalLostReasonContainer');
+    const wonDeliveryWrapper = document.getElementById('wonDeliveryStatusWrapper');
+
+    if (st === 'Lost') {
+      container.classList.remove('d-none');
+      wonDeliveryWrapper.classList.add('d-none');
+    } else if (st === 'Won') {
+      container.classList.add('d-none');
+      wonDeliveryWrapper.classList.remove('d-none');
+    } else {
+      container.classList.add('d-none');
+      wonDeliveryWrapper.classList.add('d-none');
+    }
+  }
+
   function openEditModal(id) {
     const item = globalEnquiries.find(e => String(e.id) === String(id));
     if (!item) return;
@@ -1879,21 +1975,22 @@
     document.getElementById('editPaymentTerms').value = item.paymentTerms || '';
     document.getElementById('editPaymentFollowup').value = item.paymentFollowup || '';
     document.getElementById('editDispatch').value = item.dispatch || '';
+    document.getElementById('editDispatchStatus').value = item.dispatch || 'Pending';
     document.getElementById('editLostReason').value = item.lostReason || '';
     document.getElementById('editRemark').value = item.remark || '';
 
     const isWonAndPaid = String(item.status).toLowerCase() === 'won' && String(item.paymentStatus).toLowerCase() === 'fully paid';
-    const isLocked = isWonAndPaid && (Number(item.editCount) >= 2);
+    const isLocked = isWonAndPaid && (Number(item.editCount) >= 4);
     const lockNotice = document.getElementById('modalLockNotice');
     const saveBtn = document.getElementById('saveUpdateBtn');
 
     if (lockNotice && saveBtn) {
       lockNotice.classList.toggle('d-none', !isLocked);
       saveBtn.disabled = isLocked;
-      saveBtn.innerText = isLocked ? "🔒 Locked (Max 2 Edits Reached)" : "SAVE ALL UPDATES";
+      saveBtn.innerText = isLocked ? "🔒 Locked (Max 4 Edits Reached)" : "SAVE ALL UPDATES";
     }
 
-    toggleModalLostReason();
+    toggleModalWonStatusFields();
     fetchAndRenderDynamicCustomerDetails(item.customer, item.salesPerson, item);
 
     const modalElement = document.getElementById('leadDetailsModal');
@@ -1961,6 +2058,7 @@
     const res = await callAppsScriptApi("quickSnoozeEnquiry", { id: activeId, type: snoozeType, newDate: snoozeDate, user: loggedInUser ? loggedInUser.salesPerson : 'Admin' });
     if (res && res.success) {
       showFloatingNotification("Snooze Saved", res.message);
+      sessionStorage.removeItem('portal_dashboard_data');
       const modalEl = document.getElementById('leadDetailsModal');
       if (modalEl) bootstrap.Modal.getInstance(modalEl).hide();
       loadDashboard();
@@ -1978,6 +2076,7 @@
     const res = await callAppsScriptApi("transferLeadOwner", { id: activeId, targetSp: targetSp, user: loggedInUser ? loggedInUser.salesPerson : 'Admin' });
     if (res && res.success) {
       showFloatingNotification("Lead Transferred", res.message);
+      sessionStorage.removeItem('portal_dashboard_data');
       const modalEl = document.getElementById('leadDetailsModal');
       if (modalEl) bootstrap.Modal.getInstance(modalEl).hide();
       loadDashboard();
@@ -2038,13 +2137,6 @@
     }
   }
 
-  function toggleModalLostReason() {
-    const st = document.getElementById('editStatus').value;
-    const container = document.getElementById('modalLostReasonContainer');
-    if (st === 'Lost') container.classList.remove('d-none');
-    else container.classList.add('d-none');
-  }
-
   async function saveLeadFullUpdate() {
     const stVal = document.getElementById('editStatus').value;
     const lostReasonVal = document.getElementById('editLostReason').value;
@@ -2060,6 +2152,8 @@
       saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Saving Updates...';
     }
 
+    const dispatchVal = (stVal === 'Won') ? document.getElementById('editDispatchStatus').value : document.getElementById('editDispatch').value;
+
     const payload = {
       id: document.getElementById('editEnqId').value,
       approxValue: document.getElementById('editApproxValue').value,
@@ -2068,12 +2162,13 @@
       leadFollowup: document.getElementById('editLeadFollowup').value,
       paymentTerms: document.getElementById('editPaymentTerms').value,
       paymentFollowup: document.getElementById('editPaymentFollowup').value,
-      dispatch: document.getElementById('editDispatch').value,
+      dispatch: dispatchVal,
       lostReason: lostReasonVal,
       remark: document.getElementById('editRemark').value,
       user: loggedInUser
     };
 
+    sessionStorage.removeItem('portal_dashboard_data');
     const res = await callAppsScriptApi("updateEnquiryFull", payload);
     
     if (saveBtn) {
@@ -2083,6 +2178,7 @@
 
     if (res && res.success) {
       showFloatingNotification("Updated Successfully", `Enquiry ${payload.id} updated to ${payload.status}`);
+      sessionStorage.removeItem('portal_dashboard_data');
       const modalEl = document.getElementById('leadDetailsModal');
       if (modalEl) bootstrap.Modal.getInstance(modalEl).hide();
       loadDashboard();
@@ -2157,15 +2253,18 @@
     if (!container) return;
 
     if (acts.length === 0) {
-      container.innerHTML = '<div class="text-muted text-center py-2">No activity on this date</div>';
+      container.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-2">No activity on this date</td></tr>';
       return;
     }
 
     container.innerHTML = acts.map(a => `
-      <div class="p-1 border-bottom d-flex justify-content-between align-items-center">
-        <div><b>${escapeHtml(a.customer)}</b><br><span class="text-muted">${escapeHtml(a.remark || '-')}</span></div>
-        <div><span class="badge ${a.type === 'Call' ? 'bg-info text-dark' : 'bg-success'}">${escapeHtml(a.type)}</span></div>
-      </div>
+      <tr>
+        <td><b>${escapeHtml(a.customer)}</b></td>
+        <td>${escapeHtml(a.salesPerson)}</td>
+        <td><span class="badge ${a.type === 'Call' ? 'bg-info text-dark' : 'bg-success'}">${escapeHtml(a.type)}</span></td>
+        <td>${a.status === 'Yes' ? 'Connected' : 'Failed'}</td>
+        <td>${escapeHtml(a.remark || '-')}</td>
+      </tr>
     `).join('');
   }
 
@@ -2196,12 +2295,14 @@
       longitude: userGeoCoords ? userGeoCoords.longitude : ''
     };
 
+    sessionStorage.removeItem('portal_dashboard_data');
     const res = await callAppsScriptApi("saveActivity", activityData);
     saveBtn.disabled = false;
     saveBtn.innerText = 'Save Activity';
 
     if (res && res.success) {
       showFloatingNotification("Activity Logged", `${type} recorded for ${cust}`);
+      sessionStorage.removeItem('portal_dashboard_data');
       document.getElementById('mobModalActCust').value = '';
       document.getElementById('mobModalActRemark').value = '';
       loadDashboard();
@@ -2323,11 +2424,13 @@
       longitude: userGeoCoords ? userGeoCoords.longitude : ''
     };
 
+    sessionStorage.removeItem('portal_dashboard_data');
     const res = await callAppsScriptApi("saveEnquiry", formData);
     saveBtn.disabled = false; saveBtn.innerText = "SAVE";
 
     if (res && res.success) {
       showFloatingNotification(res.isDuplicate ? "Duplicate Warning" : "Lead Created", res.message);
+      sessionStorage.removeItem('portal_dashboard_data');
       resetMobileEnquiryForm();
       switchTab('leads');
       loadDashboard();
@@ -2419,18 +2522,30 @@
 
   function logout() {
     localStorage.clear();
+    sessionStorage.clear();
     location.reload();
   }
 
+  // TEAM & INDIVIDUAL TARGET DISPLAY LOGIC (MATCHING WEB VERSION)
   async function loadSidebarTargetInfo() {
     if (!loggedInUser) return;
+    
+    const role = String(loggedInUser.role || '').toLowerCase();
+    const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
+    
     let targetSp = loggedInUser.salesPerson;
     const filterEl = document.getElementById('filterSalesPerson');
+    
     if (filterEl && filterEl.value) {
       targetSp = (filterEl.value === 'ALL') ? 'ALL' : filterEl.value;
+    } else if (isMgmt) {
+      targetSp = 'ALL';
     }
 
-    if (!targetSp) return;
+    const scopeBadge = document.getElementById('targetSelectedPersonBadge');
+    if (scopeBadge) {
+      scopeBadge.innerText = (targetSp === 'ALL') ? 'Team View' : targetSp;
+    }
 
     const res = await callAppsScriptApi("getSalespersonTargetInfo", { targetSp: targetSp, user: loggedInUser });
     if (res) {
