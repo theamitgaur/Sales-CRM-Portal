@@ -38,17 +38,12 @@
     .add-hint-icon { position: absolute; bottom: 6px; right: 8px; color: #cbd5e1; font-size: 0.75rem; }
     .cal-day:hover .add-hint-icon { color: #2563eb; }
     
-    @keyframes shimmerLoading {
-      0% { background-position: -200px 0; }
-      100% { background-position: calc(200px + 100%) 0; }
-    }
-    .skeleton-loader {
-      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-      background-size: 200px 100%;
-      animation: shimmerLoading 1.5s infinite;
-      border-radius: 6px;
-      color: transparent !important;
-      user-select: none;
+    .kpi-metric-box {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      background: #ffffff;
+      min-width: 140px;
     }
 
     .brand-dropdown-menu {
@@ -234,6 +229,88 @@
           </div>
         </div>
 
+        <!-- NEW: DYNAMIC SUMMARY / KPI STRIP ACCORDING TO APPLIED FILTERS -->
+        <div class="card p-3 mb-3 bg-light border">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold text-primary small"><i class="fa fa-chart-line me-1"></i> Live Filtered Summary (Count & Value)</span>
+            <span class="badge bg-white text-secondary border" id="summaryFilterIndicator">All Records</span>
+          </div>
+          <div class="row g-2 text-center">
+            <div class="col-6 col-md-3 col-xl">
+              <div class="kpi-metric-box border-start border-4 border-primary shadow-sm h-100">
+                <div class="text-muted extra-small fw-bold">TOTAL ENQUIRIES</div>
+                <h6 class="fw-bold mb-0 text-dark" id="kpiTotalCount">0</h6>
+                <small class="text-primary fw-bold" id="kpiTotalVal">₹0</small>
+              </div>
+            </div>
+            <div class="col-6 col-md-3 col-xl">
+              <div class="kpi-metric-box border-start border-4 border-secondary shadow-sm h-100">
+                <div class="text-muted extra-small fw-bold">NEW LEADS</div>
+                <h6 class="fw-bold mb-0 text-dark" id="kpiNewCount">0</h6>
+                <small class="text-secondary fw-bold" id="kpiNewVal">₹0</small>
+              </div>
+            </div>
+            <div class="col-6 col-md-3 col-xl">
+              <div class="kpi-metric-box border-start border-4 border-warning shadow-sm h-100">
+                <div class="text-muted extra-small fw-bold">HOT LEADS</div>
+                <h6 class="fw-bold mb-0 text-dark" id="kpiHotCount">0</h6>
+                <small class="text-warning text-dark fw-bold" id="kpiHotVal">₹0</small>
+              </div>
+            </div>
+            <div class="col-6 col-md-3 col-xl">
+              <div class="kpi-metric-box border-start border-4 border-info shadow-sm h-100">
+                <div class="text-muted extra-small fw-bold">QUOTED / LIVE</div>
+                <h6 class="fw-bold mb-0 text-dark" id="kpiQuotedCount">0</h6>
+                <small class="text-info fw-bold" id="kpiQuotedVal">₹0</small>
+              </div>
+            </div>
+            <div class="col-6 col-md-3 col-xl">
+              <div class="kpi-metric-box border-start border-4 border-success shadow-sm h-100">
+                <div class="text-muted extra-small fw-bold">WON DEALS</div>
+                <h6 class="fw-bold mb-0 text-dark" id="kpiWonCount">0</h6>
+                <small class="text-success fw-bold" id="kpiWonVal">₹0</small>
+              </div>
+            </div>
+            <div class="col-6 col-md-3 col-xl">
+              <div class="kpi-metric-box border-start border-4 border-danger shadow-sm h-100">
+                <div class="text-muted extra-small fw-bold">LOST LEADS</div>
+                <h6 class="fw-bold mb-0 text-dark" id="kpiLostCount">0</h6>
+                <small class="text-danger fw-bold" id="kpiLostVal">₹0</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW: MEMBER-WISE ENQUIRIES BREAKDOWN ACCORDING TO CURRENT FILTERS -->
+        <div class="card p-3 mb-3 border">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="fw-bold text-dark m-0"><i class="fa fa-users me-1 text-primary"></i> Team Member-wise Enquiry Breakdown</h6>
+            <button class="btn btn-sm btn-link text-decoration-none p-0" type="button" data-bs-toggle="collapse" data-bs-target="#memberBreakdownCollapse" aria-expanded="true">
+              <i class="fa fa-chevron-down"></i> Toggle
+            </button>
+          </div>
+          <div class="collapse show" id="memberBreakdownCollapse">
+            <div class="table-responsive" style="max-height: 250px;">
+              <table class="table table-sm table-hover table-bordered align-middle small mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Sales Member</th>
+                    <th class="text-center">Total Enq (Count / ₹)</th>
+                    <th class="text-center">New Lead</th>
+                    <th class="text-center">Hot Lead</th>
+                    <th class="text-center">Quoted / Live</th>
+                    <th class="text-center">Won Deals</th>
+                    <th class="text-center">Pending Payment</th>
+                  </tr>
+                </thead>
+                <tbody id="memberWiseSummaryTbody">
+                  <tr><td colspan="7" class="text-center text-muted py-2">Loading member summary...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <div class="card p-3 mb-4 bg-light border d-none" id="adminTargetCard">
           <h6 class="fw-bold text-primary mb-2"><i class="fa fa-edit me-1"></i> Manage / Set Salesperson Target (Admin)</h6>
           <div class="row g-2">
@@ -380,7 +457,7 @@
         </div>
       </div>
 
-      <!-- MODULE: ADD LEAD (STANDALONE PAGE ID FIXED) -->
+      <!-- MODULE: ADD LEAD -->
       <div id="add-leadModule" class="d-none">
         <div class="card p-4 mb-4" id="createEnquiryCardWrapper">
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -978,10 +1055,6 @@
           </div>
         </div>
 
-        <div id="modalLockNotice" class="alert alert-warning py-1 px-2 extra-small fw-bold d-none mb-2">
-          🔒 This completed enquiry is locked because the maximum 2 edit limit has been reached.
-        </div>
-
         <h6 class="fw-bold text-primary mb-2 small">Update Status & Payment Details</h6>
         <div class="row g-2">
           <div class="col-md-4">
@@ -1021,7 +1094,7 @@
             <label class="form-label text-success">Payment Follow-Up Date</label>
             <input type="date" id="editPaymentFollowup" class="form-control form-control-sm fw-bold border-success">
           </div>
-                    <div class="col-md-4" id="deliveryStatusWrapper">
+          <div class="col-md-4" id="deliveryStatusWrapper">
             <label class="form-label text-info fw-bold" id="deliveryStatusLabel">Delivery Status</label>
             <select id="editDispatchStatus" class="form-select form-select-sm fw-bold border-info">
               <option value="Dispatched">Dispatched</option>
@@ -1633,8 +1706,6 @@
       paymentTerms: termsSelect.options[termsSelect.selectedIndex].text,
       paymentTermsDays: termsSelect.value,
       paymentFollowup: document.getElementById('paymentFollowupDate').value,
-      // New leads must never start as Dispatched. Delivery status is only
-      // applicable after the lead becomes Won, so send it explicitly blank.
       dispatch: '',
       remark: document.getElementById('remark').value,
       latitude: userGeoCoords ? userGeoCoords.latitude : '',
@@ -1667,8 +1738,6 @@
     if (res && res.success) {
       showFloatingNotification("Success", res.message || "Lead saved successfully.");
       sessionStorage.removeItem('portal_dashboard_data');
-      // Wait for the fresh Google Sheets data before opening the dashboard,
-      // so the newly saved lead is immediately available to View Details.
       await loadDashboardData();
       showTab('enquiry');
     } else {
@@ -1744,6 +1813,8 @@
     const todayStr = new Date().toISOString().split('T')[0];
     filteredEnquiriesList = globalEnquiries.filter(item => item.leadFollowup === todayStr);
     currentPage = 1;
+    renderFilteredSummaryMetrics(filteredEnquiriesList);
+    renderMemberWiseSummary(filteredEnquiriesList);
     renderPaginatedTable();
   }
 
@@ -1751,6 +1822,8 @@
     const todayStr = new Date().toISOString().split('T')[0];
     filteredEnquiriesList = globalEnquiries.filter(item => item.paymentFollowup === todayStr);
     currentPage = 1;
+    renderFilteredSummaryMetrics(filteredEnquiriesList);
+    renderMemberWiseSummary(filteredEnquiriesList);
     renderPaginatedTable();
   }
 
@@ -1761,6 +1834,115 @@
     applyDashboardFilters();
   }
   function onSalespersonFilterChange() { applyDashboardFilters(); loadSidebarTargetInfo(); }
+
+  // LIVE DYNAMIC SUMMARY METRICS CALCULATOR
+  function renderFilteredSummaryMetrics(list) {
+    let totalCount = list.length;
+    let totalVal = 0, newCount = 0, newVal = 0;
+    let hotCount = 0, hotVal = 0;
+    let quotedCount = 0, quotedVal = 0;
+    let wonCount = 0, wonVal = 0;
+    let lostCount = 0, lostVal = 0;
+
+    list.forEach(item => {
+      const v = Number(item.value) || 0;
+      totalVal += v;
+      const s = String(item.status || '').toLowerCase().trim();
+
+      if (s === 'new lead') { newCount++; newVal += v; }
+      else if (s === 'hot lead') { hotCount++; hotVal += v; }
+      else if (s === 'quoted' || s === 'live') { quotedCount++; quotedVal += v; }
+      else if (s === 'won') { wonCount++; wonVal += v; }
+      else if (s === 'lost') { lostCount++; lostVal += v; }
+    });
+
+    const setEl = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
+
+    setEl('kpiTotalCount', totalCount);
+    setEl('kpiTotalVal', '₹' + totalVal.toLocaleString());
+    setEl('kpiNewCount', newCount);
+    setEl('kpiNewVal', '₹' + newVal.toLocaleString());
+    setEl('kpiHotCount', hotCount);
+    setEl('kpiHotVal', '₹' + hotVal.toLocaleString());
+    setEl('kpiQuotedCount', quotedCount);
+    setEl('kpiQuotedVal', '₹' + quotedVal.toLocaleString());
+    setEl('kpiWonCount', wonCount);
+    setEl('kpiWonVal', '₹' + wonVal.toLocaleString());
+    setEl('kpiLostCount', lostCount);
+    setEl('kpiLostVal', '₹' + lostVal.toLocaleString());
+
+    const ind = document.getElementById('summaryFilterIndicator');
+    if (ind) {
+      ind.innerText = `Filtered: ${totalCount} Enquiries`;
+    }
+  }
+
+  // MEMBER-WISE PERFORMANCE SUMMARY GENERATOR
+  function renderMemberWiseSummary(list) {
+    const tbody = document.getElementById('memberWiseSummaryTbody');
+    if (!tbody) return;
+
+    if (!list || list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-2">No records match current filters</td></tr>';
+      return;
+    }
+
+    const memberMap = {};
+
+    list.forEach(item => {
+      const sp = (item.salesPerson && item.salesPerson.trim()) ? item.salesPerson.trim() : 'Unassigned';
+      if (!memberMap[sp]) {
+        memberMap[sp] = {
+          totalCount: 0,
+          totalVal: 0,
+          newCount: 0,
+          newVal: 0,
+          hotCount: 0,
+          hotVal: 0,
+          quotedCount: 0,
+          quotedVal: 0,
+          wonCount: 0,
+          wonVal: 0,
+          payPendingCount: 0,
+          payPendingVal: 0
+        };
+      }
+
+      const v = Number(item.value) || 0;
+      const s = String(item.status || '').toLowerCase().trim();
+      const p = String(item.paymentStatus || '').toLowerCase().trim();
+
+      memberMap[sp].totalCount++;
+      memberMap[sp].totalVal += v;
+
+      if (s === 'new lead') { memberMap[sp].newCount++; memberMap[sp].newVal += v; }
+      else if (s === 'hot lead') { memberMap[sp].hotCount++; memberMap[sp].hotVal += v; }
+      else if (s === 'quoted' || s === 'live') { memberMap[sp].quotedCount++; memberMap[sp].quotedVal += v; }
+      else if (s === 'won') { memberMap[sp].wonCount++; memberMap[sp].wonVal += v; }
+
+      if (p === 'pending') { memberMap[sp].payPendingCount++; memberMap[sp].payPendingVal += v; }
+    });
+
+    let html = '';
+    const sortedMembers = Object.keys(memberMap).sort((a, b) => memberMap[b].totalVal - memberMap[a].totalVal);
+
+    sortedMembers.forEach(sp => {
+      const m = memberMap[sp];
+      html += `
+        <tr>
+          <td><b class="text-primary">${escapeHtml(sp)}</b></td>
+          <td class="text-center"><b>${m.totalCount}</b> <span class="text-muted">(₹${m.totalVal.toLocaleString()})</span></td>
+          <td class="text-center">${m.newCount} <small class="text-muted">(₹${m.newVal.toLocaleString()})</small></td>
+          <td class="text-center"><span class="badge bg-warning text-dark">${m.hotCount}</span> <small class="text-muted">(₹${m.hotVal.toLocaleString()})</small></td>
+          <td class="text-center">${m.quotedCount} <small class="text-muted">(₹${m.quotedVal.toLocaleString()})</small></td>
+          <td class="text-center"><span class="badge bg-success">${m.wonCount}</span> <b class="text-success small">₹${m.wonVal.toLocaleString()}</b></td>
+          <td class="text-center"><span class="badge bg-danger">${m.payPendingCount}</span> <small class="text-danger">₹${m.payPendingVal.toLocaleString()}</small></td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html;
+  }
 
   function applyDashboardFilters() {
     const fromDate = document.getElementById('filterFromDate').value;
@@ -1792,6 +1974,10 @@
     if (payFilter !== 'ALL') filteredEnquiriesList = filteredEnquiriesList.filter(item => String(item.paymentStatus || '').toLowerCase() === payFilter.toLowerCase());
     if (dispatchFilter !== 'ALL') filteredEnquiriesList = filteredEnquiriesList.filter(item => String(item.dispatch || '').toLowerCase() === dispatchFilter.toLowerCase());
 
+    // Update dynamic summary and member-wise breakdown on every filter change
+    renderFilteredSummaryMetrics(filteredEnquiriesList);
+    renderMemberWiseSummary(filteredEnquiriesList);
+
     currentPage = 1;
     renderPaginatedTable();
   }
@@ -1815,19 +2001,15 @@
       if (statusEl) statusEl.value = 'ALL';
       if (paymentEl) {
         paymentEl.value = statusType;
-        paymentEl.dispatchEvent(new Event('change'));
       }
     } else {
       if (paymentEl) paymentEl.value = 'ALL';
       if (statusEl) {
         statusEl.value = statusType;
-        statusEl.dispatchEvent(new Event('change'));
       }
     }
     
-    if (typeof applyDashboardFilters === 'function') {
-      applyDashboardFilters();
-    }
+    applyDashboardFilters();
   }
 
   function renderPaginatedTable() {
@@ -1889,7 +2071,7 @@
             <td>${payFup}</td>
             <td>${dispatchHtml}</td>
             <td><span class="badge ${badgeColor}">${escapeHtml(item.status || 'New Lead')}</span></td>
-            <td><button type="button" class="btn btn-sm btn-primary py-0 px-2" onclick="openEditModal('${escapeHtml(item.id)}')">👁️️ Details</button></td>
+            <td><button type="button" class="btn btn-sm btn-primary py-0 px-2" onclick="openEditModal('${escapeHtml(item.id)}')">👁 Details</button></td>
           </tr>
         `;
       });
@@ -1971,19 +2153,13 @@
   }
 
   function openEditModal(id) {
-    console.log("Opening edit modal for ID:", id);
-    console.log("Global Enquiries array length:", globalEnquiries ? globalEnquiries.length : 0);
-
     const targetId = String(id || '').trim().toLowerCase();
     const item = globalEnquiries.find(e => String(e.id || '').trim().toLowerCase() === targetId);
     
     if (!item) {
-      console.error("Lead not found in globalEnquiries for ID:", targetId);
       alert("Lead details not found in current data! Please refresh dashboard.");
       return;
     }
-
-    console.log("Found item:", item);
 
     document.getElementById('modalEnqTitle').innerText = "Lead Details - " + item.id;
     document.getElementById('editEnqId').value = item.id;
@@ -2017,7 +2193,6 @@
     checkDeliveryStatusCondition();
     fetchAndRenderDynamicCustomerDetails(item.customer, item.salesPerson);
 
-    // Safe Bootstrap Modal Opening
     const modalEl = document.getElementById('leadDetailsModal');
     if (modalEl) {
       let modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -2027,6 +2202,7 @@
       modalInstance.show();
     }
   }
+
   function findMasterCustomer(customerName, salesPerson) {
     const name = String(customerName || '').trim().toLowerCase();
     if (!name || !Array.isArray(rawCustomers)) return null;
@@ -2153,8 +2329,6 @@
     const leadFupVal = document.getElementById('editLeadFollowup').value;
     const payTermsVal = document.getElementById('editPaymentTerms').value;
     const payFupVal = document.getElementById('editPaymentFollowup').value;
-    // Delivery/Dispatch status is only applicable when the lead is Won.
-    // For New Lead / Live / Lost etc., keep the Google Sheet cell blank.
     const dispatchVal = (stVal.toLowerCase() === 'won')
       ? (document.getElementById('editDispatchStatus').value || 'Pending')
       : '';
@@ -2633,6 +2807,5 @@
     }
   }
 </script>
-
 </body>
 </html>
