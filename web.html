@@ -9,23 +9,80 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     html, body {
-      background-color: #f8fafc;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f1f5f9;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       font-size: 0.88rem;
       overscroll-behavior: none !important;
       -webkit-overscroll-behavior: none !important;
+      color: #1e293b;
     }
-    .sidebar { background: #0f172a; color: #fff; min-height: 100vh; box-shadow: 4px 0 15px rgba(0,0,0,0.05);}
-    .sidebar .nav-link { color: #94a3b8; font-weight: 500; border-radius: 8px; margin-bottom: 6px; cursor: pointer; transition: all 0.2s ease }
-    .sidebar .nav-link.active, .sidebar .nav-link:hover { color: #fff; background-color: #1e293b;transform: translateX(3px) }
-    .card { border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.02);transition: all 0.2s ease;background: #ffffff; }
-    .card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.04); }
-    .form-label { font-weight: 600; font-size: 0.8rem; color: #334155; }
-    .form-control, .form-select { border-radius: 8px;  border: 1px solid #cbd5e1; padding: 7px 12px; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
-    .form-control:focus, .form-select:focus { border-color: #2563eb;box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    .sidebar { background: #0f172a; color: #fff; min-height: 100vh; box-shadow: 4px 0 20px rgba(0,0,0,0.06); }
+    .sidebar .nav-link { color: #94a3b8; font-weight: 500; border-radius: 10px; margin-bottom: 6px; cursor: pointer; transition: all 0.2s ease; padding: 10px 14px; }
+    .sidebar .nav-link.active, .sidebar .nav-link:hover { color: #fff; background-color: #1e293b; transform: translateX(3px); }
+    .card { border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03); transition: all 0.2s ease; background: #ffffff; }
+    .card:hover { box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); }
+    .form-label { font-weight: 600; font-size: 0.8rem; color: #475569; }
+    .form-control, .form-select { border-radius: 8px; border: 1px solid #cbd5e1; padding: 7px 12px; transition: all 0.15s ease-in-out; }
+    .form-control:focus, .form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
     .table-responsive { max-height: 540px; overflow-y: auto; overscroll-behavior-y: contain; }
-    .stat-card { border-left: 4px solid #0d6efd; background: linear-gradient(to right, #ffffff, #f8fafc); }
-    
+
+    /* Modern KPI Cards */
+    .kpi-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      border-color: #93c5fd;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+    }
+    .kpi-total::before { background: #3b82f6; }
+    .kpi-new::before { background: #64748b; }
+    .kpi-hot::before { background: #f59e0b; }
+    .kpi-quoted::before { background: #06b6d4; }
+    .kpi-won::before { background: #10b981; }
+    .kpi-lost::before { background: #ef4444; }
+    .kpi-pay::before { background: #8b5cf6; }
+
+    .kpi-icon-wrap {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    /* Member Badge Avatar */
+    .member-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e0e7ff;
+      color: #3730a3;
+      font-weight: 700;
+      font-size: 0.72rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+    }
+
     /* Calendar Styling */
     .cal-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 700; color: #64748b; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; margin-bottom: 8px; }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
@@ -37,14 +94,6 @@
     .badge-visit { background-color: #16a34a; color: #ffffff; font-size: 0.68rem; border-radius: 4px; padding: 2px 4px; }
     .add-hint-icon { position: absolute; bottom: 6px; right: 8px; color: #cbd5e1; font-size: 0.75rem; }
     .cal-day:hover .add-hint-icon { color: #2563eb; }
-    
-    .kpi-metric-box {
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 10px 14px;
-      background: #ffffff;
-      min-width: 140px;
-    }
 
     .brand-dropdown-menu {
       position: absolute !important;
@@ -77,8 +126,8 @@
       background: #ffffff;
       color: #333333;
       padding: 12px 16px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
       border-left: 5px solid #0d6efd;
       font-size: 0.85rem;
       pointer-events: auto;
@@ -89,15 +138,10 @@
       align-items: flex-start;
       justify-content: space-between;
     }
-
-    .custom-toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .custom-toast.success { border-left-color: #198754; }
-    .custom-toast.danger { border-left-color: #dc3545; }
-    .custom-toast.warning { border-left-color: #ffc107; }
+    .custom-toast.show { opacity: 1; transform: translateY(0); }
+    .custom-toast.success { border-left-color: #10b981; }
+    .custom-toast.danger { border-left-color: #ef4444; }
+    .custom-toast.warning { border-left-color: #f59e0b; }
   </style>
 </head>
 <body>
@@ -215,7 +259,7 @@
 
       <!-- MODULE: DASHBOARD -->
       <div id="enquiryModule">
-        <div id="reminderBanner" class="card p-3 mb-4 border-start border-warning border-4 bg-light d-none">
+        <div id="reminderBanner" class="card p-3 mb-3 border-start border-warning border-4 bg-light d-none">
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h6 class="fw-bold text-dark mb-1"><i class="fa fa-bell text-warning me-2"></i>Today's Reminders & Follow-ups</h6>
@@ -225,88 +269,6 @@
               <button class="btn btn-sm btn-outline-primary py-1 px-2" onclick="filterTodayLeadFollowups()">Lead F/Up</button>
               <button class="btn btn-sm btn-outline-success py-1 px-2" onclick="filterTodayPaymentFollowups()">Payment F/Up</button>
               <button class="btn btn-sm btn-outline-secondary py-1 px-2" onclick="clearReminderFilter()">Show All</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- NEW: DYNAMIC SUMMARY / KPI STRIP ACCORDING TO APPLIED FILTERS -->
-        <div class="card p-3 mb-3 bg-light border">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="fw-bold text-primary small"><i class="fa fa-chart-line me-1"></i> Live Filtered Summary (Count & Value)</span>
-            <span class="badge bg-white text-secondary border" id="summaryFilterIndicator">All Records</span>
-          </div>
-          <div class="row g-2 text-center">
-            <div class="col-6 col-md-3 col-xl">
-              <div class="kpi-metric-box border-start border-4 border-primary shadow-sm h-100">
-                <div class="text-muted extra-small fw-bold">TOTAL ENQUIRIES</div>
-                <h6 class="fw-bold mb-0 text-dark" id="kpiTotalCount">0</h6>
-                <small class="text-primary fw-bold" id="kpiTotalVal">₹0</small>
-              </div>
-            </div>
-            <div class="col-6 col-md-3 col-xl">
-              <div class="kpi-metric-box border-start border-4 border-secondary shadow-sm h-100">
-                <div class="text-muted extra-small fw-bold">NEW LEADS</div>
-                <h6 class="fw-bold mb-0 text-dark" id="kpiNewCount">0</h6>
-                <small class="text-secondary fw-bold" id="kpiNewVal">₹0</small>
-              </div>
-            </div>
-            <div class="col-6 col-md-3 col-xl">
-              <div class="kpi-metric-box border-start border-4 border-warning shadow-sm h-100">
-                <div class="text-muted extra-small fw-bold">HOT LEADS</div>
-                <h6 class="fw-bold mb-0 text-dark" id="kpiHotCount">0</h6>
-                <small class="text-warning text-dark fw-bold" id="kpiHotVal">₹0</small>
-              </div>
-            </div>
-            <div class="col-6 col-md-3 col-xl">
-              <div class="kpi-metric-box border-start border-4 border-info shadow-sm h-100">
-                <div class="text-muted extra-small fw-bold">QUOTED / LIVE</div>
-                <h6 class="fw-bold mb-0 text-dark" id="kpiQuotedCount">0</h6>
-                <small class="text-info fw-bold" id="kpiQuotedVal">₹0</small>
-              </div>
-            </div>
-            <div class="col-6 col-md-3 col-xl">
-              <div class="kpi-metric-box border-start border-4 border-success shadow-sm h-100">
-                <div class="text-muted extra-small fw-bold">WON DEALS</div>
-                <h6 class="fw-bold mb-0 text-dark" id="kpiWonCount">0</h6>
-                <small class="text-success fw-bold" id="kpiWonVal">₹0</small>
-              </div>
-            </div>
-            <div class="col-6 col-md-3 col-xl">
-              <div class="kpi-metric-box border-start border-4 border-danger shadow-sm h-100">
-                <div class="text-muted extra-small fw-bold">LOST LEADS</div>
-                <h6 class="fw-bold mb-0 text-dark" id="kpiLostCount">0</h6>
-                <small class="text-danger fw-bold" id="kpiLostVal">₹0</small>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- NEW: MEMBER-WISE ENQUIRIES BREAKDOWN ACCORDING TO CURRENT FILTERS -->
-        <div class="card p-3 mb-3 border">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="fw-bold text-dark m-0"><i class="fa fa-users me-1 text-primary"></i> Team Member-wise Enquiry Breakdown</h6>
-            <button class="btn btn-sm btn-link text-decoration-none p-0" type="button" data-bs-toggle="collapse" data-bs-target="#memberBreakdownCollapse" aria-expanded="true">
-              <i class="fa fa-chevron-down"></i> Toggle
-            </button>
-          </div>
-          <div class="collapse show" id="memberBreakdownCollapse">
-            <div class="table-responsive" style="max-height: 250px;">
-              <table class="table table-sm table-hover table-bordered align-middle small mb-0">
-                <thead class="table-dark">
-                  <tr>
-                    <th>Sales Member</th>
-                    <th class="text-center">Total Enq (Count / ₹)</th>
-                    <th class="text-center">New Lead</th>
-                    <th class="text-center">Hot Lead</th>
-                    <th class="text-center">Quoted / Live</th>
-                    <th class="text-center">Won Deals</th>
-                    <th class="text-center">Pending Payment</th>
-                  </tr>
-                </thead>
-                <tbody id="memberWiseSummaryTbody">
-                  <tr><td colspan="7" class="text-center text-muted py-2">Loading member summary...</td></tr>
-                </tbody>
-              </table>
             </div>
           </div>
         </div>
@@ -345,11 +307,131 @@
           </div>
         </div>
 
+        <!-- MAIN DASHBOARD CARD WRAPPER -->
         <div class="card p-4">
+          <!-- TOP BAR: DASHBOARD TITLE + EXPORT BUTTON -->
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="fw-bold text-dark mb-0 fs-6"><i class="fa fa-list me-1"></i> Recent Enquiries Dashboard</h6>
-            <button class="btn btn-sm btn-success fw-bold" onclick="openMemberExportModal()"><i class="fa fa-file-excel me-1"></i> Download Member Report</button>
+            <div>
+              <h5 class="fw-bold text-dark mb-0 fs-5"><i class="fa fa-chart-line text-primary me-2"></i>Sales Performance & Enquiries</h5>
+              <small class="text-muted" id="summaryFilterIndicator">All active records</small>
+            </div>
+            <button class="btn btn-sm btn-success fw-bold px-3 py-2 shadow-sm rounded-3" onclick="openMemberExportModal()">
+              <i class="fa fa-file-excel me-1"></i> Download Member Report
+            </button>
           </div>
+
+          <!-- 1. DYNAMIC INTERACTIVE KPI TILES -->
+          <div class="row g-2 mb-3">
+            <div class="col-6 col-md-4 col-xl" onclick="filterByPill('ALL', document.querySelector('.filter-pill-btn'))" title="Click to view All Enquiries">
+              <div class="kpi-card kpi-total">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="text-muted extra-small fw-bold">TOTAL ENQUIRIES</span>
+                  <div class="kpi-icon-wrap bg-primary-subtle text-primary"><i class="fa fa-layer-group"></i></div>
+                </div>
+                <h4 class="fw-bold mb-0 text-dark" id="kpiTotalCount">0</h4>
+                <div class="fw-bold text-primary small text-truncate" id="kpiTotalVal">₹0</div>
+              </div>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('New Lead')" title="Click to filter New Leads">
+              <div class="kpi-card kpi-new">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="text-muted extra-small fw-bold">NEW LEADS</span>
+                  <div class="kpi-icon-wrap bg-secondary-subtle text-secondary"><i class="fa fa-clock"></i></div>
+                </div>
+                <h4 class="fw-bold mb-0 text-dark" id="kpiNewCount">0</h4>
+                <div class="fw-bold text-secondary small text-truncate" id="kpiNewVal">₹0</div>
+              </div>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Hot lead')" title="Click to filter Hot Leads">
+              <div class="kpi-card kpi-hot">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="text-muted extra-small fw-bold">HOT LEADS</span>
+                  <div class="kpi-icon-wrap bg-warning-subtle text-warning"><i class="fa fa-fire"></i></div>
+                </div>
+                <h4 class="fw-bold mb-0 text-dark" id="kpiHotCount">0</h4>
+                <div class="fw-bold text-warning small text-truncate" id="kpiHotVal">₹0</div>
+              </div>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Quoted')" title="Click to filter Quoted & Live">
+              <div class="kpi-card kpi-quoted">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="text-muted extra-small fw-bold">QUOTED / LIVE</span>
+                  <div class="kpi-icon-wrap bg-info-subtle text-info"><i class="fa fa-bolt"></i></div>
+                </div>
+                <h4 class="fw-bold mb-0 text-dark" id="kpiQuotedCount">0</h4>
+                <div class="fw-bold text-info small text-truncate" id="kpiQuotedVal">₹0</div>
+              </div>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Won')" title="Click to filter Won Deals">
+              <div class="kpi-card kpi-won">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="text-muted extra-small fw-bold">WON DEALS</span>
+                  <div class="kpi-icon-wrap bg-success-subtle text-success"><i class="fa fa-trophy"></i></div>
+                </div>
+                <h4 class="fw-bold mb-0 text-dark" id="kpiWonCount">0</h4>
+                <div class="fw-bold text-success small text-truncate" id="kpiWonVal">₹0</div>
+              </div>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Lost')" title="Click to filter Lost Deals">
+              <div class="kpi-card kpi-lost">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="text-muted extra-small fw-bold">LOST DEALS</span>
+                  <div class="kpi-icon-wrap bg-danger-subtle text-danger"><i class="fa fa-ban"></i></div>
+                </div>
+                <h4 class="fw-bold mb-0 text-dark" id="kpiLostCount">0</h4>
+                <div class="fw-bold text-danger small text-truncate" id="kpiLostVal">₹0</div>
+              </div>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Pending')" title="Click to filter Pending Payments">
+              <div class="kpi-card kpi-pay">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="text-muted extra-small fw-bold">PAY PENDING</span>
+                  <div class="kpi-icon-wrap bg-purple-subtle text-primary"><i class="fa fa-receipt"></i></div>
+                </div>
+                <h4 class="fw-bold mb-0 text-dark" id="kpiPayPendingCount">0</h4>
+                <div class="fw-bold text-danger small text-truncate" id="kpiPayPendingVal">₹0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. MEMBER-WISE BREAKDOWN TABLE (DIRECTLY ABOVE SEARCH & DASHBOARD TABLE) -->
+          <div class="card p-3 mb-3 bg-white border rounded-3 shadow-none">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-bold text-dark small"><i class="fa fa-users me-1 text-primary"></i> Team Member Performance Breakdown</span>
+              <button class="btn btn-sm btn-light border text-muted py-0 px-2" type="button" data-bs-toggle="collapse" data-bs-target="#memberBreakdownCollapse" aria-expanded="true" style="font-size: 0.75rem;">
+                <i class="fa fa-sliders-h me-1"></i> Minimize
+              </button>
+            </div>
+            <div class="collapse show" id="memberBreakdownCollapse">
+              <div class="table-responsive" style="max-height: 220px;">
+                <table class="table table-sm table-hover align-middle small mb-0 border">
+                  <thead class="table-light text-muted">
+                    <tr>
+                      <th>Salesperson</th>
+                      <th class="text-center">Total Enquiries</th>
+                      <th class="text-center">New</th>
+                      <th class="text-center">Hot</th>
+                      <th class="text-center">Quoted / Live</th>
+                      <th class="text-center">Won</th>
+                      <th class="text-center">Win Rate %</th>
+                      <th class="text-center">Pay Due (₹)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="memberWiseSummaryTbody">
+                    <tr><td colspan="8" class="text-center text-muted py-2">Loading member summary...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. QUICK FILTER PILLS -->
           <div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
             <span class="small fw-bold text-muted"><i class="fa fa-filter me-1"></i> Quick Filter:</span>
             <button type="button" class="btn btn-sm btn-primary active filter-pill-btn" onclick="filterByPill('ALL', this)">All</button>
@@ -365,23 +447,25 @@
             <button type="button" class="btn btn-sm btn-outline-secondary filter-pill-btn" onclick="filterByPill('Partial', this)">🔸 Partial</button>
             <button type="button" class="btn btn-sm btn-outline-secondary filter-pill-btn" onclick="filterByPill('Credit', this)">💳 Credit</button>
           </div>
-          <div class="mb-3 p-2 bg-light rounded border">
+
+          <!-- 4. ADVANCED FILTER BAR -->
+          <div class="mb-3 p-3 bg-light rounded-3 border">
             <div class="row g-2">
               <div class="col-md-3">
                 <label class="form-label mb-1">🔍 Search Enquiries</label>
-                <input type="text" id="searchInput" oninput="applyDashboardFilters()" class="form-control form-control-sm" placeholder="Search by ID, Customer, Brand...">
+                <input type="text" id="searchInput" oninput="applyDashboardFilters()" class="form-control form-control-sm bg-white" placeholder="Search ID, Customer, Brand...">
               </div>
               <div class="col-md-2">
                 <label class="form-label mb-1">From Date</label>
-                <input type="date" id="filterFromDate" onchange="applyDashboardFilters()" class="form-control form-control-sm">
+                <input type="date" id="filterFromDate" onchange="applyDashboardFilters()" class="form-control form-control-sm bg-white">
               </div>
               <div class="col-md-2">
                 <label class="form-label mb-1">To Date</label>
-                <input type="date" id="filterToDate" onchange="applyDashboardFilters()" class="form-control form-control-sm">
+                <input type="date" id="filterToDate" onchange="applyDashboardFilters()" class="form-control form-control-sm bg-white">
               </div>
               <div class="col-md-2">
                 <label class="form-label mb-1">Status</label>
-                <select id="filterStatus" onchange="applyDashboardFilters()" class="form-select form-select-sm">
+                <select id="filterStatus" onchange="applyDashboardFilters()" class="form-select form-select-sm bg-white">
                   <option value="ALL">All Status</option>
                   <option value="New Lead">New Lead</option>
                   <option value="Hot lead">Hot lead</option>
@@ -393,7 +477,7 @@
               </div>
               <div class="col-md-3">
                 <label class="form-label mb-1">Payment Status</label>
-                <select id="filterPaymentStatus" onchange="applyDashboardFilters()" class="form-select form-select-sm">
+                <select id="filterPaymentStatus" onchange="applyDashboardFilters()" class="form-select form-select-sm bg-white">
                   <option value="ALL">All Payment</option>
                   <option value="Pending">Pending</option>
                   <option value="Advance Received">Advance Received</option>
@@ -404,7 +488,7 @@
               </div>
               <div class="col-md-3">
                 <label class="form-label mb-1">Delivery Status</label>
-                <select id="filterDispatchStatus" onchange="applyDashboardFilters()" class="form-select form-select-sm">
+                <select id="filterDispatchStatus" onchange="applyDashboardFilters()" class="form-select form-select-sm bg-white">
                   <option value="ALL">All Delivery Status</option>
                   <option value="Dispatched">Dispatched</option>
                   <option value="Pending">Pending</option>
@@ -413,7 +497,7 @@
               </div>
               <div class="col-md-3">
                 <label class="form-label mb-1">Sales Person</label>
-                <select id="filterSalesPerson" onchange="onSalespersonFilterChange()" class="form-select form-select-sm">
+                <select id="filterSalesPerson" onchange="onSalespersonFilterChange()" class="form-select form-select-sm bg-white">
                   <option value="ALL">All Team Member</option>
                 </select>
               </div>
@@ -424,7 +508,8 @@
             </div>
           </div>
 
-          <div class="table-responsive">
+          <!-- 5. MAIN ENQUIRIES TABLE -->
+          <div class="table-responsive border rounded-3">
             <table class="table table-hover align-middle small mb-0" id="enquiryTable">
               <thead class="table-light">
                 <tr>
@@ -1843,17 +1928,21 @@
     let quotedCount = 0, quotedVal = 0;
     let wonCount = 0, wonVal = 0;
     let lostCount = 0, lostVal = 0;
+    let payPendingCount = 0, payPendingVal = 0;
 
     list.forEach(item => {
       const v = Number(item.value) || 0;
       totalVal += v;
       const s = String(item.status || '').toLowerCase().trim();
+      const p = String(item.paymentStatus || '').toLowerCase().trim();
 
       if (s === 'new lead') { newCount++; newVal += v; }
       else if (s === 'hot lead') { hotCount++; hotVal += v; }
       else if (s === 'quoted' || s === 'live') { quotedCount++; quotedVal += v; }
       else if (s === 'won') { wonCount++; wonVal += v; }
       else if (s === 'lost') { lostCount++; lostVal += v; }
+
+      if (p === 'pending') { payPendingCount++; payPendingVal += v; }
     });
 
     const setEl = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
@@ -1870,20 +1959,22 @@
     setEl('kpiWonVal', '₹' + wonVal.toLocaleString());
     setEl('kpiLostCount', lostCount);
     setEl('kpiLostVal', '₹' + lostVal.toLocaleString());
+    setEl('kpiPayPendingCount', payPendingCount);
+    setEl('kpiPayPendingVal', '₹' + payPendingVal.toLocaleString());
 
     const ind = document.getElementById('summaryFilterIndicator');
     if (ind) {
-      ind.innerText = `Filtered: ${totalCount} Enquiries`;
+      ind.innerText = `Showing ${totalCount} filtered records | Value: ₹${totalVal.toLocaleString()}`;
     }
   }
 
-  // MEMBER-WISE PERFORMANCE SUMMARY GENERATOR
+  // MEMBER-WISE PERFORMANCE SUMMARY GENERATOR (ENHANCED)
   function renderMemberWiseSummary(list) {
     const tbody = document.getElementById('memberWiseSummaryTbody');
     if (!tbody) return;
 
     if (!list || list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-2">No records match current filters</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-2">No records match current filters</td></tr>';
       return;
     }
 
@@ -1928,20 +2019,63 @@
 
     sortedMembers.forEach(sp => {
       const m = memberMap[sp];
+      const winRate = m.totalCount > 0 ? Math.round((m.wonCount / m.totalCount) * 100) : 0;
+      const initials = sp.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'SP';
+
       html += `
         <tr>
-          <td><b class="text-primary">${escapeHtml(sp)}</b></td>
-          <td class="text-center"><b>${m.totalCount}</b> <span class="text-muted">(₹${m.totalVal.toLocaleString()})</span></td>
-          <td class="text-center">${m.newCount} <small class="text-muted">(₹${m.newVal.toLocaleString()})</small></td>
-          <td class="text-center"><span class="badge bg-warning text-dark">${m.hotCount}</span> <small class="text-muted">(₹${m.hotVal.toLocaleString()})</small></td>
-          <td class="text-center">${m.quotedCount} <small class="text-muted">(₹${m.quotedVal.toLocaleString()})</small></td>
-          <td class="text-center"><span class="badge bg-success">${m.wonCount}</span> <b class="text-success small">₹${m.wonVal.toLocaleString()}</b></td>
-          <td class="text-center"><span class="badge bg-danger">${m.payPendingCount}</span> <small class="text-danger">₹${m.payPendingVal.toLocaleString()}</small></td>
+          <td>
+            <div class="d-flex align-items-center">
+              <span class="member-avatar">${escapeHtml(initials)}</span>
+              <div>
+                <a href="javascript:void(0)" class="fw-bold text-dark text-decoration-none" onclick="filterByMemberDirectly('${escapeHtml(sp)}')">${escapeHtml(sp)}</a>
+                <div class="text-muted extra-small">Val: ₹${m.totalVal.toLocaleString()}</div>
+              </div>
+            </div>
+          </td>
+          <td class="text-center fw-bold fs-6">${m.totalCount}</td>
+          <td class="text-center"><span class="badge bg-light text-secondary border">${m.newCount}</span></td>
+          <td class="text-center"><span class="badge bg-warning text-dark">${m.hotCount}</span></td>
+          <td class="text-center"><span class="badge bg-info text-dark">${m.quotedCount}</span></td>
+          <td class="text-center">
+            <span class="badge bg-success">${m.wonCount}</span>
+            <div class="text-success extra-small fw-bold">₹${m.wonVal.toLocaleString()}</div>
+          </td>
+          <td class="text-center" style="min-width: 100px;">
+            <div class="d-flex align-items-center gap-1">
+              <div class="progress flex-fill" style="height: 6px;">
+                <div class="progress-bar bg-success" style="width: ${winRate}%"></div>
+              </div>
+              <span class="extra-small fw-bold">${winRate}%</span>
+            </div>
+          </td>
+          <td class="text-center">
+            <span class="text-danger fw-bold">₹${m.payPendingVal.toLocaleString()}</span>
+            <div class="extra-small text-muted">(${m.payPendingCount} due)</div>
+          </td>
         </tr>
       `;
     });
 
     tbody.innerHTML = html;
+  }
+
+  function filterByMemberDirectly(spName) {
+    const spSelect = document.getElementById('filterSalesPerson');
+    if (spSelect) {
+      spSelect.value = spName;
+      onSalespersonFilterChange();
+      showFloatingNotification("Filter Applied", `Viewing leads for ${spName}`);
+    }
+  }
+
+  function triggerKpiFilter(statusType) {
+    const pills = document.querySelectorAll('.filter-pill-btn');
+    pills.forEach(p => {
+      if (p.innerText.includes(statusType)) {
+        filterByPill(statusType, p);
+      }
+    });
   }
 
   function applyDashboardFilters() {
@@ -1974,7 +2108,6 @@
     if (payFilter !== 'ALL') filteredEnquiriesList = filteredEnquiriesList.filter(item => String(item.paymentStatus || '').toLowerCase() === payFilter.toLowerCase());
     if (dispatchFilter !== 'ALL') filteredEnquiriesList = filteredEnquiriesList.filter(item => String(item.dispatch || '').toLowerCase() === dispatchFilter.toLowerCase());
 
-    // Update dynamic summary and member-wise breakdown on every filter change
     renderFilteredSummaryMetrics(filteredEnquiriesList);
     renderMemberWiseSummary(filteredEnquiriesList);
 
@@ -1987,8 +2120,10 @@
       b.classList.remove('btn-primary', 'active');
       b.classList.add('btn-outline-secondary');
     });
-    btnEl.classList.remove('btn-outline-secondary');
-    btnEl.classList.add('btn-primary', 'active');
+    if (btnEl) {
+      btnEl.classList.remove('btn-outline-secondary');
+      btnEl.classList.add('btn-primary', 'active');
+    }
 
     const paymentStatuses = ['Pending', 'Advance Received', 'Fully Paid', 'Partial', 'Credit'];
     const statusEl = document.getElementById('filterStatus');
@@ -1999,14 +2134,10 @@
       if (paymentEl) paymentEl.value = 'ALL';
     } else if (paymentStatuses.includes(statusType)) {
       if (statusEl) statusEl.value = 'ALL';
-      if (paymentEl) {
-        paymentEl.value = statusType;
-      }
+      if (paymentEl) paymentEl.value = statusType;
     } else {
       if (paymentEl) paymentEl.value = 'ALL';
-      if (statusEl) {
-        statusEl.value = statusType;
-      }
+      if (statusEl) statusEl.value = statusType;
     }
     
     applyDashboardFilters();
@@ -2030,10 +2161,10 @@
     if (enquiries && enquiries.length > 0) {
       let rows = '';
       enquiries.forEach(item => {
-        let badgeColor = 'bg-info';
-        if (item.status === 'Won') badgeColor = 'bg-success';
-        if (item.status === 'Lost') badgeColor = 'bg-danger';
-        if (item.status === 'Live') badgeColor = 'bg-primary';
+        let badgeColor = 'bg-info text-dark';
+        if (item.status === 'Won') badgeColor = 'bg-success text-white';
+        if (item.status === 'Lost') badgeColor = 'bg-danger text-white';
+        if (item.status === 'Live') badgeColor = 'bg-primary text-white';
         if (item.status === 'Quoted') badgeColor = 'bg-dark text-white';
         if (item.status === 'Hot lead') badgeColor = 'bg-warning text-dark';
         
@@ -2071,7 +2202,7 @@
             <td>${payFup}</td>
             <td>${dispatchHtml}</td>
             <td><span class="badge ${badgeColor}">${escapeHtml(item.status || 'New Lead')}</span></td>
-            <td><button type="button" class="btn btn-sm btn-primary py-0 px-2" onclick="openEditModal('${escapeHtml(item.id)}')">👁 Details</button></td>
+            <td><button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" onclick="openEditModal('${escapeHtml(item.id)}')"><i class="fa fa-eye me-1"></i>Details</button></td>
           </tr>
         `;
       });
