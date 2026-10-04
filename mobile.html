@@ -14,11 +14,12 @@
       width: 100%; height: 100%;
       margin: 0; padding: 0;
       overflow: hidden !important;
-      background-color: #f8fafc;
+      background-color: #f1f5f9;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-size: 0.88rem;
       user-select: none;
       -webkit-user-select: none;
+      color: #1e293b;
     }
     .app-shell {
       display: flex;
@@ -31,7 +32,7 @@
       background: #0f172a;
       color: #fff;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 16px;
+      padding: 0 14px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.18);
       z-index: 100;
     }
@@ -52,8 +53,8 @@
       z-index: 999;
     }
     .btn-scroll {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: #0f172a;
       color: #ffffff;
@@ -63,7 +64,7 @@
       justify-content: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 0.95rem;
       opacity: 0.9;
     }
     .app-bottom-nav {
@@ -103,6 +104,57 @@
       -webkit-overflow-scrolling: touch !important; 
       position: relative;
     }
+
+    /* Mobile KPI Tiles */
+    .mob-kpi-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .mob-kpi-card:active {
+      transform: scale(0.97);
+    }
+    .mob-kpi-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+    }
+    .mob-kpi-total::before { background: #3b82f6; }
+    .mob-kpi-new::before { background: #64748b; }
+    .mob-kpi-hot::before { background: #f59e0b; }
+    .mob-kpi-quoted::before { background: #06b6d4; }
+    .mob-kpi-won::before { background: #10b981; }
+    .mob-kpi-lost::before { background: #ef4444; }
+    .mob-kpi-pay::before { background: #8b5cf6; }
+
+    .member-avatar-mob {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: #e0e7ff;
+      color: #3730a3;
+      font-weight: 700;
+      font-size: 0.7rem;
+      display: inline-flex;
+      align-items: center; justify-content: center;
+      margin-right: 6px;
+    }
+
+    .pills-scroll-container {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+    .pills-scroll-container::-webkit-scrollbar { display: none; }
+
     .cal-header-m { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 700; color: #64748b; font-size: 0.72rem; padding-bottom: 4px; }
     .cal-grid-m { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
     .cal-day-m { min-height: 55px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 2px; text-align: center; cursor: pointer; }
@@ -188,12 +240,16 @@
 <div class="app-shell">
   <div class="app-top-bar">
     <div class="d-flex align-items-center gap-2">
-      <img src="https://unitedcontrolengg.com/wp-content/uploads/2025/06/United-Logo.png" alt="Logo" style="height: 35px; width: auto; margin-right: 8px; vertical-align: middle;">
+      <img src="https://unitedcontrolengg.com/wp-content/uploads/2025/06/United-Logo.png" alt="Logo" style="height: 32px; width: auto; margin-right: 4px; vertical-align: middle;">
       <span class="fw-bold fs-6">UCE SALES</span>
     </div>
-    <div class="d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center gap-1">
+      <!-- TOP REFRESH BUTTON -->
+      <button id="topRefreshBtn" onclick="triggerMobileDataRefresh(this)" class="btn btn-sm btn-outline-light py-0 px-2" title="Refresh Data">
+        <i class="fa fa-rotate"></i>
+      </button>
       <button id="notifEnableBtn" onclick="requestNotificationPermission()" class="btn btn-sm btn-outline-warning py-0 px-2 d-none" title="Enable Notifications"><i class="fa fa-bell"></i></button>
-      <span id="loggedUserMobile" class="badge bg-secondary">User</span>
+      <span id="loggedUserMobile" class="badge bg-secondary extra-small">User</span>
       <button onclick="logout()" class="btn btn-sm btn-outline-light py-0 px-2"><i class="fa fa-power-off"></i></button>
     </div>
   </div>
@@ -204,9 +260,9 @@
       <button type="button" class="btn-close py-2" onclick="hideAlert()"></button>
     </div>
 
-    <!-- TAB 1: LEADS FEED -->
+    <!-- TAB 1: LEADS FEED & DASHBOARD SUMMARY -->
     <div id="tab-leads">
-      <div id="reminderBanner" class="app-card p-3 mb-3 border-start border-warning border-4 bg-light d-none">
+      <div id="reminderBanner" class="app-card p-3 mb-2 border-start border-warning border-4 bg-light d-none">
         <h6 class="fw-bold text-dark mb-1"><i class="fa fa-bell text-warning me-2"></i>Today's Reminders</h6>
         <p class="text-muted extra-small mb-2" id="reminderText">Checking today's follow-ups...</p>
         <div class="d-flex gap-1">
@@ -216,9 +272,10 @@
         </div>
       </div>
       
-      <div class="app-card p-3 mb-3 bg-light border-start border-primary border-4" id="sidebarTargetWidget">
+      <!-- TARGETS & GOALS WIDGET -->
+      <div class="app-card p-2 mb-2 bg-light border-start border-primary border-4" id="sidebarTargetWidget">
         <div class="d-flex justify-content-between align-items-center mb-1">
-          <span class="fw-bold text-primary extra-small"><i class="fa fa-bullseye me-1"></i> Performance & Targets</span>
+          <span class="fw-bold text-primary extra-small"><i class="fa fa-bullseye me-1"></i> Targets & Goals</span>
         </div>
         <div class="d-flex justify-content-between extra-small text-muted mb-1">
           <span>Monthly: <b id="mTargetText" class="text-dark">₹0 / ₹0</b></span>
@@ -254,28 +311,134 @@
         </div>
       </div>
 
+      <!-- 1. DYNAMIC CLICKABLE KPI TILES (WEB MATCHING) -->
+      <div class="app-card p-2 mb-2 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+          <span class="fw-bold text-dark extra-small"><i class="fa fa-chart-line text-primary me-1"></i> Performance Overview</span>
+          <span class="text-muted extra-small" id="mobSummaryIndicator">Filtered</span>
+        </div>
+
+        <div class="row g-2 text-start">
+          <div class="col-6" onclick="filterByMobPill('ALL', null)">
+            <div class="mob-kpi-card mob-kpi-total">
+              <div class="text-muted extra-small fw-bold">TOTAL ENQUIRIES</div>
+              <h5 class="fw-bold mb-0 text-dark" id="mobKpiTotalCount">0</h5>
+              <div class="fw-bold text-primary extra-small text-truncate" id="mobKpiTotalVal">₹0</div>
+            </div>
+          </div>
+
+          <div class="col-6" onclick="filterByMobPill('New Lead', null)">
+            <div class="mob-kpi-card mob-kpi-new">
+              <div class="text-muted extra-small fw-bold">NEW LEADS</div>
+              <h5 class="fw-bold mb-0 text-dark" id="mobKpiNewCount">0</h5>
+              <div class="fw-bold text-secondary extra-small text-truncate" id="mobKpiNewVal">₹0</div>
+            </div>
+          </div>
+
+          <div class="col-6" onclick="filterByMobPill('Hot lead', null)">
+            <div class="mob-kpi-card mob-kpi-hot">
+              <div class="text-muted extra-small fw-bold">HOT LEADS</div>
+              <h5 class="fw-bold mb-0 text-dark" id="mobKpiHotCount">0</h5>
+              <div class="fw-bold text-warning extra-small text-truncate" id="mobKpiHotVal">₹0</div>
+            </div>
+          </div>
+
+          <div class="col-6" onclick="filterByMobPill('Quoted', null)">
+            <div class="mob-kpi-card mob-kpi-quoted">
+              <div class="text-muted extra-small fw-bold">QUOTED / LIVE</div>
+              <h5 class="fw-bold mb-0 text-dark" id="mobKpiQuotedCount">0</h5>
+              <div class="fw-bold text-info extra-small text-truncate" id="mobKpiQuotedVal">₹0</div>
+            </div>
+          </div>
+
+          <div class="col-6" onclick="filterByMobPill('Won', null)">
+            <div class="mob-kpi-card mob-kpi-won">
+              <div class="text-muted extra-small fw-bold">WON DEALS</div>
+              <h5 class="fw-bold mb-0 text-dark" id="mobKpiWonCount">0</h5>
+              <div class="fw-bold text-success extra-small text-truncate" id="mobKpiWonVal">₹0</div>
+            </div>
+          </div>
+
+          <div class="col-6" onclick="filterByMobPill('Pending', null)">
+            <div class="mob-kpi-card mob-kpi-pay">
+              <div class="text-muted extra-small fw-bold">PAY PENDING</div>
+              <h5 class="fw-bold mb-0 text-dark" id="mobKpiPayCount">0</h5>
+              <div class="fw-bold text-danger extra-small text-truncate" id="mobKpiPayVal">₹0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. MEMBER-WISE BREAKDOWN ACCORDION (WEB MATCHING) -->
+      <div class="app-card p-2 mb-2 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-1 px-1">
+          <span class="fw-bold text-dark extra-small"><i class="fa fa-users me-1 text-primary"></i> Team Member Breakdown</span>
+          <button class="btn btn-xs btn-light border py-0 px-2 extra-small text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#mobMemberCollapse" aria-expanded="true">
+            Toggle
+          </button>
+        </div>
+        <div class="collapse show" id="mobMemberCollapse">
+          <div class="table-responsive border rounded mt-2" style="max-height: 220px;">
+            <table class="table table-sm table-hover align-middle extra-small mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Member</th>
+                  <th class="text-center">Total</th>
+                  <th class="text-center">Won</th>
+                  <th class="text-center">Win%</th>
+                  <th class="text-center">Due (₹)</th>
+                </tr>
+              </thead>
+              <tbody id="mobMemberBreakdownTbody">
+                <tr><td colspan="5" class="text-center text-muted py-2">Loading member stats...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. HORIZONTAL FILTER PILLS -->
+      <div class="pills-scroll-container mb-2">
+        <button type="button" class="btn btn-xs btn-primary active mob-pill-btn" onclick="filterByMobPill('ALL', this)">All</button>
+        <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('New Lead', this)">📌 New</button>
+        <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('Hot lead', this)">🔥 Hot</button>
+        <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('Quoted', this)">📋 Quoted</button>
+        <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('Live', this)">⚡ Live</button>
+        <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('Won', this)">🏆 Won</button>
+        <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('Lost', this)">❌ Lost</button>
+        <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('Pending', this)">⏳ Pending</button>
+        <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('Advance Received', this)">💵 Advance</button>
+        <button type="button" class="btn btn-xs btn-outline-secondary mob-pill-btn" onclick="filterByMobPill('Fully Paid', this)">✅ Paid</button>
+      </div>
+
+      <!-- 4. ADVANCED FILTER ACCORDION -->
       <div class="app-card bg-light p-2 mb-3">
         <div class="d-flex justify-content-between align-items-center mb-2">
           <span class="fw-bold extra-small text-dark">Filter Enquiries</span>
-          <button class="btn btn-xs btn-success fw-bold py-0 px-2 extra-small" onclick="openMemberExportModalMob()">
-            <i class="fa fa-file-excel me-1"></i> Export Report
-          </button>
+          <div class="d-flex gap-1">
+            <button class="btn btn-xs btn-outline-primary fw-bold py-0 px-2 extra-small" onclick="loadDashboard()" title="Refresh Enquiries">
+              <i class="fa fa-rotate me-1"></i> Refresh
+            </button>
+            <button class="btn btn-xs btn-success fw-bold py-0 px-2 extra-small" onclick="openMemberExportModalMob()">
+              <i class="fa fa-file-excel me-1"></i> Export
+            </button>
+          </div>
         </div>
         <div class="row g-2 mb-1">
           <div class="col-12">
-            <input type="text" id="searchInput" oninput="applyFilters()" class="form-control form-control-sm" placeholder="🔍 Search (ID, Customer, Brand)...">
+            <input type="text" id="searchInput" oninput="applyFilters()" class="form-control form-control-sm bg-white" placeholder="🔍 Search (ID, Customer, Brand)...">
           </div>
           <div class="col-6">
             <label class="form-label extra-small mb-0">From Date</label>
-            <input type="date" id="filterFromDate" onchange="applyFilters()" class="form-control form-control-sm">
+            <input type="date" id="filterFromDate" onchange="applyFilters()" class="form-control form-control-sm bg-white">
           </div>
           <div class="col-6">
             <label class="form-label extra-small mb-0">To Date</label>
-            <input type="date" id="filterToDate" onchange="applyFilters()" class="form-control form-control-sm">
+            <input type="date" id="filterToDate" onchange="applyFilters()" class="form-control form-control-sm bg-white">
           </div>
           <div class="col-6">
             <label class="form-label extra-small mb-0">Status</label>
-            <select id="filterStatus" onchange="applyFilters()" class="form-select form-select-sm">
+            <select id="filterStatus" onchange="applyFilters()" class="form-select form-select-sm bg-white">
               <option value="ALL">All Status</option>
               <option value="New Lead">New Lead</option>
               <option value="Hot lead">Hot lead</option>
@@ -287,7 +450,7 @@
           </div>
           <div class="col-6">
             <label class="form-label extra-small mb-0">Payment Status</label>
-            <select id="filterPaymentStatus" onchange="applyFilters()" class="form-select form-select-sm">
+            <select id="filterPaymentStatus" onchange="applyFilters()" class="form-select form-select-sm bg-white">
               <option value="ALL">All Payment</option>
               <option value="Pending">Pending</option>
               <option value="Advance Received">Advance Received</option>
@@ -298,13 +461,14 @@
           </div>
           <div class="col-12">
             <label class="form-label extra-small mb-0">Sales Person</label>
-            <select id="filterSalesPerson" onchange="onSalespersonFilterChange()" class="form-select form-select-sm">
+            <select id="filterSalesPerson" onchange="onSalespersonFilterChange()" class="form-select form-select-sm bg-white">
               <option value="ALL">All Team Member</option>
             </select>
           </div>
         </div>
       </div>
 
+      <!-- 5. LEADS FEED CARDS -->
       <div id="mobileLeadsContainer">
         <div class="text-center text-muted py-4">Loading enquiries...</div>
       </div>
@@ -939,7 +1103,16 @@
     modalBody.scrollBy({ top: direction === 'up' ? -180 : 180, behavior: 'smooth' });
   }
 
-  // --- ROLE-BASED NAVIGATION RESTRICTION FOR ENGINEER / DELIVERY ---
+  // TRIGGER MOBILE DATA REFRESH (WITH ANIMATION)
+  async function triggerMobileDataRefresh(btnEl) {
+    const icon = btnEl ? btnEl.querySelector('i') : null;
+    if (icon) icon.classList.add('fa-spin');
+    showFloatingNotification("Syncing", "Refreshing latest records...");
+    await loadDashboard();
+    if (icon) icon.classList.remove('fa-spin');
+    showFloatingNotification("Refreshed", "Data updated successfully!");
+  }
+
   function applyRoleNavigationRestrictions() {
     if (!loggedInUser || !loggedInUser.role) return;
     const role = String(loggedInUser.role).toLowerCase();
@@ -950,7 +1123,6 @@
     }
 
     if (role.indexOf('engineer') > -1 || role.indexOf('delivery') > -1 || role.indexOf('employee') > -1) {
-      // Hide unauthorized bottom navigation buttons for Engineer/Delivery
       const leadsBtn = document.getElementById('nb-leads');
       const addBtn = document.getElementById('nb-add');
       const analyticsBtn = document.getElementById('nb-analytics');
@@ -1298,6 +1470,8 @@
     const todayStr = new Date().toISOString().split('T')[0];
     filteredList = globalEnquiries.filter(item => item.leadFollowup === todayStr);
     currentPage = 1;
+    renderMobileKpiMetrics(filteredList);
+    renderMobileMemberWiseBreakdown(filteredList);
     renderPage();
   }
 
@@ -1305,6 +1479,8 @@
     const todayStr = new Date().toISOString().split('T')[0];
     filteredList = globalEnquiries.filter(item => item.paymentFollowup === todayStr);
     currentPage = 1;
+    renderMobileKpiMetrics(filteredList);
+    renderMobileMemberWiseBreakdown(filteredList);
     renderPage();
   }
 
@@ -1317,6 +1493,146 @@
     loadSidebarTargetInfo();
   }
 
+  // DYNAMIC FILTER KPI METRICS GENERATOR (MOBILE)
+  function renderMobileKpiMetrics(list) {
+    let totalCount = list.length;
+    let totalVal = 0, newCount = 0, newVal = 0;
+    let hotCount = 0, hotVal = 0;
+    let quotedCount = 0, quotedVal = 0;
+    let wonCount = 0, wonVal = 0;
+    let payPendingCount = 0, payPendingVal = 0;
+
+    list.forEach(item => {
+      const v = Number(item.value) || 0;
+      totalVal += v;
+      const s = String(item.status || '').toLowerCase().trim();
+      const p = String(item.paymentStatus || '').toLowerCase().trim();
+
+      if (s === 'new lead') { newCount++; newVal += v; }
+      else if (s === 'hot lead') { hotCount++; hotVal += v; }
+      else if (s === 'quoted' || s === 'live') { quotedCount++; quotedVal += v; }
+      else if (s === 'won') { wonCount++; wonVal += v; }
+
+      if (p === 'pending') { payPendingCount++; payPendingVal += v; }
+    });
+
+    const setEl = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
+
+    setEl('mobKpiTotalCount', totalCount);
+    setEl('mobKpiTotalVal', '₹' + totalVal.toLocaleString());
+    setEl('mobKpiNewCount', newCount);
+    setEl('mobKpiNewVal', '₹' + newVal.toLocaleString());
+    setEl('mobKpiHotCount', hotCount);
+    setEl('mobKpiHotVal', '₹' + hotVal.toLocaleString());
+    setEl('mobKpiQuotedCount', quotedCount);
+    setEl('mobKpiQuotedVal', '₹' + quotedVal.toLocaleString());
+    setEl('mobKpiWonCount', wonCount);
+    setEl('mobKpiWonVal', '₹' + wonVal.toLocaleString());
+    setEl('mobKpiPayCount', payPendingCount);
+    setEl('mobKpiPayVal', '₹' + payPendingVal.toLocaleString());
+
+    const ind = document.getElementById('mobSummaryIndicator');
+    if (ind) {
+      ind.innerText = `${totalCount} Enquiries | ₹${totalVal.toLocaleString()}`;
+    }
+  }
+
+  // MEMBER-WISE BREAKDOWN GENERATOR (MOBILE)
+  function renderMobileMemberWiseBreakdown(list) {
+    const tbody = document.getElementById('mobMemberBreakdownTbody');
+    if (!tbody) return;
+
+    if (!list || list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-2">No records found</td></tr>';
+      return;
+    }
+
+    const memberMap = {};
+
+    list.forEach(item => {
+      const sp = (item.salesPerson && item.salesPerson.trim()) ? item.salesPerson.trim() : 'Unassigned';
+      if (!memberMap[sp]) {
+        memberMap[sp] = { totalCount: 0, totalVal: 0, wonCount: 0, wonVal: 0, payPendingVal: 0 };
+      }
+      const v = Number(item.value) || 0;
+      const s = String(item.status || '').toLowerCase().trim();
+      const p = String(item.paymentStatus || '').toLowerCase().trim();
+
+      memberMap[sp].totalCount++;
+      memberMap[sp].totalVal += v;
+
+      if (s === 'won') { memberMap[sp].wonCount++; memberMap[sp].wonVal += v; }
+      if (p === 'pending') { memberMap[sp].payPendingVal += v; }
+    });
+
+    let html = '';
+    const sortedMembers = Object.keys(memberMap).sort((a, b) => memberMap[b].totalVal - memberMap[a].totalVal);
+
+    sortedMembers.forEach(sp => {
+      const m = memberMap[sp];
+      const winRate = m.totalCount > 0 ? Math.round((m.wonCount / m.totalCount) * 100) : 0;
+      const initials = sp.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'SP';
+
+      html += `
+        <tr>
+          <td>
+            <div class="d-flex align-items-center">
+              <span class="member-avatar-mob">${escapeHtml(initials)}</span>
+              <div>
+                <a href="javascript:void(0)" class="fw-bold text-dark text-decoration-none" onclick="filterByMemberMobDirectly('${escapeHtml(sp)}')">${escapeHtml(sp)}</a>
+                <div class="text-muted extra-small">₹${m.totalVal.toLocaleString()}</div>
+              </div>
+            </div>
+          </td>
+          <td class="text-center fw-bold">${m.totalCount}</td>
+          <td class="text-center text-success fw-bold">${m.wonCount}</td>
+          <td class="text-center"><span class="badge bg-light text-dark border">${winRate}%</span></td>
+          <td class="text-center text-danger fw-semibold">₹${m.payPendingVal.toLocaleString()}</td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html;
+  }
+
+  function filterByMemberMobDirectly(spName) {
+    const spSelect = document.getElementById('filterSalesPerson');
+    if (spSelect) {
+      spSelect.value = spName;
+      onSalespersonFilterChange();
+      showFloatingNotification("Member Filter", `Viewing leads for ${spName}`);
+    }
+  }
+
+  function filterByMobPill(statusType, btnEl) {
+    document.querySelectorAll('.mob-pill-btn').forEach(b => {
+      b.classList.remove('btn-primary', 'active');
+      b.classList.add('btn-outline-secondary');
+    });
+
+    if (btnEl) {
+      btnEl.classList.remove('btn-outline-secondary');
+      btnEl.classList.add('btn-primary', 'active');
+    }
+
+    const paymentStatuses = ['Pending', 'Advance Received', 'Fully Paid', 'Partial', 'Credit'];
+    const statusEl = document.getElementById('filterStatus');
+    const paymentEl = document.getElementById('filterPaymentStatus');
+
+    if (statusType === 'ALL') {
+      if (statusEl) statusEl.value = 'ALL';
+      if (paymentEl) paymentEl.value = 'ALL';
+    } else if (paymentStatuses.includes(statusType)) {
+      if (statusEl) statusEl.value = 'ALL';
+      if (paymentEl) paymentEl.value = statusType;
+    } else {
+      if (paymentEl) paymentEl.value = 'ALL';
+      if (statusEl) statusEl.value = statusType;
+    }
+
+    applyFilters();
+  }
+
   function applyFilters() {
     const fromDate = document.getElementById('filterFromDate').value;
     const toDate = document.getElementById('filterToDate').value;
@@ -1325,7 +1641,7 @@
     const sp = document.getElementById('filterSalesPerson') ? document.getElementById('filterSalesPerson').value : 'ALL';
     const searchVal = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim().toLowerCase() : '';
 
-    filteredList = globalEnquiries;
+    filteredList = globalEnquiries || [];
 
     if (searchVal) {
       filteredList = filteredList.filter(item => {
@@ -1345,6 +1661,10 @@
     if (paySt !== 'ALL') filteredList = filteredList.filter(e => String(e.paymentStatus).toLowerCase() === paySt.toLowerCase());
     if (sp !== 'ALL' && sp !== '') filteredList = filteredList.filter(e => String(e.salesPerson || '').toLowerCase() === sp.toLowerCase());
 
+    // Update Live Metrics & Breakdown on mobile
+    renderMobileKpiMetrics(filteredList);
+    renderMobileMemberWiseBreakdown(filteredList);
+
     currentPage = 1;
     renderPage();
   }
@@ -1356,10 +1676,10 @@
 
     let html = '';
     items.forEach(item => {
-      let bColor = 'bg-info';
-      if (item.status === 'Won') bColor = 'bg-success';
-      if (item.status === 'Lost') bColor = 'bg-danger';
-      if (item.status === 'Live') bColor = 'bg-primary';
+      let bColor = 'bg-info text-dark';
+      if (item.status === 'Won') bColor = 'bg-success text-white';
+      if (item.status === 'Lost') bColor = 'bg-danger text-white';
+      if (item.status === 'Live') bColor = 'bg-primary text-white';
       if (item.status === 'Quoted') bColor = 'bg-dark text-white';
       if (item.status === 'Hot lead') bColor = 'bg-warning text-dark';
 
@@ -1380,17 +1700,17 @@
             <span class="fw-bold text-dark">${item.id} ${duplicateWarningIcon}</span>
             <span class="badge ${bColor}">${item.status || 'New Lead'}</span>
           </div>
-          <h6 class="fw-bold text-primary m-0 mb-1">${item.customer}</h6>
+          <h6 class="fw-bold text-primary m-0 mb-1">${escapeHtml(item.customer)}</h6>
           <div class="d-flex justify-content-between extra-small text-muted mb-1">
-            <span>👤 ${item.salesPerson}</span>
-            <span>📅 ${item.date}</span>
+            <span>👤 ${escapeHtml(item.salesPerson)}</span>
+            <span>📅 ${escapeHtml(item.date)}</span>
           </div>
           <div class="extra-small mb-2 d-flex justify-content-between gap-1">
-            <span>Lead F/Up: ${leadFup}</span>
-            <span>Pay F/Up: ${payFup}</span>
+            <span>Lead: ${leadFup}</span>
+            <span>Pay: ${payFup}</span>
           </div>
           <div class="d-flex justify-content-between align-items-center border-top pt-2">
-            <span class="badge ${payBadge}">${item.paymentStatus || 'Pending'}</span>
+            <span class="badge ${payBadge}">${escapeHtml(item.paymentStatus || 'Pending')}</span>
             <span class="fw-bold text-success fs-6">₹${Number(item.value || 0).toLocaleString()}</span>
           </div>
         </div>`;
