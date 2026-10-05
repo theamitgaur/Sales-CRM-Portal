@@ -68,7 +68,6 @@
       font-size: 1rem;
     }
 
-    /* Member Badge Avatar */
     .member-avatar {
       width: 28px;
       height: 28px;
@@ -400,7 +399,7 @@
             </div>
           </div>
 
-          <!-- 2. MEMBER-WISE BREAKDOWN TABLE (DIRECTLY ABOVE SEARCH & DASHBOARD TABLE) -->
+          <!-- 2. MEMBER-WISE BREAKDOWN TABLE -->
           <div class="card p-3 mb-3 bg-white border rounded-3 shadow-none">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <span class="fw-bold text-dark small"><i class="fa fa-users me-1 text-primary"></i> Team Member Performance Breakdown</span>
@@ -735,9 +734,13 @@
       <!-- MODULE: ANALYTICS -->
       <div id="analyticsModule" class="d-none">
         <div class="card p-4 mb-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <h5 class="mb-0 text-primary fw-bold"><i class="fa fa-chart-pie me-2"></i>Executive Power BI Analytics Dashboard</h5>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 align-items-center">
+              <!-- ROLE-BASED ANALYTICS SALESPERSON FILTER -->
+              <select id="analyticsFilterSalesPerson" class="form-select form-select-sm fw-bold border-secondary" style="min-width: 180px;" onchange="renderPowerBiDashboard()">
+                <option value="ALL">All Team Members</option>
+              </select>
               <select id="powerBiReportSelect" class="form-select form-select-sm fw-bold border-primary" onchange="renderPowerBiDashboard()">
                 <option value="funnel">📈 Sales Funnel & Pipeline Velocity</option>
                 <option value="brands">🏷️ Brand Performance Matrix</option>
@@ -780,7 +783,7 @@
               <div class="card p-3 bg-light border">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                   <h6 id="powerBiChartTitle" class="fw-bold text-primary m-0">Sales Funnel Progression</h6>
-                  <span class="badge bg-dark">Live Data Engine</span>
+                  <span class="badge bg-dark" id="analyticsChartBadge">Live Data Engine</span>
                 </div>
                 <div style="height: 380px;" class="d-flex justify-content-center align-items-center">
                   <canvas id="powerBiCanvas"></canvas>
@@ -1179,14 +1182,17 @@
             <label class="form-label text-success">Payment Follow-Up Date</label>
             <input type="date" id="editPaymentFollowup" class="form-control form-control-sm fw-bold border-success">
           </div>
-          <div class="col-md-4" id="deliveryStatusWrapper">
-            <label class="form-label text-info fw-bold" id="deliveryStatusLabel">Delivery Status</label>
+          
+          <!-- Delivery Status: STRICTLY DISPLAYED AND SAVED ONLY WHEN STATUS IS WON -->
+          <div class="col-md-4 d-none" id="deliveryStatusWrapper">
+            <label class="form-label text-info fw-bold" id="deliveryStatusLabel">Delivery Status (Won Lead)</label>
             <select id="editDispatchStatus" class="form-select form-select-sm fw-bold border-info">
-              <option value="Dispatched">Dispatched</option>
               <option value="Pending">Pending</option>
+              <option value="Dispatched">Dispatched</option>
               <option value="Delivered">Delivered</option>
             </select>
           </div>
+
           <div id="modalLostReasonContainer" class="col-12 d-none">
             <label class="form-label text-danger">Lost Reason Details *</label>
             <input type="text" id="editLostReason" class="form-control form-control-sm border-danger" placeholder="Why was this enquiry lost?">
@@ -1616,6 +1622,21 @@
       }
     }
 
+    // ROLE-BASED POPULATION FOR VISUAL ANALYTICS SALESPERSON FILTER
+    const analyticsSpFilterEl = document.getElementById('analyticsFilterSalesPerson');
+    if (analyticsSpFilterEl) {
+      if (isMgmt) {
+        let anOpts = '<option value="ALL">All Team Members</option>';
+        masterSalesPersons.forEach(sp => { anOpts += `<option value="${sp}">${sp}</option>`; });
+        analyticsSpFilterEl.innerHTML = anOpts;
+        analyticsSpFilterEl.disabled = false;
+      } else {
+        analyticsSpFilterEl.innerHTML = `<option value="${loggedInUser.salesPerson}">${loggedInUser.salesPerson}</option>`;
+        analyticsSpFilterEl.value = loggedInUser.salesPerson;
+        analyticsSpFilterEl.disabled = true;
+      }
+    }
+
     if (document.getElementById('adminTargetSp')) document.getElementById('adminTargetSp').innerHTML = adminTargetOpts;
 
     const adminTargetCard = document.getElementById('adminTargetCard');
@@ -1791,6 +1812,7 @@
       paymentTerms: termsSelect.options[termsSelect.selectedIndex].text,
       paymentTermsDays: termsSelect.value,
       paymentFollowup: document.getElementById('paymentFollowupDate').value,
+      // NEW LEADS MUST REMAIN BLANK FOR DELIVERY/DISPATCH COLUMN
       dispatch: '',
       remark: document.getElementById('remark').value,
       latitude: userGeoCoords ? userGeoCoords.latitude : '',
@@ -1807,6 +1829,7 @@
       leadFollowup: formData.leadFollowup,
       paymentStatus: payStatusVal,
       paymentFollowup: formData.paymentFollowup,
+      dispatch: '',
       status: 'New Lead',
       brand: brandValue
     };
@@ -1968,7 +1991,7 @@
     }
   }
 
-  // MEMBER-WISE PERFORMANCE SUMMARY GENERATOR (ENHANCED)
+  // MEMBER-WISE PERFORMANCE SUMMARY GENERATOR
   function renderMemberWiseSummary(list) {
     const tbody = document.getElementById('memberWiseSummaryTbody');
     if (!tbody) return;
@@ -2179,8 +2202,9 @@
         let payFup = item.paymentFollowup ? `<span class="badge bg-light text-success border border-success">${escapeHtml(item.paymentFollowup)}</span>` : '<span class="badge bg-light text-muted border">Not Set</span>';
         
         let dispatchHtml = '<span class="text-muted">-</span>';
-        if (String(item.status).toLowerCase() === 'won') {
-          let dispatchVal = item.dispatch || 'Pending';
+        // ONLY DISPLAY DISPATCH STATUS IF WON
+        if (String(item.status).toLowerCase() === 'won' && item.dispatch) {
+          let dispatchVal = item.dispatch;
           let dispatchBadgeColor = 'bg-secondary';
           if (dispatchVal === 'Dispatched') dispatchBadgeColor = 'bg-info text-dark';
           if (dispatchVal === 'Pending') dispatchBadgeColor = 'bg-warning text-dark';
@@ -2299,6 +2323,7 @@
     document.getElementById('mMode').innerText = item.mode || '-';
     document.getElementById('mSalesPerson').innerText = item.salesPerson || '-';
     document.getElementById('mDescription').innerText = item.description || '-';
+    
     const editDispatchStatusEl = document.getElementById('editDispatchStatus');
     if (editDispatchStatusEl) {
       editDispatchStatusEl.value = item.dispatch || 'Pending';
@@ -2460,6 +2485,8 @@
     const leadFupVal = document.getElementById('editLeadFollowup').value;
     const payTermsVal = document.getElementById('editPaymentTerms').value;
     const payFupVal = document.getElementById('editPaymentFollowup').value;
+
+    // DELIVERY STATUS RULE: STRICTLY BLANK UNLESS STATUS IS WON
     const dispatchVal = (stVal.toLowerCase() === 'won')
       ? (document.getElementById('editDispatchStatus').value || 'Pending')
       : '';
@@ -2628,23 +2655,33 @@
     `).join('') || '<tr><td colspan="6" class="text-center text-muted">No lost enquiries</td></tr>';
   }
 
+  // UPDATED VISUAL ANALYTICS WITH ROLE-BASED SALESPERSON FILTER
   async function renderPowerBiDashboard() {
     if (!globalEnquiries) return;
     const reportType = document.getElementById('powerBiReportSelect').value;
+    const spFilterEl = document.getElementById('analyticsFilterSalesPerson');
+    const selectedSp = spFilterEl ? spFilterEl.value : 'ALL';
+
+    let analyticsList = globalEnquiries;
+    if (selectedSp !== 'ALL') {
+      analyticsList = analyticsList.filter(e => String(e.salesPerson || '').toLowerCase() === selectedSp.toLowerCase());
+    }
 
     let won = 0, pipeline = 0, lost = 0;
-    globalEnquiries.forEach(e => {
+    analyticsList.forEach(e => {
       let v = Number(e.value) || 0, s = String(e.status).toLowerCase();
       if (s === 'won') won += v; else if (s === 'lost') lost += v; else pipeline += v;
     });
 
-    document.getElementById('statTotalEnq').innerText = globalEnquiries.length;
+    document.getElementById('statTotalEnq').innerText = analyticsList.length;
     document.getElementById('statWonValue').innerText = '₹' + won.toLocaleString();
     document.getElementById('statPipelineValue').innerText = '₹' + pipeline.toLocaleString();
     document.getElementById('statLostValue').innerText = '₹' + lost.toLocaleString();
 
-    const res = await callAppsScriptApi("getAdvancedAnalyticsData", { user: loggedInUser });
-    if (!res || !res.success) return;
+    const chartBadge = document.getElementById('analyticsChartBadge');
+    if (chartBadge) {
+      chartBadge.innerText = (selectedSp === 'ALL') ? 'All Team Members' : `Filtered: ${selectedSp}`;
+    }
 
     const ctx = document.getElementById('powerBiCanvas');
     if (powerBiChartInstance) powerBiChartInstance.destroy();
@@ -2652,23 +2689,75 @@
     let chartConfig = { type: 'bar', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false } };
 
     if (reportType === 'funnel') {
-      const f = res.funnel;
-      chartConfig.data = { labels: ['New', 'Hot', 'Live', 'Won', 'Lost'], datasets: [{ label: 'Value (₹)', data: [f['New Lead'].value, f['Hot lead'].value, f['Live'].value, f['Won'].value, f['Lost'].value], backgroundColor: ['#6c757d', '#ffc107', '#0dcaf0', '#198754', '#dc3545'] }] };
+      let fCount = { 'New Lead': 0, 'Hot lead': 0, 'Live': 0, 'Won': 0, 'Lost': 0 };
+      let fVal = { 'New Lead': 0, 'Hot lead': 0, 'Live': 0, 'Won': 0, 'Lost': 0 };
+
+      analyticsList.forEach(e => {
+        let st = e.status;
+        let v = Number(e.value) || 0;
+        if (st === 'Quoted') st = 'Live';
+        if (fVal[st] !== undefined) {
+          fVal[st] += v;
+          fCount[st]++;
+        }
+      });
+
+      chartConfig.data = {
+        labels: ['New', 'Hot', 'Live / Quoted', 'Won', 'Lost'],
+        datasets: [{
+          label: 'Value (₹)',
+          data: [fVal['New Lead'], fVal['Hot lead'], fVal['Live'], fVal['Won'], fVal['Lost']],
+          backgroundColor: ['#6c757d', '#ffc107', '#0dcaf0', '#198754', '#dc3545']
+        }]
+      };
     } else if (reportType === 'brands') {
-      const b = res.brands, labels = Object.keys(b);
-      chartConfig.data = { labels: labels, datasets: [{ label: 'Won (₹)', data: labels.map(l => b[l].wonValue), backgroundColor: '#198754' }] };
+      let brandMap = {};
+      analyticsList.forEach(e => {
+        let b = e.brand || 'Other';
+        let v = Number(e.value) || 0;
+        let isWon = String(e.status).toLowerCase() === 'won';
+        if (!brandMap[b]) brandMap[b] = 0;
+        if (isWon) brandMap[b] += v;
+      });
+
+      const labels = Object.keys(brandMap).slice(0, 10);
+      chartConfig.data = { labels: labels, datasets: [{ label: 'Won Value (₹)', data: labels.map(l => brandMap[l]), backgroundColor: '#198754' }] };
     } else if (reportType === 'marketing') {
-      const m = res.modes, labels = Object.keys(m);
+      let modeMap = {};
+      analyticsList.forEach(e => {
+        let m = e.mode || 'Direct';
+        let v = Number(e.value) || 0;
+        if (!modeMap[m]) modeMap[m] = 0;
+        modeMap[m] += v;
+      });
+      const labels = Object.keys(modeMap);
       chartConfig.type = 'doughnut';
-      chartConfig.data = { labels: labels, datasets: [{ data: labels.map(l => m[l].wonValue), backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#0dcaf0', '#dc3545'] }] };
+      chartConfig.data = { labels: labels, datasets: [{ data: labels.map(l => modeMap[l]), backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#0dcaf0', '#dc3545', '#6610f2'] }] };
     } else if (reportType === 'productivity') {
-      const sps = res.teamProductivity, labels = Object.keys(sps);
-      chartConfig.data = { labels: labels, datasets: [{ label: 'Won (₹)', data: labels.map(l => sps[l].wonRevenue), backgroundColor: '#198754' }] };
+      let spMap = {};
+      analyticsList.forEach(e => {
+        let sp = e.salesPerson || 'Unassigned';
+        let v = Number(e.value) || 0;
+        let isWon = String(e.status).toLowerCase() === 'won';
+        if (!spMap[sp]) spMap[sp] = 0;
+        if (isWon) spMap[sp] += v;
+      });
+      const labels = Object.keys(spMap);
+      chartConfig.data = { labels: labels, datasets: [{ label: 'Won Revenue (₹)', data: labels.map(l => spMap[l]), backgroundColor: '#198754' }] };
     } else if (reportType === 'cashflow') {
-      const p = res.payments;
+      let pMap = { 'Fully Paid': 0, 'Advance Received': 0, 'Partial': 0, 'Pending': 0, 'Credit': 0 };
+      analyticsList.forEach(e => {
+        let p = e.paymentStatus || 'Pending';
+        let v = Number(e.value) || 0;
+        if (pMap[p] !== undefined) pMap[p] += v;
+      });
       chartConfig.type = 'pie';
-      chartConfig.data = { labels: ['Paid', 'Advance', 'Partial', 'Pending', 'Credit'], datasets: [{ data: [p['Fully Paid']?.value || 0, p['Advance Received']?.value || 0, p['Partial']?.value || 0, p['Pending']?.value || 0, p['Credit']?.value || 0], backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545', '#0f172a'] }] };
+      chartConfig.data = {
+        labels: ['Fully Paid', 'Advance', 'Partial', 'Pending', 'Credit'],
+        datasets: [{ data: [pMap['Fully Paid'], pMap['Advance Received'], pMap['Partial'], pMap['Pending'], pMap['Credit']], backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545', '#0f172a'] }]
+      };
     }
+
     powerBiChartInstance = new Chart(ctx, chartConfig);
   }
 
