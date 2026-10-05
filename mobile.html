@@ -263,7 +263,7 @@
         </div>
       </div>
       
-      <!-- TARGETS & GOALS WIDGET (DYNAMIC MANAGER / TEAM & INDIVIDUAL TARGETS) -->
+      <!-- TARGETS & GOALS WIDGET -->
       <div class="app-card p-2 mb-2 bg-light border-start border-primary border-4" id="sidebarTargetWidget">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <span class="fw-bold text-primary extra-small" id="targetWidgetScopeLabel"><i class="fa fa-bullseye me-1"></i> Targets & Goals</span>
@@ -371,7 +371,7 @@
         </div>
       </div>
 
-      <!-- 2. MEMBER-WISE PERFORMANCE BREAKDOWN ACCORDION -->
+      <!-- 2. MEMBER-WISE BREAKDOWN ACCORDION -->
       <div class="app-card p-2 mb-2 bg-white">
         <div class="d-flex justify-content-between align-items-center mb-1 px-1">
           <span class="fw-bold text-dark extra-small"><i class="fa fa-users me-1 text-primary"></i> Team Member Performance</span>
@@ -466,8 +466,8 @@
             <label class="form-label extra-small mb-0">Delivery Status</label>
             <select id="filterDispatchStatus" onchange="applyFilters()" class="form-select form-select-sm bg-white">
               <option value="ALL">All Delivery</option>
+              <option value="Pending">Pending</option>
               <option value="Dispatched">Dispatched</option>
-              <option value="Intransit">Intransit</option>
               <option value="Delivered">Delivered</option>
             </select>
           </div>
@@ -625,10 +625,6 @@
 
           <div class="row g-2 mb-2">
             <div class="col-12">
-              <label class="form-label">Dispatch Info</label>
-              <input type="text" class="form-control" id="dispatch" placeholder="Dispatch details...">
-            </div>
-            <div class="col-12">
               <label class="form-label">Internal Remarks / Notes</label>
               <input type="text" class="form-control" id="remark" placeholder="Any internal notes...">
             </div>
@@ -660,8 +656,17 @@
       </div>
 
       <div class="app-card mb-3">
-        <h6 class="fw-bold text-primary mb-2 extra-small"><i class="fa fa-chart-pie me-1"></i> Power BI Executive Reports</h6>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-primary mb-0 extra-small"><i class="fa fa-chart-pie me-1"></i> Power BI Reports</h6>
+          <span class="badge bg-dark extra-small" id="mobAnalyticsChartBadge">Team</span>
+        </div>
+        
+        <!-- ROLE-BASED SALESPERSON FILTER IN VISUAL ANALYTICS -->
         <div class="mb-2">
+          <label class="form-label extra-small mb-1 text-muted">Filter Analytics Member:</label>
+          <select id="analyticsFilterSalesPersonMob" class="form-select form-select-sm fw-bold border-secondary mb-2" onchange="renderMobilePowerBiDashboard()">
+            <option value="ALL">All Team Members</option>
+          </select>
           <select id="powerBiReportSelect" class="form-select form-select-sm fw-bold border-primary" onchange="renderMobilePowerBiDashboard()">
             <option value="funnel">📈 Sales Funnel & Pipeline Velocity</option>
             <option value="brands">🏷️ Brand Performance Matrix</option>
@@ -739,16 +744,15 @@
 
   <!-- BOTTOM NAVIGATION -->
   <div class="app-bottom-nav">
-        <a class="nav-btn" id="nb-add" onclick="switchTab('add')">
-      <i class="fa fa-plus-circle"></i>Add Lead
-    </a>
     <a class="nav-btn" id="nb-leads" onclick="switchTab('leads')">
       <i class="fa fa-list"></i>Leads
     </a>
     <a class="nav-btn" id="nb-todo" onclick="switchTab('todo')">
       <i class="fa fa-calendar-check"></i>To-Do
     </a>
-
+    <a class="nav-btn" id="nb-add" onclick="switchTab('add')">
+      <i class="fa fa-plus-circle"></i>Add Lead
+    </a>
     <a class="nav-btn" id="nb-analytics" onclick="switchTab('analytics')">
       <i class="fa fa-chart-pie"></i>Analytics
     </a>
@@ -906,19 +910,17 @@
             <label class="form-label">Payment Terms</label>
             <input type="text" id="editPaymentTerms" class="form-control" placeholder="Terms...">
           </div>
-          <div class="col-12">
-            <label class="form-label">Dispatch Info</label>
-            <input type="text" id="editDispatch" class="form-control" placeholder="Dispatch details...">
-          </div>
-          <!-- Delivery Status Box (Only visible when Won) -->
+
+          <!-- Delivery Status: STRICTLY DISPLAYED AND SAVED ONLY WHEN STATUS IS WON -->
           <div class="col-12 d-none" id="wonDeliveryStatusWrapper">
             <label class="form-label text-info fw-bold">Delivery Status (Won Leads)</label>
             <select id="editDispatchStatus" class="form-select fw-bold border-info">
+              <option value="Pending">Pending</option>
               <option value="Dispatched">Dispatched</option>
-              <option value="Intransit">Intransit</option>
               <option value="Delivered">Delivered</option>
             </select>
           </div>
+
           <div id="modalLostReasonContainer" class="col-12 d-none">
             <label class="form-label text-danger">Lost Reason Details *</label>
             <input type="text" id="editLostReason" class="form-control border-danger" placeholder="Reason for deal loss...">
@@ -1359,7 +1361,7 @@
     masterSalesPersons = data.salesPersons || [];
     renderBrandCheckboxesMob(data.brands || []);
 
-    const role = loggedInUser && loggedInUser.role ? String(loggedInUser.role).toLowerCase() : '';
+    const role = loggedInUser && loggedInUser.role ? loggedInUser.role.toLowerCase() : '';
     const isAdmin = role.indexOf('admin') > -1;
     const isManager = role.indexOf('manager') > -1;
     const isMgmt = isAdmin || isManager;
@@ -1382,6 +1384,21 @@
 
     const mobExportSpSelect = document.getElementById('mobExportSpSelect');
     if (mobExportSpSelect) mobExportSpSelect.innerHTML = mobExportSpOpts;
+
+    // ROLE-BASED POPULATION FOR VISUAL ANALYTICS SALESPERSON FILTER (MOBILE)
+    const analyticsSpFilterEl = document.getElementById('analyticsFilterSalesPersonMob');
+    if (analyticsSpFilterEl) {
+      if (isMgmt) {
+        let anOpts = '<option value="ALL">All Team Members</option>';
+        masterSalesPersons.forEach(sp => { anOpts += `<option value="${sp}">${sp}</option>`; });
+        analyticsSpFilterEl.innerHTML = anOpts;
+        analyticsSpFilterEl.disabled = false;
+      } else {
+        analyticsSpFilterEl.innerHTML = `<option value="${loggedInUser.salesPerson}">${loggedInUser.salesPerson}</option>`;
+        analyticsSpFilterEl.value = loggedInUser.salesPerson;
+        analyticsSpFilterEl.disabled = true;
+      }
+    }
 
     const spInputEl = document.getElementById('salesPersonInput');
     const transferWrapper = document.getElementById('transferActionWrapper');
@@ -1760,16 +1777,17 @@
       let payFup = item.paymentFollowup ? `<span class="badge bg-light text-success border border-success">${item.paymentFollowup}</span>` : '<span class="badge bg-light text-muted border">Not Set</span>';
       
       let deliveryBadge = '';
-      if (String(item.status).toLowerCase() === 'won') {
-        let dVal = item.dispatch || 'Pending';
+      // ONLY DISPLAY DELIVERY BADGE IF STATUS IS WON AND DELIVERY IS SET
+      if (String(item.status).toLowerCase() === 'won' && item.dispatch) {
+        let dVal = item.dispatch;
         let dColor = 'bg-secondary';
         if (dVal === 'Dispatched') dColor = 'bg-info text-dark';
-        if (dVal === 'Intransit') dColor = 'bg-warning text-dark';
+        if (dVal === 'Pending') dColor = 'bg-warning text-dark';
         if (dVal === 'Delivered') dColor = 'bg-success';
         deliveryBadge = `<span class="badge ${dColor} ms-1">Delivery: ${escapeHtml(dVal)}</span>`;
       }
 
-      let duplicateWarningIcon = item.isDuplicate ? `<span class="badge bg-warning text-dark ms-1">⚠️ Duplicate</span>` : '';
+      let duplicateWarningIcon = item.isDuplicate ? `<span class="badge bg-warning text-dark ms-1" title="${escapeHtml(item.isDuplicate)}">⚠️ Duplicate</span>` : '';
 
       html += `
         <div class="lead-card" onclick="openEditModal('${item.id}')">
@@ -1975,7 +1993,6 @@
     document.getElementById('editLeadFollowup').value = item.leadFollowup || '';
     document.getElementById('editPaymentTerms').value = item.paymentTerms || '';
     document.getElementById('editPaymentFollowup').value = item.paymentFollowup || '';
-    document.getElementById('editDispatch').value = item.dispatch || '';
     document.getElementById('editDispatchStatus').value = item.dispatch || 'Pending';
     document.getElementById('editLostReason').value = item.lostReason || '';
     document.getElementById('editRemark').value = item.remark || '';
@@ -2153,7 +2170,10 @@
       saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Saving Updates...';
     }
 
-    const dispatchVal = (stVal === 'Won') ? document.getElementById('editDispatchStatus').value : document.getElementById('editDispatch').value;
+    // DELIVERY STATUS RULE: STRICTLY BLANK UNLESS STATUS IS WON
+    const dispatchVal = (stVal.toLowerCase() === 'won') 
+      ? (document.getElementById('editDispatchStatus').value || 'Pending') 
+      : '';
 
     const payload = {
       id: document.getElementById('editEnqId').value,
@@ -2419,7 +2439,8 @@
       paymentTerms: termsSelect.options[termsSelect.selectedIndex].text,
       paymentTermsDays: termsSelect.value,
       paymentFollowup: document.getElementById('paymentFollowupDateMob').value,
-      dispatch: document.getElementById('dispatch').value,
+      // DELIVERY DISPATCH ALWAYS REMAINS BLANK FOR NEW LEADS
+      dispatch: '',
       remark: document.getElementById('remark').value,
       latitude: userGeoCoords ? userGeoCoords.latitude : '',
       longitude: userGeoCoords ? userGeoCoords.longitude : ''
@@ -2440,21 +2461,31 @@
     }
   }
 
+  // UPDATED MOBILE VISUAL ANALYTICS WITH ROLE-BASED SALESPERSON FILTER
   async function renderMobilePowerBiDashboard() {
     if (!globalEnquiries) return;
     const reportType = document.getElementById('powerBiReportSelect').value;
+    const spFilterEl = document.getElementById('analyticsFilterSalesPersonMob');
+    const selectedSp = spFilterEl ? spFilterEl.value : 'ALL';
+
+    let analyticsList = globalEnquiries;
+    if (selectedSp !== 'ALL') {
+      analyticsList = analyticsList.filter(e => String(e.salesPerson || '').toLowerCase() === selectedSp.toLowerCase());
+    }
 
     let wonVal = 0, pipelineVal = 0;
-    globalEnquiries.forEach(e => {
+    analyticsList.forEach(e => {
       let v = Number(e.value) || 0, s = String(e.status).toLowerCase();
       if (s === 'won') wonVal += v; else if (s !== 'lost') pipelineVal += v;
     });
 
-    document.getElementById('statTotalEnq').innerText = globalEnquiries.length;
+    document.getElementById('statTotalEnq').innerText = analyticsList.length;
     document.getElementById('statWonValue').innerText = '₹' + wonVal.toLocaleString();
 
-    const res = await callAppsScriptApi("getAdvancedAnalyticsData", { user: loggedInUser });
-    if (!res || !res.success) return;
+    const chartBadge = document.getElementById('mobAnalyticsChartBadge');
+    if (chartBadge) {
+      chartBadge.innerText = (selectedSp === 'ALL') ? 'Team' : selectedSp;
+    }
 
     const ctx = document.getElementById('powerBiCanvas');
     if (powerBiMobileChartInstance) powerBiMobileChartInstance.destroy();
@@ -2463,43 +2494,76 @@
 
     if (reportType === 'funnel') {
       document.getElementById('powerBiChartTitle').innerText = "Sales Funnel & Pipeline Velocity";
-      const funnel = res.funnel;
+      let fVal = { 'New Lead': 0, 'Hot lead': 0, 'Live': 0, 'Won': 0, 'Lost': 0 };
+
+      analyticsList.forEach(e => {
+        let st = e.status;
+        let v = Number(e.value) || 0;
+        if (st === 'Quoted') st = 'Live';
+        if (fVal[st] !== undefined) fVal[st] += v;
+      });
+
       chartConfig.data = {
-        labels: ['New', 'Hot', 'Live', 'Won', 'Lost'],
-        datasets: [{ label: 'Value (₹)', data: [funnel['New Lead'].value, funnel['Hot lead'].value, funnel['Live'].value, funnel['Won'].value, funnel['Lost'].value], backgroundColor: ['#6c757d', '#ffc107', '#0dcaf0', '#198754', '#dc3545'] }]
+        labels: ['New', 'Hot', 'Live/Quoted', 'Won', 'Lost'],
+        datasets: [{ label: 'Value (₹)', data: [fVal['New Lead'], fVal['Hot lead'], fVal['Live'], fVal['Won'], fVal['Lost']], backgroundColor: ['#6c757d', '#ffc107', '#0dcaf0', '#198754', '#dc3545'] }]
       };
     } else if (reportType === 'brands') {
       document.getElementById('powerBiChartTitle').innerText = "Brand Performance Matrix";
-      const brands = res.brands;
-      const labels = Object.keys(brands);
+      let brandMap = {};
+      analyticsList.forEach(e => {
+        let b = e.brand || 'Other';
+        let v = Number(e.value) || 0;
+        let isWon = String(e.status).toLowerCase() === 'won';
+        if (!brandMap[b]) brandMap[b] = 0;
+        if (isWon) brandMap[b] += v;
+      });
+      const labels = Object.keys(brandMap).slice(0, 8);
       chartConfig.data = {
         labels: labels,
-        datasets: [{ label: 'Won (₹)', data: labels.map(l => brands[l].wonValue), backgroundColor: '#198754' }]
+        datasets: [{ label: 'Won (₹)', data: labels.map(l => brandMap[l]), backgroundColor: '#198754' }]
       };
     } else if (reportType === 'marketing') {
       document.getElementById('powerBiChartTitle').innerText = "Lead Source / Marketing ROI";
-      const modes = res.modes;
-      const labels = Object.keys(modes);
+      let modeMap = {};
+      analyticsList.forEach(e => {
+        let m = e.mode || 'Direct';
+        let v = Number(e.value) || 0;
+        if (!modeMap[m]) modeMap[m] = 0;
+        modeMap[m] += v;
+      });
+      const labels = Object.keys(modeMap);
       chartConfig.type = 'doughnut';
       chartConfig.data = {
         labels: labels,
-        datasets: [{ data: labels.map(l => modes[l].wonValue), backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#0dcaf0', '#dc3545'] }]
+        datasets: [{ data: labels.map(l => modeMap[l]), backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#0dcaf0', '#dc3545'] }]
       };
     } else if (reportType === 'productivity') {
       document.getElementById('powerBiChartTitle').innerText = "Team Activity vs Revenue";
-      const sps = res.teamProductivity;
-      const labels = Object.keys(sps);
+      let spMap = {};
+      analyticsList.forEach(e => {
+        let sp = e.salesPerson || 'Unassigned';
+        let v = Number(e.value) || 0;
+        let isWon = String(e.status).toLowerCase() === 'won';
+        if (!spMap[sp]) spMap[sp] = 0;
+        if (isWon) spMap[sp] += v;
+      });
+      const labels = Object.keys(spMap);
       chartConfig.data = {
         labels: labels,
-        datasets: [{ label: 'Won Revenue (₹)', data: labels.map(l => sps[l].wonRevenue), backgroundColor: '#198754' }]
+        datasets: [{ label: 'Won Revenue (₹)', data: labels.map(l => spMap[l]), backgroundColor: '#198754' }]
       };
     } else if (reportType === 'cashflow') {
       document.getElementById('powerBiChartTitle').innerText = "Cash Flow & Payment Aging";
-      const pays = res.payments;
+      let pMap = { 'Fully Paid': 0, 'Advance Received': 0, 'Partial': 0, 'Pending': 0, 'Credit': 0 };
+      analyticsList.forEach(e => {
+        let p = e.paymentStatus || 'Pending';
+        let v = Number(e.value) || 0;
+        if (pMap[p] !== undefined) pMap[p] += v;
+      });
       chartConfig.type = 'pie';
       chartConfig.data = {
         labels: ['Paid', 'Advance', 'Partial', 'Pending', 'Credit'],
-        datasets: [{ data: [pays['Fully Paid'] ? pays['Fully Paid'].value : 0, pays['Advance Received'] ? pays['Advance Received'].value : 0, pays['Partial'] ? pays['Partial'].value : 0, pays['Pending'] ? pays['Pending'].value : 0, pays['Credit'] ? pays['Credit'].value : 0], backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545', '#0f172a'] }]
+        datasets: [{ data: [pMap['Fully Paid'], pMap['Advance Received'], pMap['Partial'], pMap['Pending'], pMap['Credit']], backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545', '#0f172a'] }]
       };
     }
 
@@ -2527,7 +2591,7 @@
     location.reload();
   }
 
-  // TEAM & INDIVIDUAL TARGET DISPLAY LOGIC (MATCHING WEB VERSION)
+  // TEAM & INDIVIDUAL TARGET DISPLAY LOGIC
   async function loadSidebarTargetInfo() {
     if (!loggedInUser) return;
     
