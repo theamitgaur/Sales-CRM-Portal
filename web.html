@@ -558,61 +558,89 @@
         </div>
       </div>
 
-      <!-- MODULE: CUSTOMER & PRODUCT SALES MIS REPORT (NEW) -->
+      <!-- MODULE: DYNAMIC CUSTOMER & SALESPERSON MIS INTELLIGENCE -->
       <div id="misModule" class="d-none">
         <div class="card p-4 mb-4 shadow-sm border-0">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <div>
-              <h5 class="fw-bold text-primary m-0"><i class="fa fa-chart-column me-2"></i>Customer & Product Revenue Comparison (Yearly & Monthly)</h5>
-              <small class="text-muted">Sorted highest to lowest revenue | FY 24-25 vs FY 25-26 vs FY 26-27</small>
+              <h5 class="fw-bold text-primary m-0"><i class="fa fa-chart-line me-2"></i>Salesperson & Customer Sales Intelligence MIS</h5>
+              <small class="text-muted">Dynamic comparison | Highest to Lowest Revenue | Multi-Year YoY Growth</small>
             </div>
             <div class="d-flex gap-2">
               <button class="btn btn-sm btn-outline-primary fw-bold" onclick="loadCustomerMisReport()"><i class="fa fa-rotate me-1"></i> Refresh</button>
-              <button class="btn btn-sm btn-success fw-bold" onclick="exportMisTableToCSV()"><i class="fa fa-file-excel me-1"></i> Export MIS</button>
+              <button class="btn btn-sm btn-success fw-bold" onclick="exportMisTableToCSV()"><i class="fa fa-file-excel me-1"></i> Export Excel/CSV</button>
             </div>
           </div>
 
-          <!-- FILTERS BAR -->
+          <!-- ADVANCED PIVOT & DATE CONTROLS BAR -->
           <div class="p-3 bg-light rounded-3 border mb-3">
             <div class="row g-2 align-items-end">
               <div class="col-md-3">
-                <label class="form-label mb-1">Sales Person</label>
-                <select id="misFilterSp" class="form-select form-select-sm fw-bold" onchange="loadCustomerMisReport()">
+                <label class="form-label mb-1">1. Salesperson</label>
+                <select id="misFilterSp" class="form-select form-select-sm fw-bold border-primary" onchange="loadCustomerMisReport()">
                   <option value="ALL">All Team Members</option>
                 </select>
               </div>
+
+              <div class="col-md-2">
+                <label class="form-label mb-1">From Date</label>
+                <input type="date" id="misFromDate" class="form-control form-control-sm bg-white" onchange="loadCustomerMisReport()">
+              </div>
+
+              <div class="col-md-2">
+                <label class="form-label mb-1">To Date</label>
+                <input type="date" id="misToDate" class="form-control form-control-sm bg-white" onchange="loadCustomerMisReport()">
+              </div>
+
+              <div class="col-md-2">
+                <label class="form-label mb-1">Compare Base FY</label>
+                <select id="misCompareYear1" class="form-select form-select-sm fw-bold" onchange="renderMisTable(rawMisReportData)">
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <div class="col-md-2">
+                <label class="form-label mb-1">Compare Target FY</label>
+                <select id="misCompareYear2" class="form-select form-select-sm fw-bold border-success text-success" onchange="renderMisTable(rawMisReportData)">
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <div class="col-md-1">
+                <button class="btn btn-sm btn-outline-secondary w-100" onclick="clearMisDateFilter()" title="Clear Dates">Reset</button>
+              </div>
+            </div>
+
+            <div class="row g-2 mt-2 align-items-center">
+              <div class="col-md-5">
+                <input type="text" id="misSearchCustomer" class="form-control form-control-sm bg-white" placeholder="🔍 Search Customer..." oninput="filterMisTableLive()">
+              </div>
               <div class="col-md-4">
-                <label class="form-label mb-1">🔍 Search Specific Customer</label>
-                <input type="text" id="misSearchCustomer" class="form-control form-control-sm bg-white" placeholder="Type customer name..." oninput="filterMisTableLive()">
+                <input type="text" id="misSearchProduct" class="form-control form-control-sm bg-white" placeholder="🏷️ Filter by Product / Brand..." oninput="filterMisTableLive()">
               </div>
-              <div class="col-md-3">
-                <label class="form-label mb-1">Product / Brand Keyword</label>
-                <input type="text" id="misSearchProduct" class="form-control form-control-sm bg-white" placeholder="Filter by brand/product..." oninput="filterMisTableLive()">
-              </div>
-              <div class="col-md-2 text-end">
+              <div class="col-md-3 text-end">
                 <span class="badge bg-primary fs-6 px-3 py-2 w-100" id="misTotalTurnoverBadge">Total: ₹0</span>
               </div>
             </div>
           </div>
 
-          <!-- COMPARISON TABLE (SORTED HIGHEST TO LOWEST) -->
+          <!-- RESPONSIVE COMPARISON TABLE -->
           <div class="table-responsive border rounded-3" style="max-height: 580px;">
             <table class="table table-hover align-middle small mb-0 table-bordered">
               <thead class="table-dark sticky-top text-center" style="font-size: 0.82rem;">
                 <tr>
-                  <th class="text-start" style="min-width: 200px;">Customer Name</th>
-                  <th style="min-width: 120px;">Salesperson</th>
-                  <th style="min-width: 130px;" class="bg-primary text-white">Total Revenue (₹)</th>
-                  <th style="min-width: 110px;">FY 24-25</th>
-                  <th style="min-width: 110px;">FY 25-26</th>
-                  <th style="min-width: 110px;">FY 26-27</th>
-                  <th style="min-width: 90px;">YoY Growth</th>
-                  <th class="text-start" style="min-width: 250px;">Products / Brands Delivered</th>
-                  <th style="min-width: 80px;">Action</th>
+                  <th class="text-start" style="min-width: 220px;">Customer Name</th>
+                  <th style="min-width: 140px;">Salesperson</th>
+                  <th style="min-width: 140px;" class="bg-primary text-white">Total Revenue (₹)</th>
+                  <th style="min-width: 120px;" id="misThYear1">Base FY</th>
+                  <th style="min-width: 120px;" id="misThYear2">Target FY</th>
+                  <th style="min-width: 100px;">YoY Growth</th>
+                  <th class="text-start" style="min-width: 260px;">Products & Brands Delivered</th>
+                  <th style="min-width: 80px;">Breakdown</th>
                 </tr>
               </thead>
               <tbody id="misReportTableBody">
-                <tr><td colspan="9" class="text-center text-muted py-4">Loading Customer MIS Report...</td></tr>
+                <tr><td colspan="8" class="text-center text-muted py-4">Loading Customer MIS Report...</td></tr>
               </tbody>
             </table>
           </div>
@@ -978,7 +1006,7 @@
           <table class="table table-sm table-striped table-bordered small">
             <thead class="table-light">
               <tr>
-                <th>FY & Month</th>
+                <th>Month & Year</th>
                 <th class="text-end">Value Won (₹)</th>
               </tr>
             </thead>
@@ -1346,6 +1374,7 @@
   let selectedTodoDateStr = '';
   let notificationHistory = JSON.parse(localStorage.getItem('portal_notif_history') || '[]');
   let rawMisReportData = [];
+  let availableFinancialYears = [];
 
   function escapeHtml(str) {
     if (!str) return '';
@@ -1931,7 +1960,6 @@
       paymentTerms: termsSelect.options[termsSelect.selectedIndex].text,
       paymentTermsDays: termsSelect.value,
       paymentFollowup: document.getElementById('paymentFollowupDate').value,
-      // DELIVERY MUST BE BLANK WHEN ADDING A NEW LEAD
       dispatch: '',
       remark: document.getElementById('remark').value,
       latitude: userGeoCoords ? userGeoCoords.latitude : '',
@@ -2321,7 +2349,6 @@
         let payFup = item.paymentFollowup ? `<span class="badge bg-light text-success border border-success">${escapeHtml(item.paymentFollowup)}</span>` : '<span class="badge bg-light text-muted border">Not Set</span>';
         
         let dispatchHtml = '<span class="text-muted">-</span>';
-        // ONLY DISPLAY DISPATCH STATUS IF WON
         if (String(item.status).toLowerCase() === 'won' && item.dispatch) {
           let dispatchVal = item.dispatch;
           let dispatchBadgeColor = 'bg-secondary';
@@ -2605,7 +2632,6 @@
     const payTermsVal = document.getElementById('editPaymentTerms').value;
     const payFupVal = document.getElementById('editPaymentFollowup').value;
 
-    // DELIVERY STATUS RULE: STRICTLY BLANK UNLESS STATUS IS WON
     const dispatchVal = (stVal.toLowerCase() === 'won')
       ? (document.getElementById('editDispatchStatus').value || 'Pending')
       : '';
@@ -2876,42 +2902,94 @@
     powerBiChartInstance = new Chart(ctx, chartConfig);
   }
 
-  // --- CUSTOMER & PRODUCT SALES MIS REPORT FUNCTIONS ---
+  // --- DYNAMIC CUSTOMER SALES INTELLIGENCE (MIS) FUNCTIONS ---
   async function loadCustomerMisReport() {
     const tbody = document.getElementById('misReportTableBody');
-    if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4"><i class="fa fa-spinner fa-spin me-2"></i>Loading sales intelligence data...</td></tr>';
+    if (tbody) {
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4"><i class="fa fa-spinner fa-spin me-2"></i>Loading sales intelligence report...</td></tr>';
+    }
 
     const role = String(loggedInUser.role || '').toLowerCase();
     const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
     const spSelect = document.getElementById('misFilterSp');
-    
+
     let targetSp = 'ALL';
     if (!isMgmt) {
       targetSp = loggedInUser.salesPerson;
+      if (spSelect) {
+        spSelect.innerHTML = `<option value="${loggedInUser.salesPerson}">${loggedInUser.salesPerson}</option>`;
+        spSelect.disabled = true;
+      }
     } else {
       targetSp = spSelect ? spSelect.value : 'ALL';
     }
 
+    const fromDate = document.getElementById('misFromDate') ? document.getElementById('misFromDate').value : '';
+    const toDate = document.getElementById('misToDate') ? document.getElementById('misToDate').value : '';
+
     const res = await callAppsScriptApi("getCustomerYearlyComparisonReport", {
       salesPerson: targetSp,
+      fromDate: fromDate,
+      toDate: toDate,
       user: loggedInUser
     });
 
     if (res && res.success) {
       rawMisReportData = res.report || [];
+      availableFinancialYears = res.availableYears || [];
+      populateDynamicYearSelectors(availableFinancialYears);
       renderMisTable(rawMisReportData);
     } else {
-      if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger py-4">Failed to load report: ${res ? res.message : 'Error'}</td></tr>`;
+      if (tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">Failed: ${res ? res.message : 'Error'}</td></tr>`;
     }
+  }
+
+  function populateDynamicYearSelectors(years) {
+    const sel1 = document.getElementById('misCompareYear1');
+    const sel2 = document.getElementById('misCompareYear2');
+    if (!sel1 || !sel2) return;
+
+    let yList = (years && years.length > 0) ? years.slice() : ['FY 24-25', 'FY 25-26', 'FY 26-27'];
+
+    const cur1 = sel1.value;
+    const cur2 = sel2.value;
+
+    let opts = '';
+    yList.forEach(y => { opts += `<option value="${y}">${y}</option>`; });
+    sel1.innerHTML = opts;
+    sel2.innerHTML = opts;
+
+    if (cur1 && yList.includes(cur1)) sel1.value = cur1;
+    else sel1.value = yList.length >= 2 ? yList[yList.length - 2] : yList[0];
+
+    if (cur2 && yList.includes(cur2)) sel2.value = cur2;
+    else sel2.value = yList[yList.length - 1];
+  }
+
+  function clearMisDateFilter() {
+    if (document.getElementById('misFromDate')) document.getElementById('misFromDate').value = '';
+    if (document.getElementById('misToDate')) document.getElementById('misToDate').value = '';
+    loadCustomerMisReport();
   }
 
   function renderMisTable(list) {
     const tbody = document.getElementById('misReportTableBody');
     const turnoverBadge = document.getElementById('misTotalTurnoverBadge');
+    const sel1 = document.getElementById('misCompareYear1');
+    const sel2 = document.getElementById('misCompareYear2');
+    const th1 = document.getElementById('misThYear1');
+    const th2 = document.getElementById('misThYear2');
+
+    const y1 = sel1 ? sel1.value : 'Base FY';
+    const y2 = sel2 ? sel2.value : 'Target FY';
+
+    if (th1) th1.innerText = y1 || 'Base FY';
+    if (th2) th2.innerText = y2 || 'Target FY';
+
     if (!tbody) return;
 
     if (!list || list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">No closed (Won) sales records found for this criteria.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">No records found for selected criteria.</td></tr>';
       if (turnoverBadge) turnoverBadge.innerText = 'Total: ₹0';
       return;
     }
@@ -2922,26 +3000,30 @@
     list.forEach(item => {
       totalAllRevenue += item.totalRevenue;
 
+      const valY1 = (item.fyBreakdown && item.fyBreakdown[y1]) ? Number(item.fyBreakdown[y1]) : 0;
+      const valY2 = (item.fyBreakdown && item.fyBreakdown[y2]) ? Number(item.fyBreakdown[y2]) : 0;
+
       let growthHtml = '<span class="text-muted">-</span>';
-      if (item.fy25_26 > 0 && item.fy26_27 > 0) {
-        let pct = Math.round(((item.fy26_27 - item.fy25_26) / item.fy25_26) * 100);
+      if (valY1 > 0 && valY2 > 0) {
+        let pct = Math.round(((valY2 - valY1) / valY1) * 100);
         let gColor = pct >= 0 ? 'text-success' : 'text-danger';
         let icon = pct >= 0 ? '▲' : '▼';
         growthHtml = `<span class="${gColor} fw-bold">${icon} ${pct}%</span>`;
+      } else if (valY1 === 0 && valY2 > 0) {
+        growthHtml = '<span class="text-success fw-bold">New (100%)</span>';
       }
 
       rows += `
         <tr>
           <td class="fw-bold text-dark">${escapeHtml(item.customer)}</td>
-          <td class="text-center"><span class="badge bg-light text-dark border">${escapeHtml(item.salesPerson)}</span></td>
+          <td class="text-center"><span class="badge bg-light text-dark border px-2 py-1">${escapeHtml(item.salesPerson)}</span></td>
           <td class="text-end fw-bold text-primary">₹${Number(item.totalRevenue).toLocaleString()}</td>
-          <td class="text-end fw-semibold">₹${Number(item.fy24_25).toLocaleString()}</td>
-          <td class="text-end fw-semibold">₹${Number(item.fy25_26).toLocaleString()}</td>
-          <td class="text-end fw-bold text-success">₹${Number(item.fy26_27).toLocaleString()}</td>
+          <td class="text-end fw-semibold">₹${Number(valY1).toLocaleString()}</td>
+          <td class="text-end fw-bold text-success">₹${Number(valY2).toLocaleString()}</td>
           <td class="text-center">${growthHtml}</td>
-          <td><small class="text-muted">${escapeHtml(item.topProducts || 'Standard Components')}</small></td>
+          <td><small class="text-dark fw-semibold">${escapeHtml(item.topProducts || 'Standard Equipment')}</small></td>
           <td class="text-center">
-            <button class="btn btn-xs btn-outline-dark py-0 px-2 extra-small" onclick="openCustomerMonthlyModal('${escapeHtml(item.customer)}')">
+            <button class="btn btn-sm btn-outline-dark py-0 px-2 extra-small" onclick="openCustomerMonthlyModal('${escapeHtml(item.customer)}')">
               <i class="fa fa-calendar-alt me-1"></i>Months
             </button>
           </td>
@@ -2996,17 +3078,28 @@
       alert("No records to export!");
       return;
     }
+    const sel1 = document.getElementById('misCompareYear1');
+    const sel2 = document.getElementById('misCompareYear2');
+    const y1 = sel1 ? sel1.value : 'Base FY';
+    const y2 = sel2 ? sel2.value : 'Target FY';
+
     let csv = [];
-    csv.push(["Customer Name", "Sales Person", "Total Revenue (INR)", "FY 24-25", "FY 25-26", "FY 26-27", "Products/Brands"]);
+    csv.push(["Customer Name", "Sales Person", "Total Revenue (INR)", y1, y2, "YoY Growth", "Products/Brands"]);
 
     rawMisReportData.forEach(r => {
+      const v1 = (r.fyBreakdown && r.fyBreakdown[y1]) ? Number(r.fyBreakdown[y1]) : 0;
+      const v2 = (r.fyBreakdown && r.fyBreakdown[y2]) ? Number(r.fyBreakdown[y2]) : 0;
+      let gStr = '-';
+      if (v1 > 0 && v2 > 0) gStr = Math.round(((v2 - v1) / v1) * 100) + '%';
+      else if (v1 === 0 && v2 > 0) gStr = '100%';
+
       csv.push([
         `"${r.customer.replace(/"/g, '""')}"`,
         `"${r.salesPerson.replace(/"/g, '""')}"`,
         r.totalRevenue,
-        r.fy24_25,
-        r.fy25_26,
-        r.fy26_27,
+        v1,
+        v2,
+        `"${gStr}"`,
         `"${(r.topProducts || '').replace(/"/g, '""')}"`
       ]);
     });
@@ -3014,7 +3107,7 @@
     const blob = new Blob([csv.map(e => e.join(",")).join("\n")], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `Sales_MIS_Customer_Report_${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `Sales_MIS_${y1}_vs_${y2}_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
   }
 
