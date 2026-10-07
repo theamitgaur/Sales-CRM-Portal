@@ -174,14 +174,31 @@
       <ul class="nav nav-pills flex-column mb-auto" id="sidebarNavList">
         <li class="nav-item"><a class="nav-link" id="tab-add-lead-btn" onclick="showTab('add-lead')">➕ Add Lead</a></li>
         <li class="nav-item" id="navItemDashboard"><a class="nav-link active" id="tab-enquiry-btn" onclick="showTab('enquiry')">📋 Dashboard</a></li>
+        <li class="nav-item" id="navItemMis"><a class="nav-link" id="tab-mis-btn" onclick="showTab('mis')">📈 Customer Sales MIS</a></li>
         <li class="nav-item" id="navItemTodo"><a class="nav-link" id="tab-todo-btn" onclick="showTab('todo')">✅ To-Do List</a></li>
         <li class="nav-item" id="navItemAnalytics"><a class="nav-link" id="tab-analytics-btn" onclick="showTab('analytics')">📊 Visual Analytics</a></li>
         <li class="nav-item" id="navItemLost"><a class="nav-link" id="tab-lost-btn" onclick="showTab('lost')">❌ Lost Enquiries</a></li>
         <li class="nav-item" id="navItemActivity"><a class="nav-link" id="tab-activity-btn" onclick="showTab('activity')">📞 Calls & Visits</a></li>
       </ul>
+
+      <!-- TARGETS & GOALS WIDGET WITH FINANCIAL MONTH SELECTOR -->
       <div class="p-2 mb-2 bg-dark rounded border border-secondary text-white small shadow-sm" id="sidebarTargetWidget">
-        <div class="fw-bold text-info mb-2 d-flex justify-content-between align-items-center">
-          <span><i class="fa fa-bullseye me-1"></i> Targets & Goals</span>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="fw-bold text-info"><i class="fa fa-bullseye me-1"></i> Targets</span>
+          <select id="targetMonthSelector" class="form-select form-select-sm py-0 px-1 border-secondary bg-dark text-white" style="width: auto; max-width: 105px; font-size: 0.72rem;" onchange="loadSidebarTargetInfo()">
+            <option value="1">April</option>
+            <option value="2">May</option>
+            <option value="3">June</option>
+            <option value="4">July</option>
+            <option value="5">August</option>
+            <option value="6">September</option>
+            <option value="7">October</option>
+            <option value="8">November</option>
+            <option value="9">December</option>
+            <option value="10">January</option>
+            <option value="11">February</option>
+            <option value="12">March</option>
+          </select>
         </div>
         
         <div class="d-flex justify-content-between extra-small mb-1">
@@ -541,6 +558,67 @@
         </div>
       </div>
 
+      <!-- MODULE: CUSTOMER & PRODUCT SALES MIS REPORT (NEW) -->
+      <div id="misModule" class="d-none">
+        <div class="card p-4 mb-4 shadow-sm border-0">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+              <h5 class="fw-bold text-primary m-0"><i class="fa fa-chart-column me-2"></i>Customer & Product Revenue Comparison (Yearly & Monthly)</h5>
+              <small class="text-muted">Sorted highest to lowest revenue | FY 24-25 vs FY 25-26 vs FY 26-27</small>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-primary fw-bold" onclick="loadCustomerMisReport()"><i class="fa fa-rotate me-1"></i> Refresh</button>
+              <button class="btn btn-sm btn-success fw-bold" onclick="exportMisTableToCSV()"><i class="fa fa-file-excel me-1"></i> Export MIS</button>
+            </div>
+          </div>
+
+          <!-- FILTERS BAR -->
+          <div class="p-3 bg-light rounded-3 border mb-3">
+            <div class="row g-2 align-items-end">
+              <div class="col-md-3">
+                <label class="form-label mb-1">Sales Person</label>
+                <select id="misFilterSp" class="form-select form-select-sm fw-bold" onchange="loadCustomerMisReport()">
+                  <option value="ALL">All Team Members</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label mb-1">🔍 Search Specific Customer</label>
+                <input type="text" id="misSearchCustomer" class="form-control form-control-sm bg-white" placeholder="Type customer name..." oninput="filterMisTableLive()">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label mb-1">Product / Brand Keyword</label>
+                <input type="text" id="misSearchProduct" class="form-control form-control-sm bg-white" placeholder="Filter by brand/product..." oninput="filterMisTableLive()">
+              </div>
+              <div class="col-md-2 text-end">
+                <span class="badge bg-primary fs-6 px-3 py-2 w-100" id="misTotalTurnoverBadge">Total: ₹0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- COMPARISON TABLE (SORTED HIGHEST TO LOWEST) -->
+          <div class="table-responsive border rounded-3" style="max-height: 580px;">
+            <table class="table table-hover align-middle small mb-0 table-bordered">
+              <thead class="table-dark sticky-top text-center" style="font-size: 0.82rem;">
+                <tr>
+                  <th class="text-start" style="min-width: 200px;">Customer Name</th>
+                  <th style="min-width: 120px;">Salesperson</th>
+                  <th style="min-width: 130px;" class="bg-primary text-white">Total Revenue (₹)</th>
+                  <th style="min-width: 110px;">FY 24-25</th>
+                  <th style="min-width: 110px;">FY 25-26</th>
+                  <th style="min-width: 110px;">FY 26-27</th>
+                  <th style="min-width: 90px;">YoY Growth</th>
+                  <th class="text-start" style="min-width: 250px;">Products / Brands Delivered</th>
+                  <th style="min-width: 80px;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="misReportTableBody">
+                <tr><td colspan="9" class="text-center text-muted py-4">Loading Customer MIS Report...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- MODULE: ADD LEAD -->
       <div id="add-leadModule" class="d-none">
         <div class="card p-4 mb-4" id="createEnquiryCardWrapper">
@@ -737,7 +815,6 @@
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <h5 class="mb-0 text-primary fw-bold"><i class="fa fa-chart-pie me-2"></i>Executive Power BI Analytics Dashboard</h5>
             <div class="d-flex gap-2 align-items-center">
-              <!-- ROLE-BASED ANALYTICS SALESPERSON FILTER -->
               <select id="analyticsFilterSalesPerson" class="form-select form-select-sm fw-bold border-secondary" style="min-width: 180px;" onchange="renderPowerBiDashboard()">
                 <option value="ALL">All Team Members</option>
               </select>
@@ -884,6 +961,34 @@
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- SINGLE CUSTOMER MONTH-WISE HISTORY MODAL -->
+<div class="modal fade" id="customerMonthlyLedgerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title fw-bold"><i class="fa fa-history me-2 text-warning"></i>Monthly Breakdown: <span id="modalLedgerCustName"></span></h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3">
+        <div class="table-responsive" style="max-height: 320px;">
+          <table class="table table-sm table-striped table-bordered small">
+            <thead class="table-light">
+              <tr>
+                <th>FY & Month</th>
+                <th class="text-end">Value Won (₹)</th>
+              </tr>
+            </thead>
+            <tbody id="customerMonthlyLedgerTbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1240,6 +1345,7 @@
   let todoCalCurrentDate = new Date();
   let selectedTodoDateStr = '';
   let notificationHistory = JSON.parse(localStorage.getItem('portal_notif_history') || '[]');
+  let rawMisReportData = [];
 
   function escapeHtml(str) {
     if (!str) return '';
@@ -1416,11 +1522,13 @@
       const navLost = document.getElementById('navItemLost');
       const navActivity = document.getElementById('navItemActivity');
       const navDashboard = document.getElementById('navItemDashboard');
+      const navMis = document.getElementById('navItemMis');
 
       if (navAnalytics) navAnalytics.style.display = 'none';
       if (navLost) navLost.style.display = 'none';
       if (navActivity) navActivity.style.display = 'none';
       if (navDashboard) navDashboard.style.display = 'none';
+      if (navMis) navMis.style.display = 'none';
     }
   }
 
@@ -1622,18 +1730,29 @@
       }
     }
 
-    // ROLE-BASED POPULATION FOR VISUAL ANALYTICS SALESPERSON FILTER
+    // ROLE-BASED POPULATION FOR VISUAL ANALYTICS & MIS FILTER
     const analyticsSpFilterEl = document.getElementById('analyticsFilterSalesPerson');
+    const misSpFilterEl = document.getElementById('misFilterSp');
+
     if (analyticsSpFilterEl) {
       if (isMgmt) {
         let anOpts = '<option value="ALL">All Team Members</option>';
         masterSalesPersons.forEach(sp => { anOpts += `<option value="${sp}">${sp}</option>`; });
         analyticsSpFilterEl.innerHTML = anOpts;
         analyticsSpFilterEl.disabled = false;
+        if (misSpFilterEl) {
+          misSpFilterEl.innerHTML = anOpts;
+          misSpFilterEl.disabled = false;
+        }
       } else {
         analyticsSpFilterEl.innerHTML = `<option value="${loggedInUser.salesPerson}">${loggedInUser.salesPerson}</option>`;
         analyticsSpFilterEl.value = loggedInUser.salesPerson;
         analyticsSpFilterEl.disabled = true;
+        if (misSpFilterEl) {
+          misSpFilterEl.innerHTML = `<option value="${loggedInUser.salesPerson}">${loggedInUser.salesPerson}</option>`;
+          misSpFilterEl.value = loggedInUser.salesPerson;
+          misSpFilterEl.disabled = true;
+        }
       }
     }
 
@@ -1812,7 +1931,7 @@
       paymentTerms: termsSelect.options[termsSelect.selectedIndex].text,
       paymentTermsDays: termsSelect.value,
       paymentFollowup: document.getElementById('paymentFollowupDate').value,
-      // NEW LEADS MUST REMAIN BLANK FOR DELIVERY/DISPATCH COLUMN
+      // DELIVERY MUST BE BLANK WHEN ADDING A NEW LEAD
       dispatch: '',
       remark: document.getElementById('remark').value,
       latitude: userGeoCoords ? userGeoCoords.latitude : '',
@@ -2689,17 +2808,13 @@
     let chartConfig = { type: 'bar', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false } };
 
     if (reportType === 'funnel') {
-      let fCount = { 'New Lead': 0, 'Hot lead': 0, 'Live': 0, 'Won': 0, 'Lost': 0 };
       let fVal = { 'New Lead': 0, 'Hot lead': 0, 'Live': 0, 'Won': 0, 'Lost': 0 };
 
       analyticsList.forEach(e => {
         let st = e.status;
         let v = Number(e.value) || 0;
         if (st === 'Quoted') st = 'Live';
-        if (fVal[st] !== undefined) {
-          fVal[st] += v;
-          fCount[st]++;
-        }
+        if (fVal[st] !== undefined) fVal[st] += v;
       });
 
       chartConfig.data = {
@@ -2759,6 +2874,148 @@
     }
 
     powerBiChartInstance = new Chart(ctx, chartConfig);
+  }
+
+  // --- CUSTOMER & PRODUCT SALES MIS REPORT FUNCTIONS ---
+  async function loadCustomerMisReport() {
+    const tbody = document.getElementById('misReportTableBody');
+    if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4"><i class="fa fa-spinner fa-spin me-2"></i>Loading sales intelligence data...</td></tr>';
+
+    const role = String(loggedInUser.role || '').toLowerCase();
+    const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
+    const spSelect = document.getElementById('misFilterSp');
+    
+    let targetSp = 'ALL';
+    if (!isMgmt) {
+      targetSp = loggedInUser.salesPerson;
+    } else {
+      targetSp = spSelect ? spSelect.value : 'ALL';
+    }
+
+    const res = await callAppsScriptApi("getCustomerYearlyComparisonReport", {
+      salesPerson: targetSp,
+      user: loggedInUser
+    });
+
+    if (res && res.success) {
+      rawMisReportData = res.report || [];
+      renderMisTable(rawMisReportData);
+    } else {
+      if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger py-4">Failed to load report: ${res ? res.message : 'Error'}</td></tr>`;
+    }
+  }
+
+  function renderMisTable(list) {
+    const tbody = document.getElementById('misReportTableBody');
+    const turnoverBadge = document.getElementById('misTotalTurnoverBadge');
+    if (!tbody) return;
+
+    if (!list || list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">No closed (Won) sales records found for this criteria.</td></tr>';
+      if (turnoverBadge) turnoverBadge.innerText = 'Total: ₹0';
+      return;
+    }
+
+    let totalAllRevenue = 0;
+    let rows = '';
+
+    list.forEach(item => {
+      totalAllRevenue += item.totalRevenue;
+
+      let growthHtml = '<span class="text-muted">-</span>';
+      if (item.fy25_26 > 0 && item.fy26_27 > 0) {
+        let pct = Math.round(((item.fy26_27 - item.fy25_26) / item.fy25_26) * 100);
+        let gColor = pct >= 0 ? 'text-success' : 'text-danger';
+        let icon = pct >= 0 ? '▲' : '▼';
+        growthHtml = `<span class="${gColor} fw-bold">${icon} ${pct}%</span>`;
+      }
+
+      rows += `
+        <tr>
+          <td class="fw-bold text-dark">${escapeHtml(item.customer)}</td>
+          <td class="text-center"><span class="badge bg-light text-dark border">${escapeHtml(item.salesPerson)}</span></td>
+          <td class="text-end fw-bold text-primary">₹${Number(item.totalRevenue).toLocaleString()}</td>
+          <td class="text-end fw-semibold">₹${Number(item.fy24_25).toLocaleString()}</td>
+          <td class="text-end fw-semibold">₹${Number(item.fy25_26).toLocaleString()}</td>
+          <td class="text-end fw-bold text-success">₹${Number(item.fy26_27).toLocaleString()}</td>
+          <td class="text-center">${growthHtml}</td>
+          <td><small class="text-muted">${escapeHtml(item.topProducts || 'Standard Components')}</small></td>
+          <td class="text-center">
+            <button class="btn btn-xs btn-outline-dark py-0 px-2 extra-small" onclick="openCustomerMonthlyModal('${escapeHtml(item.customer)}')">
+              <i class="fa fa-calendar-alt me-1"></i>Months
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = rows;
+    if (turnoverBadge) turnoverBadge.innerText = 'Total: ₹' + totalAllRevenue.toLocaleString();
+  }
+
+  function filterMisTableLive() {
+    const custQuery = document.getElementById('misSearchCustomer').value.toLowerCase().trim();
+    const prodQuery = document.getElementById('misSearchProduct').value.toLowerCase().trim();
+
+    let filtered = rawMisReportData.filter(item => {
+      let matchCust = (!custQuery || item.customer.toLowerCase().indexOf(custQuery) > -1);
+      let matchProd = (!prodQuery || (item.topProducts && item.topProducts.toLowerCase().indexOf(prodQuery) > -1));
+      return matchCust && matchProd;
+    });
+
+    renderMisTable(filtered);
+  }
+
+  function openCustomerMonthlyModal(customerName) {
+    const custObj = rawMisReportData.find(c => c.customer === customerName);
+    if (!custObj) return;
+
+    document.getElementById('modalLedgerCustName').innerText = customerName;
+    const tbody = document.getElementById('customerMonthlyLedgerTbody');
+    
+    let html = '';
+    const months = Object.keys(custObj.monthlyBreakdown || {});
+    if (months.length === 0) {
+      html = '<tr><td colspan="2" class="text-center text-muted py-2">No monthly breakdown available</td></tr>';
+    } else {
+      months.forEach(m => {
+        html += `
+          <tr>
+            <td><b>${escapeHtml(m)}</b></td>
+            <td class="text-end fw-bold text-success">₹${Number(custObj.monthlyBreakdown[m]).toLocaleString()}</td>
+          </tr>
+        `;
+      });
+    }
+    tbody.innerHTML = html;
+    new bootstrap.Modal(document.getElementById('customerMonthlyLedgerModal')).show();
+  }
+
+  function exportMisTableToCSV() {
+    if (!rawMisReportData || rawMisReportData.length === 0) {
+      alert("No records to export!");
+      return;
+    }
+    let csv = [];
+    csv.push(["Customer Name", "Sales Person", "Total Revenue (INR)", "FY 24-25", "FY 25-26", "FY 26-27", "Products/Brands"]);
+
+    rawMisReportData.forEach(r => {
+      csv.push([
+        `"${r.customer.replace(/"/g, '""')}"`,
+        `"${r.salesPerson.replace(/"/g, '""')}"`,
+        r.totalRevenue,
+        r.fy24_25,
+        r.fy25_26,
+        r.fy26_27,
+        `"${(r.topProducts || '').replace(/"/g, '""')}"`
+      ]);
+    });
+
+    const blob = new Blob([csv.map(e => e.join(",")).join("\n")], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `Sales_MIS_Customer_Report_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
   }
 
   function changeTodoCalendarMonth(step) {
@@ -2945,7 +3202,7 @@
       return;
     }
 
-    ['enquiry', 'add-lead', 'todo', 'analytics', 'lost', 'activity'].forEach(t => {
+    ['enquiry', 'add-lead', 'mis', 'todo', 'analytics', 'lost', 'activity'].forEach(t => {
       const mod = document.getElementById(t + 'Module');
       const btn = document.getElementById('tab-' + t + '-btn');
       if (mod) mod.classList.toggle('d-none', t !== tabName);
@@ -2953,6 +3210,7 @@
     });
 
     if (tabName === 'analytics') renderPowerBiDashboard();
+    if (tabName === 'mis') loadCustomerMisReport();
     if (tabName === 'activity') renderActivityCalendarAndMatrix();
     if (tabName === 'todo') renderTodoCalendar();
     if (saveState) localStorage.setItem('active_portal_tab', tabName);
@@ -2968,18 +3226,40 @@
     setTimeout(() => alertBox.classList.add('d-none'), 5000);
   }
 
+  function getInitialFinancialMonth() {
+    const m = new Date().getMonth(); // 0=Jan, 3=Apr
+    return (m >= 3) ? (m - 2) : (m + 10);
+  }
+
   async function loadSidebarTargetInfo() {
     if (!loggedInUser) return;
     let targetSp = loggedInUser.salesPerson;
     const filterEl = document.getElementById('filterSalesPerson');
+    const role = String(loggedInUser.role || '').toLowerCase();
+    const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
+
     if (filterEl && filterEl.value) {
       targetSp = (filterEl.value === 'ALL') ? 'ALL' : filterEl.value;
+    } else if (isMgmt) {
+      targetSp = 'ALL';
     }
 
     if (!targetSp) return;
 
-    const res = await callAppsScriptApi("getSalespersonTargetInfo", { targetSp: targetSp, user: loggedInUser });
-    if (res) {
+    const monthSelector = document.getElementById('targetMonthSelector');
+    if (monthSelector && !monthSelector.dataset.initialized) {
+      monthSelector.value = String(getInitialFinancialMonth());
+      monthSelector.dataset.initialized = "true";
+    }
+    const selectedMonth = monthSelector ? monthSelector.value : getInitialFinancialMonth();
+
+    const res = await callAppsScriptApi("getSalespersonTargetInfo", {
+      targetSp: targetSp,
+      selectedMonth: selectedMonth,
+      user: loggedInUser
+    });
+
+    if (res && res.success) {
       const mTarget = res.monthlyTarget || 0;
       const mAchieved = res.monthlyAchieved || 0;
       const mBalance = res.monthlyBalance || 0;
