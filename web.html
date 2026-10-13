@@ -180,10 +180,16 @@
         <li class="nav-item" id="navItemActivity"><a class="nav-link" id="tab-activity-btn" onclick="showTab('activity')">📞 Calls & Visits</a></li>
       </ul>
       
-      <!-- FUTURE-READY TARGET SELECTOR WIDGET (Year & Month Selectors) -->
+      <!-- TARGETS & GOALS WIDGET WITH 2-YEAR DATA & ADMIN/MANAGER USER FILTER -->
       <div class="p-2 mb-2 bg-dark rounded border border-secondary text-white small shadow-sm" id="sidebarTargetWidget">
-        <div class="fw-bold text-info mb-2 d-flex justify-content-between align-items-center">
+        <div class="fw-bold text-info mb-1 d-flex justify-content-between align-items-center">
           <span><i class="fa fa-bullseye me-1"></i> Targets & Goals</span>
+        </div>
+
+        <!-- Admin/Manager Target User Selector -->
+        <div class="mb-2 d-none" id="targetAdminUserFilterWrapper">
+          <label class="form-label text-light extra-small mb-1">View Target For:</label>
+          <select id="targetAdminUserSelect" class="form-select form-select-sm bg-secondary text-white border-0 py-1" style="font-size: 0.75rem;" onchange="loadSidebarTargetInfo()"></select>
         </div>
         
         <div class="row g-1 mb-2">
@@ -191,8 +197,6 @@
             <select id="targetYearSelect" class="form-select form-select-sm bg-secondary text-white border-0 py-1" style="font-size: 0.75rem;" onchange="loadSidebarTargetInfo()">
               <option value="2026">2026</option>
               <option value="2025">2025</option>
-              <option value="2027">2027</option>
-              <option value="2028">2028</option>
             </select>
           </div>
           <div class="col-6">
@@ -1279,22 +1283,31 @@
     return dStr;
   }
 
-  function showFloatingNotification(title, message, type = 'success') {
+  function showRichNotification(title, message, type = 'success', uniqueKey = '') {
+    if (uniqueKey) {
+      let seenKeys = JSON.parse(localStorage.getItem('seen_notif_keys') || '[]');
+      if (seenKeys.includes(uniqueKey)) return; // Prevent duplicate repeat on refresh
+      seenKeys.push(uniqueKey);
+      if (seenKeys.length > 50) seenKeys.shift();
+      localStorage.setItem('seen_notif_keys', JSON.stringify(seenKeys));
+    }
+
     const container = document.getElementById('toastNotificationContainer');
     if (container) {
       const toast = document.createElement('div');
       toast.className = `custom-toast ${type}`;
       
-      let icon = 'fa-check-circle text-success';
+      let icon = 'fa-bell text-primary';
+      if (type === 'success') icon = 'fa-check-circle text-success';
       if (type === 'danger') icon = 'fa-exclamation-circle text-danger';
       if (type === 'warning') icon = 'fa-exclamation-triangle text-warning';
 
       toast.innerHTML = `
         <div class="d-flex align-items-start gap-2">
-          <i class="fa ${icon} mt-1"></i>
+          <i class="fa ${icon} mt-1 fs-5"></i>
           <div>
-            <div class="fw-bold">${title}</div>
-            <div class="text-muted" style="font-size: 0.78rem;">${message}</div>
+            <div class="fw-bold text-dark">${escapeHtml(title)}</div>
+            <div class="text-muted" style="font-size: 0.78rem; line-height: 1.3;">${escapeHtml(message)}</div>
           </div>
         </div>
         <button type="button" class="btn-close btn-close-sm ms-2" onclick="this.parentElement.remove()"></button>
@@ -1302,17 +1315,16 @@
 
       container.appendChild(toast);
       setTimeout(() => toast.classList.add('show'), 10);
-
       setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 300);
-      }, 4000);
+      }, 5000);
     }
 
     playNotificationChime();
     const newNotif = { title: title, message: message, type: type, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
     notificationHistory.unshift(newNotif);
-    if (notificationHistory.length > 20) notificationHistory.pop();
+    if (notificationHistory.length > 25) notificationHistory.pop();
     localStorage.setItem('portal_notif_history', JSON.stringify(notificationHistory));
     renderNotificationHistory();
   }
@@ -1342,10 +1354,10 @@
       html += `
         <div class="p-2 mb-1 border-bottom bg-light rounded small">
           <div class="d-flex justify-content-between align-items-center">
-            <span class="fw-bold text-dark"><i class="fa fa-circle ${iconCol} me-1" style="font-size: 6px;"></i> ${n.title}</span>
+            <span class="fw-bold text-dark"><i class="fa fa-circle ${iconCol} me-1" style="font-size: 6px;"></i> ${escapeHtml(n.title)}</span>
             <span class="text-muted" style="font-size: 0.65rem;">${n.time}</span>
           </div>
-          <div class="text-muted mt-1" style="font-size: 0.75rem; line-height: 1.2;">${n.message}</div>
+          <div class="text-muted mt-1" style="font-size: 0.75rem; line-height: 1.2;">${escapeHtml(n.message)}</div>
         </div>
       `;
     });
@@ -1372,7 +1384,7 @@
     if (permission === 'granted') {
       const btn = document.getElementById('notifEnableBtn');
       if (btn) btn.classList.add('d-none');
-      showFloatingNotification("Active", "Push notifications enabled!");
+      showRichNotification("Active", "Push notifications enabled!", "success");
     }
   }
 
@@ -1421,7 +1433,7 @@
     document.getElementById('loginForm').addEventListener('submit', handleLoginSubmit);
     document.getElementById('enquiryForm').addEventListener('submit', handleEnquirySubmit);
 
-    // Initialize Target Selectors with Current Year and Month
+    // Initialize 2-year target year & month selector
     const now = new Date();
     const curYear = now.getFullYear();
     const curMonth = now.getMonth() + 1;
@@ -1516,7 +1528,7 @@
       }, 100);
       input.value = '';
       toggleAddNewBrandInput();
-      showFloatingNotification("Brand Added", `Brand "${res.brand}" saved successfully.`);
+      showRichNotification("Brand Added", `Brand "${res.brand}" saved successfully.`, "success", "brand_" + res.brand);
     } else {
       alert("Error: " + (res ? res.message : 'Failed'));
     }
@@ -1568,10 +1580,11 @@
     const isManager = role.indexOf('manager') > -1;
     const isMgmt = isAdmin || isManager;
 
-    let spOptionsHtml = '', filterOpts = '', adminTargetOpts = '', exportSpOpts = '';
+    let spOptionsHtml = '', filterOpts = '', adminTargetOpts = '', exportSpOpts = '', targetAdminOpts = '';
     if (isMgmt) {
       filterOpts += '<option value="ALL">All Team Member</option>';
       exportSpOpts += '<option value="ALL">All Team Members</option>';
+      targetAdminOpts += '<option value="ALL">All Team (Combined)</option>';
     }
 
     masterSalesPersons.forEach(sp => {
@@ -1579,12 +1592,26 @@
       filterOpts += `<option value="${sp}">${sp}</option>`;
       adminTargetOpts += `<option value="${sp}">${sp}</option>`;
       exportSpOpts += `<option value="${sp}">${sp}</option>`;
+      targetAdminOpts += `<option value="${sp}">${sp}</option>`;
     });
 
     document.getElementById('salesPersonsList').innerHTML = spOptionsHtml;
     document.getElementById('filterSalesPerson').innerHTML = filterOpts;
     document.getElementById('exportSpSelect').innerHTML = exportSpOpts;
     document.getElementById('actFilterSalesPerson').innerHTML = filterOpts;
+
+    // Target User Filter Dropdown for Admin/Manager
+    const targetAdminUserSelect = document.getElementById('targetAdminUserSelect');
+    const targetAdminUserWrapper = document.getElementById('targetAdminUserFilterWrapper');
+    if (targetAdminUserSelect && targetAdminUserWrapper) {
+      if (isMgmt) {
+        targetAdminUserSelect.innerHTML = targetAdminOpts;
+        targetAdminUserSelect.value = loggedInUser.salesPerson;
+        targetAdminUserWrapper.classList.remove('d-none');
+      } else {
+        targetAdminUserWrapper.classList.add('d-none');
+      }
+    }
 
     const todoFilterEl = document.getElementById('todoFilterSalesPerson');
     const todoWrapper = document.getElementById('todoSalespersonFilterWrapper');
@@ -1635,7 +1662,6 @@
     filterCustomersBySalesPerson();
     filterCustomerDropdownForActivity();
     loadDashboardData();
-    setTimeout(loadSidebarTargetInfo, 400);
   }
 
   async function submitAdminTargetUpdate() {
@@ -1653,7 +1679,7 @@
     btn.disabled = false; btn.innerText = 'Update Target';
 
     if (res && res.success) {
-      showFloatingNotification("Target Updated", res.message);
+      showRichNotification("Target Updated", res.message, "success");
       document.getElementById('adminTargetVal').value = '';
       loadSidebarTargetInfo();
     } else {
@@ -1719,7 +1745,7 @@
       applyRoleSidebarRestrictions();
       fetchMasterData();
       checkNotificationSupport();
-      showFloatingNotification("Welcome", `Logged in as ${loggedInUser.salesPerson}`);
+      showRichNotification("Welcome", `Logged in as ${loggedInUser.salesPerson}`, "success");
     } else {
       document.getElementById('loginError').innerText = res ? res.message : "Invalid Credentials";
       document.getElementById('loginError').classList.remove('d-none');
@@ -1731,8 +1757,11 @@
     const saveBtn = document.getElementById('saveEnquiryBtn');
     saveBtn.disabled = true; saveBtn.innerText = "Saving to Google Sheet...";
 
+    const custName = document.getElementById('customerInput').value;
+    const approxVal = document.getElementById('approxValue').value;
+
     const formData = {
-      customer: document.getElementById('customerInput').value,
+      customer: custName,
       city: document.getElementById('custCity').value,
       address: document.getElementById('custModalAddress').value,
       contactPerson: document.getElementById('custContactPerson').value,
@@ -1741,7 +1770,7 @@
       salesPerson: document.getElementById('salesPersonInput').value || loggedInUser.salesPerson,
       description: document.getElementById('description').value,
       brand: getSelectedBrandsList(),
-      approxValue: document.getElementById('approxValue').value,
+      approxValue: approxVal,
       mode: document.getElementById('mode').value,
       enquiryDate: document.getElementById('enquiryDate').value,
       expectedClose: document.getElementById('expectedClose').value,
@@ -1761,7 +1790,7 @@
     saveBtn.disabled = false; saveBtn.innerText = "Save Enquiry";
 
     if (res && res.success) {
-      showFloatingNotification("Success", res.message || "Lead saved successfully.");
+      showRichNotification("New Enquiry Created", `Customer: ${custName} | Value: ₹${Number(approxVal || 0).toLocaleString()}`, "success", "new_enq_" + custName + "_" + Date.now());
       sessionStorage.removeItem('portal_dashboard_data');
       await loadDashboardData();
       resetEnquiryForm();
@@ -1796,7 +1825,7 @@
     renderPowerBiDashboard();
     renderActivityCalendarAndMatrix();
     renderTodoCalendar();
-    loadSidebarTargetInfo(); // Refresh target info dynamically when dashboard data loads
+    loadSidebarTargetInfo();
   }
 
   function checkTodayReminders(enquiries, tasks) {
@@ -1804,13 +1833,22 @@
     let todayLeadCount = 0, todayPayCount = 0, todayTaskCount = 0;
 
     enquiries.forEach(e => {
-      if (e.leadFollowup === todayStr && String(e.status).toLowerCase() !== 'won' && String(e.status).toLowerCase() !== 'lost') todayLeadCount++;
-      if (e.paymentFollowup === todayStr && String(e.paymentStatus).toLowerCase() !== 'fully paid') todayPayCount++;
+      if (e.leadFollowup === todayStr && String(e.status).toLowerCase() !== 'won' && String(e.status).toLowerCase() !== 'lost') {
+        todayLeadCount++;
+        showRichNotification("Lead Follow-up Due", `Customer: ${e.customer} (ID: ${e.id})`, "warning", "fup_lead_" + e.id + "_" + todayStr);
+      }
+      if (e.paymentFollowup === todayStr && String(e.paymentStatus).toLowerCase() !== 'fully paid') {
+        todayPayCount++;
+        showRichNotification("Payment Due Today", `Customer: ${e.customer} | ₹${Number(e.value || 0).toLocaleString()}`, "warning", "fup_pay_" + e.id + "_" + todayStr);
+      }
     });
 
     if (tasks) {
       tasks.forEach(t => {
-        if (normalizeDateForMatch(t.dueDate) === todayStr && String(t.status).toLowerCase() !== 'completed') todayTaskCount++;
+        if (normalizeDateForMatch(t.dueDate) === todayStr && String(t.status).toLowerCase() !== 'completed') {
+          todayTaskCount++;
+          showRichNotification("Task Due Today", `${t.title} (${t.priority} Priority)`, "warning", "task_" + t.id + "_" + todayStr);
+        }
       });
     }
 
@@ -1957,7 +1995,7 @@
     if (spSelect) {
       spSelect.value = spName;
       onSalespersonFilterChange();
-      showFloatingNotification("Filter Applied", `Viewing leads for ${spName}`);
+      showRichNotification("Filter Applied", `Viewing leads for ${spName}`, "success");
     }
   }
 
@@ -2236,7 +2274,7 @@
 
     const res = await callAppsScriptApi("quickSnoozeEnquiry", { id, type, newDate: date, user: loggedInUser });
     if (res && res.success) {
-      showFloatingNotification("Snooze Saved", res.message);
+      showRichNotification("Snooze Saved", res.message, "success");
       sessionStorage.removeItem('portal_dashboard_data');
       bootstrap.Modal.getInstance(document.getElementById('leadDetailsModal')).hide();
       loadDashboardData();
@@ -2248,9 +2286,9 @@
     const targetSp = document.getElementById('modalTransferSp').value;
     if (!targetSp) return alert("Select salesperson");
 
-    const res = await callAppsScriptApi("transferLeadOwner", { id, targetSp, user: loggedInUser });
+    const res = await callAppsScriptApi("transferLeadOwner", { id: String(id).trim().toUpperCase(), targetSp: targetSp, user: loggedInUser });
     if (res && res.success) {
-      showFloatingNotification("Transferred", res.message);
+      showRichNotification("Lead Transferred", res.message, "success", "transfer_" + id + "_" + Date.now());
       sessionStorage.removeItem('portal_dashboard_data');
       bootstrap.Modal.getInstance(document.getElementById('leadDetailsModal')).hide();
       loadDashboardData();
@@ -2337,7 +2375,7 @@
     if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '<i class="fa fa-save me-1"></i> Save Updates'; }
 
     if (res && res.success) {
-      showFloatingNotification("Updated Successfully", `Enquiry ${enqId} updated to ${stVal}`);
+      showRichNotification("Enquiry Updated", `ID: ${enqId} status changed to ${stVal}`, "success", "update_enq_" + enqId + "_" + stVal + "_" + Date.now());
       sessionStorage.removeItem('portal_dashboard_data');
       const modalEl = document.getElementById('leadDetailsModal');
       if (modalEl) bootstrap.Modal.getInstance(modalEl).hide();
@@ -2401,11 +2439,14 @@
     if (actBtn.disabled) return;
     actBtn.disabled = true; actBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Saving...';
 
+    const custName = document.getElementById('modalActCustomer').value.trim();
+    const typeVal = document.querySelector('input[name="modalInteractionType"]:checked').value;
+
     const payload = {
       date: selectedActivityDateStr,
       salesPerson: document.getElementById('modalActSalesPerson').value.trim() || loggedInUser.salesPerson,
-      customer: document.getElementById('modalActCustomer').value.trim(),
-      type: document.querySelector('input[name="modalInteractionType"]:checked').value,
+      customer: custName,
+      type: typeVal,
       status: document.querySelector('input[name="modalInteractionStatus"]:checked').value,
       remark: document.getElementById('modalActRemark').value.trim()
     };
@@ -2416,7 +2457,7 @@
     actBtn.disabled = false; actBtn.innerHTML = '<i class="fa fa-save me-1"></i> Save Entry';
 
     if (res && res.success) {
-      showFloatingNotification("Saved", res.message);
+      showRichNotification("Activity Logged", `${typeVal} recorded for ${custName}`, "success", "act_" + custName + "_" + Date.now());
       document.getElementById('modalActCustomer').value = '';
       document.getElementById('modalActRemark').value = '';
       loadDashboardData();
@@ -2628,7 +2669,7 @@
     btn.disabled = false; btn.innerHTML = '<i class="fa fa-save me-1"></i> Add Task';
 
     if (res && res.success) {
-      showFloatingNotification("Task Added", `Task scheduled for ${selectedTodoDateStr}`);
+      showRichNotification("Task Added", `Scheduled for ${selectedTodoDateStr}`, "success", "task_add_" + title + "_" + Date.now());
       document.getElementById('modalTodoTitle').value = '';
       await loadDashboardData();
       setTimeout(renderModalTodoList, 400);
@@ -2641,7 +2682,7 @@
     sessionStorage.removeItem('portal_dashboard_data');
     const res = await callAppsScriptApi("toggleToDoTaskStatus", { taskId: taskId, newStatus: newStatus });
     if (res && res.success) {
-      showFloatingNotification("Task Updated", `Task marked as ${newStatus}`);
+      showRichNotification("Task Updated", `Marked as ${newStatus}`, "success", "task_status_" + taskId + "_" + newStatus);
       await loadDashboardData();
       setTimeout(renderModalTodoList, 400);
     } else {
@@ -2654,7 +2695,7 @@
     const isRestricted = role.indexOf('engineer') > -1 || role.indexOf('delivery') > -1 || role.indexOf('employee') > -1;
 
     if (isRestricted && tabName !== 'todo') {
-      showFloatingNotification("Access Denied", "This section is restricted for your role.");
+      showRichNotification("Access Denied", "This section is restricted for your role.", "danger");
       return;
     }
 
@@ -2681,9 +2722,21 @@
 
   async function loadSidebarTargetInfo() {
     if (!loggedInUser) return;
+    
+    const role = String(loggedInUser.role || '').toLowerCase();
+    const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
+    
     let targetSp = loggedInUser.salesPerson;
-    const filterEl = document.getElementById('filterSalesPerson');
-    if (filterEl && filterEl.value) targetSp = (filterEl.value === 'ALL') ? 'ALL' : filterEl.value;
+    if (isMgmt) {
+      const adminUserSelect = document.getElementById('targetAdminUserSelect');
+      if (adminUserSelect && adminUserSelect.value) {
+        targetSp = adminUserSelect.value;
+      }
+    } else {
+      const filterEl = document.getElementById('filterSalesPerson');
+      if (filterEl && filterEl.value) targetSp = (filterEl.value === 'ALL') ? 'ALL' : filterEl.value;
+    }
+
     if (!targetSp) return;
 
     const selectedYear = document.getElementById('targetYearSelect') ? document.getElementById('targetYearSelect').value : '2026';
