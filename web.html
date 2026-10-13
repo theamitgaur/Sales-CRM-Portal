@@ -174,33 +174,44 @@
       <ul class="nav nav-pills flex-column mb-auto" id="sidebarNavList">
         <li class="nav-item"><a class="nav-link" id="tab-add-lead-btn" onclick="showTab('add-lead')">➕ Add Lead</a></li>
         <li class="nav-item" id="navItemDashboard"><a class="nav-link active" id="tab-enquiry-btn" onclick="showTab('enquiry')">📋 Dashboard</a></li>
-        <li class="nav-item" id="navItemMis"><a class="nav-link" id="tab-mis-btn" onclick="showTab('mis')">📈 Customer Sales MIS</a></li>
         <li class="nav-item" id="navItemTodo"><a class="nav-link" id="tab-todo-btn" onclick="showTab('todo')">✅ To-Do List</a></li>
         <li class="nav-item" id="navItemAnalytics"><a class="nav-link" id="tab-analytics-btn" onclick="showTab('analytics')">📊 Visual Analytics</a></li>
         <li class="nav-item" id="navItemLost"><a class="nav-link" id="tab-lost-btn" onclick="showTab('lost')">❌ Lost Enquiries</a></li>
         <li class="nav-item" id="navItemActivity"><a class="nav-link" id="tab-activity-btn" onclick="showTab('activity')">📞 Calls & Visits</a></li>
       </ul>
-
-      <!-- TARGETS & GOALS WIDGET WITH FINANCIAL MONTH SELECTOR -->
+      
+      <!-- FUTURE-READY MULTI-YEAR TARGET SELECTOR WIDGET -->
       <div class="p-2 mb-2 bg-dark rounded border border-secondary text-white small shadow-sm" id="sidebarTargetWidget">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <span class="fw-bold text-info"><i class="fa fa-bullseye me-1"></i> Targets</span>
-          <select id="targetMonthSelector" class="form-select form-select-sm py-0 px-1 border-secondary bg-dark text-white" style="width: auto; max-width: 105px; font-size: 0.72rem;" onchange="loadSidebarTargetInfo()">
-            <option value="1">April</option>
-            <option value="2">May</option>
-            <option value="3">June</option>
-            <option value="4">July</option>
-            <option value="5">August</option>
-            <option value="6">September</option>
-            <option value="7">October</option>
-            <option value="8">November</option>
-            <option value="9">December</option>
-            <option value="10">January</option>
-            <option value="11">February</option>
-            <option value="12">March</option>
-          </select>
+        <div class="fw-bold text-info mb-2 d-flex justify-content-between align-items-center">
+          <span><i class="fa fa-bullseye me-1"></i> Targets & Goals</span>
         </div>
         
+        <div class="row g-1 mb-2">
+          <div class="col-7">
+            <select id="targetYearSelect" class="form-select form-select-sm bg-secondary text-white border-0 py-1" style="font-size: 0.75rem;" onchange="loadSidebarTargetInfo()">
+              <option value="2026">Financial Year 2026-27</option>
+              <option value="2025">Financial Year 2025-26</option>
+              <option value="2027">Financial Year 2027-28</option>
+            </select>
+          </div>
+          <div class="col-5">
+            <select id="targetMonthSelect" class="form-select form-select-sm bg-secondary text-white border-0 py-1" style="font-size: 0.75rem;" onchange="loadSidebarTargetInfo()">
+              <option value="1">April</option>
+              <option value="2">May</option>
+              <option value="3">June</option>
+              <option value="4">July</option>
+              <option value="5">August</option>
+              <option value="6">September</option>
+              <option value="7">October</option>
+              <option value="8">November</option>
+              <option value="9">December</option>
+              <option value="10">January</option>
+              <option value="11">February</option>
+              <option value="12">March</option>
+            </select>
+          </div>
+        </div>
+
         <div class="d-flex justify-content-between extra-small mb-1">
           <span class="text-light fw-semibold">Monthly:</span>
           <b id="mTargetText" class="text-white">₹0 / ₹0</b>
@@ -325,7 +336,6 @@
 
         <!-- MAIN DASHBOARD CARD WRAPPER -->
         <div class="card p-4">
-          <!-- TOP BAR: DASHBOARD TITLE + EXPORT BUTTON -->
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
               <h5 class="fw-bold text-dark mb-0 fs-5"><i class="fa fa-chart-line text-primary me-2"></i>Sales Performance & Enquiries</h5>
@@ -338,7 +348,7 @@
 
           <!-- 1. DYNAMIC INTERACTIVE KPI TILES -->
           <div class="row g-2 mb-3">
-            <div class="col-6 col-md-4 col-xl" onclick="filterByPill('ALL', document.querySelector('.filter-pill-btn'))" title="Click to view All Enquiries">
+            <div class="col-6 col-md-4 col-xl" onclick="filterByPill('ALL', document.querySelector('.filter-pill-btn'))">
               <div class="kpi-card kpi-total">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <span class="text-muted extra-small fw-bold">TOTAL ENQUIRIES</span>
@@ -349,7 +359,7 @@
               </div>
             </div>
 
-            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('New Lead')" title="Click to filter New Leads">
+            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('New Lead')">
               <div class="kpi-card kpi-new">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <span class="text-muted extra-small fw-bold">NEW LEADS</span>
@@ -360,7 +370,7 @@
               </div>
             </div>
 
-            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Hot lead')" title="Click to filter Hot Leads">
+            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Hot lead')">
               <div class="kpi-card kpi-hot">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <span class="text-muted extra-small fw-bold">HOT LEADS</span>
@@ -371,7 +381,7 @@
               </div>
             </div>
 
-            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Quoted')" title="Click to filter Quoted & Live">
+            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Quoted')">
               <div class="kpi-card kpi-quoted">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <span class="text-muted extra-small fw-bold">QUOTED / LIVE</span>
@@ -382,7 +392,7 @@
               </div>
             </div>
 
-            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Won')" title="Click to filter Won Deals">
+            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Won')">
               <div class="kpi-card kpi-won">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <span class="text-muted extra-small fw-bold">WON DEALS</span>
@@ -393,7 +403,7 @@
               </div>
             </div>
 
-            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Lost')" title="Click to filter Lost Deals">
+            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Lost')">
               <div class="kpi-card kpi-lost">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <span class="text-muted extra-small fw-bold">LOST DEALS</span>
@@ -404,7 +414,7 @@
               </div>
             </div>
 
-            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Pending')" title="Click to filter Pending Payments">
+            <div class="col-6 col-md-4 col-xl" onclick="triggerKpiFilter('Pending')">
               <div class="kpi-card kpi-pay">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <span class="text-muted extra-small fw-bold">PAY PENDING</span>
@@ -421,7 +431,7 @@
             <div class="d-flex justify-content-between align-items-center mb-2">
               <span class="fw-bold text-dark small"><i class="fa fa-users me-1 text-primary"></i> Team Member Performance Breakdown</span>
               <button class="btn btn-sm btn-light border text-muted py-0 px-2" type="button" data-bs-toggle="collapse" data-bs-target="#memberBreakdownCollapse" aria-expanded="true" style="font-size: 0.75rem;">
-                <i class="fa fa-sliders-h me-1"></i> Minimize
+                Minimize
               </button>
             </div>
             <div class="collapse show" id="memberBreakdownCollapse">
@@ -460,8 +470,6 @@
             <button type="button" class="btn btn-sm btn-outline-secondary filter-pill-btn" onclick="filterByPill('Pending', this)">⏳ Pay: Pending</button>
             <button type="button" class="btn btn-sm btn-outline-secondary filter-pill-btn" onclick="filterByPill('Advance Received', this)">💵 Advance</button>
             <button type="button" class="btn btn-sm btn-outline-secondary filter-pill-btn" onclick="filterByPill('Fully Paid', this)">✅ Fully Paid</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary filter-pill-btn" onclick="filterByPill('Partial', this)">🔸 Partial</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary filter-pill-btn" onclick="filterByPill('Credit', this)">💳 Credit</button>
           </div>
 
           <!-- 4. ADVANCED FILTER BAR -->
@@ -518,8 +526,8 @@
                 </select>
               </div>
               <div class="col-md-6 d-flex align-items-end justify-content-end gap-1">
-                <button class="btn btn-sm btn-outline-secondary" onclick="clearDateRangeFilter()" title="Clear Dates">Clear Dates</button>
-                <button class="btn btn-sm btn-outline-primary" onclick="loadDashboardData()" title="Refresh">🔄 Refresh</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="clearDateRangeFilter()">Clear Dates</button>
+                <button class="btn btn-sm btn-outline-primary" onclick="loadDashboardData()">🔄 Refresh</button>
               </div>
             </div>
           </div>
@@ -558,98 +566,9 @@
         </div>
       </div>
 
-      <!-- MODULE: DYNAMIC CUSTOMER & SALESPERSON MIS INTELLIGENCE -->
-      <div id="misModule" class="d-none">
-        <div class="card p-4 mb-4 shadow-sm border-0">
-          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <div>
-              <h5 class="fw-bold text-primary m-0"><i class="fa fa-chart-line me-2"></i>Salesperson & Customer Sales Intelligence MIS</h5>
-              <small class="text-muted">Dynamic comparison | Highest to Lowest Revenue | Multi-Year YoY Growth</small>
-            </div>
-            <div class="d-flex gap-2">
-              <button class="btn btn-sm btn-outline-primary fw-bold" onclick="loadCustomerMisReport()"><i class="fa fa-rotate me-1"></i> Refresh</button>
-              <button class="btn btn-sm btn-success fw-bold" onclick="exportMisTableToCSV()"><i class="fa fa-file-excel me-1"></i> Export Excel/CSV</button>
-            </div>
-          </div>
-
-          <!-- ADVANCED PIVOT & DATE CONTROLS BAR -->
-          <div class="p-3 bg-light rounded-3 border mb-3">
-            <div class="row g-2 align-items-end">
-              <div class="col-md-3">
-                <label class="form-label mb-1">1. Salesperson</label>
-                <select id="misFilterSp" class="form-select form-select-sm fw-bold border-primary" onchange="loadCustomerMisReport()">
-                  <option value="ALL">All Team Members</option>
-                </select>
-              </div>
-
-              <div class="col-md-2">
-                <label class="form-label mb-1">From Date</label>
-                <input type="date" id="misFromDate" class="form-control form-control-sm bg-white" onchange="loadCustomerMisReport()">
-              </div>
-
-              <div class="col-md-2">
-                <label class="form-label mb-1">To Date</label>
-                <input type="date" id="misToDate" class="form-control form-control-sm bg-white" onchange="loadCustomerMisReport()">
-              </div>
-
-              <div class="col-md-2">
-                <label class="form-label mb-1">Compare Base FY</label>
-                <select id="misCompareYear1" class="form-select form-select-sm fw-bold" onchange="renderMisTable(rawMisReportData)">
-                  <!-- Populated dynamically -->
-                </select>
-              </div>
-
-              <div class="col-md-2">
-                <label class="form-label mb-1">Compare Target FY</label>
-                <select id="misCompareYear2" class="form-select form-select-sm fw-bold border-success text-success" onchange="renderMisTable(rawMisReportData)">
-                  <!-- Populated dynamically -->
-                </select>
-              </div>
-
-              <div class="col-md-1">
-                <button class="btn btn-sm btn-outline-secondary w-100" onclick="clearMisDateFilter()" title="Clear Dates">Reset</button>
-              </div>
-            </div>
-
-            <div class="row g-2 mt-2 align-items-center">
-              <div class="col-md-5">
-                <input type="text" id="misSearchCustomer" class="form-control form-control-sm bg-white" placeholder="🔍 Search Customer..." oninput="filterMisTableLive()">
-              </div>
-              <div class="col-md-4">
-                <input type="text" id="misSearchProduct" class="form-control form-control-sm bg-white" placeholder="🏷️ Filter by Product / Brand..." oninput="filterMisTableLive()">
-              </div>
-              <div class="col-md-3 text-end">
-                <span class="badge bg-primary fs-6 px-3 py-2 w-100" id="misTotalTurnoverBadge">Total: ₹0</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- RESPONSIVE COMPARISON TABLE -->
-          <div class="table-responsive border rounded-3" style="max-height: 580px;">
-            <table class="table table-hover align-middle small mb-0 table-bordered">
-              <thead class="table-dark sticky-top text-center" style="font-size: 0.82rem;">
-                <tr>
-                  <th class="text-start" style="min-width: 220px;">Customer Name</th>
-                  <th style="min-width: 140px;">Salesperson</th>
-                  <th style="min-width: 140px;" class="bg-primary text-white">Total Revenue (₹)</th>
-                  <th style="min-width: 120px;" id="misThYear1">Base FY</th>
-                  <th style="min-width: 120px;" id="misThYear2">Target FY</th>
-                  <th style="min-width: 100px;">YoY Growth</th>
-                  <th class="text-start" style="min-width: 260px;">Products & Brands Delivered</th>
-                  <th style="min-width: 80px;">Breakdown</th>
-                </tr>
-              </thead>
-              <tbody id="misReportTableBody">
-                <tr><td colspan="8" class="text-center text-muted py-4">Loading Customer MIS Report...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
       <!-- MODULE: ADD LEAD -->
       <div id="add-leadModule" class="d-none">
-        <div class="card p-4 mb-4" id="createEnquiryCardWrapper">
+        <div class="card p-4 mb-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="mb-0 text-primary fw-bold"><i class="fa fa-plus-circle me-1"></i> Create New Enquiry / Add Lead</h5>
             <button type="button" class="btn btn-sm btn-outline-secondary fw-bold" onclick="showTab('enquiry')">
@@ -740,7 +659,6 @@
                   <option value="Digital Marketing">Digital Marketing</option>
                   <option value="Tradeindia">Tradeindia</option>
                   <option value="JustDial">JustDial</option>
-                  <option value="IndMall">IndMall</option>
                 </select>
               </div>
 
@@ -993,34 +911,6 @@
   </div>
 </div>
 
-<!-- SINGLE CUSTOMER MONTH-WISE HISTORY MODAL -->
-<div class="modal fade" id="customerMonthlyLedgerModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content border-0 rounded-4 shadow">
-      <div class="modal-header bg-dark text-white py-2">
-        <h6 class="modal-title fw-bold"><i class="fa fa-history me-2 text-warning"></i>Monthly Breakdown: <span id="modalLedgerCustName"></span></h6>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-3">
-        <div class="table-responsive" style="max-height: 320px;">
-          <table class="table table-sm table-striped table-bordered small">
-            <thead class="table-light">
-              <tr>
-                <th>Month & Year</th>
-                <th class="text-end">Value Won (₹)</th>
-              </tr>
-            </thead>
-            <tbody id="customerMonthlyLedgerTbody"></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="modal-footer py-2">
-        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- TO-DO MODAL -->
 <div class="modal fade" id="todoDateModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -1115,10 +1005,6 @@
             <label class="form-label extra-small">To Date</label>
             <input type="date" id="exportToDate" class="form-control form-control-sm">
           </div>
-        </div>
-
-        <div class="p-2 bg-light rounded border extra-small text-muted mb-2">
-          <i class="fa fa-info-circle me-1 text-primary"></i> Data will be exported in exact Google Sheet structure including Follow-up dates and values.
         </div>
       </div>
       <div class="modal-footer py-2">
@@ -1316,7 +1202,6 @@
             <input type="date" id="editPaymentFollowup" class="form-control form-control-sm fw-bold border-success">
           </div>
           
-          <!-- Delivery Status: STRICTLY DISPLAYED AND SAVED ONLY WHEN STATUS IS WON -->
           <div class="col-md-4 d-none" id="deliveryStatusWrapper">
             <label class="form-label text-info fw-bold" id="deliveryStatusLabel">Delivery Status (Won Lead)</label>
             <select id="editDispatchStatus" class="form-select form-select-sm fw-bold border-info">
@@ -1345,7 +1230,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbypRhN9mB2Casq9H3fYxQLzJHhz9T7B9up6OBVlupLI90GgN6vlYKvUzivWN41OCLKsMA/exec";
+  const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxeS23zbPNegYQjszbE5-Iqcw4ySVUy8Yddi6HE3RcFInfYUvSJtMpeR1XdNbM_Lne8/exec";
 
   async function callAppsScriptApi(action, data = {}) {
     try {
@@ -1373,8 +1258,6 @@
   let todoCalCurrentDate = new Date();
   let selectedTodoDateStr = '';
   let notificationHistory = JSON.parse(localStorage.getItem('portal_notif_history') || '[]');
-  let rawMisReportData = [];
-  let availableFinancialYears = [];
 
   function escapeHtml(str) {
     if (!str) return '';
@@ -1390,12 +1273,6 @@
       if (parts.length === 3) {
         if (parts[2].length === 4) return parts[2] + '-' + parts[1].padStart(2, '0') + '-' + parts[0].padStart(2, '0');
         if (parts[0].length === 4) return parts[0] + '-' + parts[1].padStart(2, '0') + '-' + parts[2].padStart(2, '0');
-      }
-    }
-    if (dStr.indexOf('-') > -1) {
-      var p = dStr.split('-');
-      if (p.length === 3 && p[0].length === 2 && p[2].length === 4) {
-        return p[2] + '-' + p[1].padStart(2, '0') + '-' + p[0].padStart(2, '0');
       }
     }
     return dStr;
@@ -1432,17 +1309,9 @@
     }
 
     playNotificationChime();
-
-    const newNotif = {
-      title: title,
-      message: message,
-      type: type,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    
+    const newNotif = { title: title, message: message, type: type, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
     notificationHistory.unshift(newNotif);
     if (notificationHistory.length > 20) notificationHistory.pop();
-    
     localStorage.setItem('portal_notif_history', JSON.stringify(notificationHistory));
     renderNotificationHistory();
   }
@@ -1479,7 +1348,6 @@
         </div>
       `;
     });
-
     listContainer.innerHTML = html;
   }
 
@@ -1492,26 +1360,18 @@
   function checkNotificationSupport() {
     if ('Notification' in window) {
       const btn = document.getElementById('notifEnableBtn');
-      if (Notification.permission === 'default' && btn) {
-        btn.classList.remove('d-none');
-      } else if (btn) {
-        btn.classList.add('d-none');
-      }
+      if (Notification.permission === 'default' && btn) btn.classList.remove('d-none');
+      else if (btn) btn.classList.add('d-none');
     }
   }
 
   async function requestNotificationPermission() {
-    if (!('Notification' in window)) {
-      showFloatingNotification("Notice", "This browser does not support native notifications.");
-      return;
-    }
+    if (!('Notification' in window)) return;
     const permission = await Notification.requestPermission();
-    const btn = document.getElementById('notifEnableBtn');
     if (permission === 'granted') {
+      const btn = document.getElementById('notifEnableBtn');
       if (btn) btn.classList.add('d-none');
       showFloatingNotification("Active", "Push notifications enabled!");
-    } else {
-      showAlert("Notification permission was denied.", "warning");
     }
   }
 
@@ -1545,19 +1405,11 @@
   function applyRoleSidebarRestrictions() {
     if (!loggedInUser || !loggedInUser.role) return;
     const role = String(loggedInUser.role).toLowerCase();
-
     if (role.indexOf('engineer') > -1 || role.indexOf('delivery') > -1 || role.indexOf('employee') > -1) {
-      const navAnalytics = document.getElementById('navItemAnalytics');
-      const navLost = document.getElementById('navItemLost');
-      const navActivity = document.getElementById('navItemActivity');
-      const navDashboard = document.getElementById('navItemDashboard');
-      const navMis = document.getElementById('navItemMis');
-
-      if (navAnalytics) navAnalytics.style.display = 'none';
-      if (navLost) navLost.style.display = 'none';
-      if (navActivity) navActivity.style.display = 'none';
-      if (navDashboard) navDashboard.style.display = 'none';
-      if (navMis) navMis.style.display = 'none';
+      ['navItemAnalytics', 'navItemLost', 'navItemActivity', 'navItemDashboard'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
     }
   }
 
@@ -1567,6 +1419,14 @@
     renderNotificationHistory();
     document.getElementById('loginForm').addEventListener('submit', handleLoginSubmit);
     document.getElementById('enquiryForm').addEventListener('submit', handleEnquirySubmit);
+
+    const now = new Date();
+    const curYear = now.getFullYear();
+    const curMonth = now.getMonth() + 1;
+    const yrSelect = document.getElementById('targetYearSelect');
+    const moSelect = document.getElementById('targetMonthSelect');
+    if (yrSelect) yrSelect.value = String(curYear);
+    if (moSelect) moSelect.value = String(curMonth >= 4 ? curMonth - 3 : curMonth + 9);
 
     const savedTab = localStorage.getItem('active_portal_tab') || 'enquiry';
     showTab(savedTab, false);
@@ -1580,9 +1440,7 @@
     const today = new Date().toISOString().split('T')[0];
     if (document.getElementById('enquiryDate')) document.getElementById('enquiryDate').value = today;
     if (document.getElementById('paymentTermsSelect')) document.getElementById('paymentTermsSelect').value = '0';
-    
     updateBrandDropdownLabel();
-
     if (loggedInUser && loggedInUser.salesPerson) {
       const spInputEl = document.getElementById('salesPersonInput');
       if (spInputEl) spInputEl.value = loggedInUser.salesPerson;
@@ -1603,7 +1461,6 @@
     const container = document.getElementById('brandCheckboxContainer');
     if (!container) return;
     masterBrandsList = brands || [];
-
     let html = '';
     masterBrandsList.forEach((b, idx) => {
       html += `
@@ -1621,7 +1478,6 @@
     const cbs = document.querySelectorAll('.brand-checkbox-input:checked');
     const labelEl = document.getElementById('brandDropdownLabel');
     if (!labelEl) return;
-    
     if (cbs.length === 0) {
       labelEl.innerText = "Select Brands...";
       labelEl.classList.add('text-muted');
@@ -1648,7 +1504,6 @@
 
     const sp = loggedInUser ? loggedInUser.salesPerson : 'User';
     const res = await callAppsScriptApi("addNewMasterBrand", { brandName: brandName, sp: sp });
-
     if (res && res.success) {
       if (masterBrandsList.indexOf(res.brand) === -1) masterBrandsList.push(res.brand);
       renderBrandCheckboxes(masterBrandsList);
@@ -1667,8 +1522,7 @@
 
   function getSelectedBrandsList() {
     const selected = [];
-    const cbs = document.querySelectorAll('.brand-checkbox-input:checked');
-    cbs.forEach(cb => selected.push(cb.value));
+    document.querySelectorAll('.brand-checkbox-input:checked').forEach(cb => selected.push(cb.value));
     return selected.length > 0 ? selected.join(', ') : 'Other';
   }
 
@@ -1680,9 +1534,7 @@
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('loggedUser').innerText = loggedInUser.salesPerson + " (" + loggedInUser.role + ")";
         applyRoleSidebarRestrictions();
-
         fetchMasterData();
-        checkNotificationSupport();
       } catch (err) {
         logout();
       }
@@ -1694,13 +1546,8 @@
   async function fetchMasterData() {
     const cached = sessionStorage.getItem('portal_master_data');
     if (cached) {
-      try {
-        onMasterDataLoaded(JSON.parse(cached));
-      } catch (e) {
-        sessionStorage.removeItem('portal_master_data');
-      }
+      try { onMasterDataLoaded(JSON.parse(cached)); } catch (e) { sessionStorage.removeItem('portal_master_data'); }
     }
-
     const data = await callAppsScriptApi("getMasterData", { user: loggedInUser });
     if (data && data.success) {
       sessionStorage.setItem('portal_master_data', JSON.stringify(data));
@@ -1719,11 +1566,7 @@
     const isManager = role.indexOf('manager') > -1;
     const isMgmt = isAdmin || isManager;
 
-    let spOptionsHtml = '';
-    let filterOpts = '';
-    let adminTargetOpts = '';
-    let exportSpOpts = '';
-
+    let spOptionsHtml = '', filterOpts = '', adminTargetOpts = '', exportSpOpts = '';
     if (isMgmt) {
       filterOpts += '<option value="ALL">All Team Member</option>';
       exportSpOpts += '<option value="ALL">All Team Members</option>';
@@ -1737,15 +1580,10 @@
     });
 
     document.getElementById('salesPersonsList').innerHTML = spOptionsHtml;
-    
-    const filterSalesPersonEl = document.getElementById('filterSalesPerson');
-    filterSalesPersonEl.innerHTML = filterOpts;
-
-    const exportSpSelectEl = document.getElementById('exportSpSelect');
-    exportSpSelectEl.innerHTML = exportSpOpts;
-
+    document.getElementById('filterSalesPerson').innerHTML = filterOpts;
+    document.getElementById('exportSpSelect').innerHTML = exportSpOpts;
     document.getElementById('actFilterSalesPerson').innerHTML = filterOpts;
-    
+
     const todoFilterEl = document.getElementById('todoFilterSalesPerson');
     const todoWrapper = document.getElementById('todoSalespersonFilterWrapper');
     if (todoFilterEl) {
@@ -1759,56 +1597,31 @@
       }
     }
 
-    // ROLE-BASED POPULATION FOR VISUAL ANALYTICS & MIS FILTER
     const analyticsSpFilterEl = document.getElementById('analyticsFilterSalesPerson');
-    const misSpFilterEl = document.getElementById('misFilterSp');
-
     if (analyticsSpFilterEl) {
       if (isMgmt) {
         let anOpts = '<option value="ALL">All Team Members</option>';
         masterSalesPersons.forEach(sp => { anOpts += `<option value="${sp}">${sp}</option>`; });
         analyticsSpFilterEl.innerHTML = anOpts;
         analyticsSpFilterEl.disabled = false;
-        if (misSpFilterEl) {
-          misSpFilterEl.innerHTML = anOpts;
-          misSpFilterEl.disabled = false;
-        }
       } else {
         analyticsSpFilterEl.innerHTML = `<option value="${loggedInUser.salesPerson}">${loggedInUser.salesPerson}</option>`;
         analyticsSpFilterEl.value = loggedInUser.salesPerson;
         analyticsSpFilterEl.disabled = true;
-        if (misSpFilterEl) {
-          misSpFilterEl.innerHTML = `<option value="${loggedInUser.salesPerson}">${loggedInUser.salesPerson}</option>`;
-          misSpFilterEl.value = loggedInUser.salesPerson;
-          misSpFilterEl.disabled = true;
-        }
       }
     }
 
     if (document.getElementById('adminTargetSp')) document.getElementById('adminTargetSp').innerHTML = adminTargetOpts;
-
     const adminTargetCard = document.getElementById('adminTargetCard');
-    if (adminTargetCard) {
-      if (isAdmin) adminTargetCard.classList.remove('d-none');
-      else adminTargetCard.classList.add('d-none');
-    }
+    if (adminTargetCard) adminTargetCard.classList.toggle('d-none', !isAdmin);
 
     const spInputEl = document.getElementById('salesPersonInput');
     const transferWrapper = document.getElementById('transferActionWrapper');
 
     if (!isMgmt) {
-      if (spInputEl) { 
-        spInputEl.value = loggedInUser ? loggedInUser.salesPerson : ''; 
-        spInputEl.readOnly = true; 
-      }
-      if (filterSalesPersonEl) {
-        filterSalesPersonEl.value = loggedInUser ? loggedInUser.salesPerson : '';
-        filterSalesPersonEl.disabled = true;
-      }
-      if (exportSpSelectEl) {
-        exportSpSelectEl.value = loggedInUser ? loggedInUser.salesPerson : '';
-        exportSpSelectEl.disabled = true;
-      }
+      if (spInputEl) { spInputEl.value = loggedInUser ? loggedInUser.salesPerson : ''; spInputEl.readOnly = true; }
+      if (document.getElementById('filterSalesPerson')) { document.getElementById('filterSalesPerson').value = loggedInUser ? loggedInUser.salesPerson : ''; document.getElementById('filterSalesPerson').disabled = true; }
+      if (document.getElementById('exportSpSelect')) { document.getElementById('exportSpSelect').value = loggedInUser ? loggedInUser.salesPerson : ''; document.getElementById('exportSpSelect').disabled = true; }
       if (transferWrapper) transferWrapper.classList.add('d-none');
     } else {
       if (transferWrapper) transferWrapper.classList.remove('d-none');
@@ -1817,35 +1630,23 @@
       document.getElementById('modalTransferSp').innerHTML = tOpts;
     }
 
-    if (loggedInUser && loggedInUser.salesPerson && spInputEl && !spInputEl.value) {
-      spInputEl.value = loggedInUser.salesPerson;
-    }
-
     filterCustomersBySalesPerson();
     filterCustomerDropdownForActivity();
     loadDashboardData();
-    setTimeout(loadSidebarTargetInfo, 600);
+    setTimeout(loadSidebarTargetInfo, 400);
   }
 
   async function submitAdminTargetUpdate() {
     const role = loggedInUser && loggedInUser.role ? String(loggedInUser.role).toLowerCase() : '';
-    if (role.indexOf('admin') === -1) {
-      showAlert("Only Admin can set or update sales targets.", "danger");
-      return;
-    }
+    if (role.indexOf('admin') === -1) { showAlert("Only Admin can set sales targets.", "danger"); return; }
 
     const sp = document.getElementById('adminTargetSp').value;
     const month = document.getElementById('adminTargetMonth').value;
     const val = document.getElementById('adminTargetVal').value;
-
-    if (!sp || !val) {
-      alert("Please select salesperson and enter target value!");
-      return;
-    }
+    if (!sp || !val) { alert("Please select salesperson and enter target value!"); return; }
 
     const btn = document.getElementById('adminTargetBtn');
     btn.disabled = true; btn.innerText = 'Updating...';
-
     const res = await callAppsScriptApi("updateSalespersonTargetFromPortal", { salesPerson: sp, monthCol: month, targetValue: val });
     btn.disabled = false; btn.innerText = 'Update Target';
 
@@ -1860,7 +1661,7 @@
 
   function populateCustomerDatalist(customersList) {
     let options = '';
-    customersList.forEach(c => { options += `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)} (${escapeHtml(c.city || 'N/A')})</option>`; });
+    customersList.forEach(c => { options += `<option value="${escapeHtml(c.name)}">${escapeHtml(c.city || 'N/A')}</option>`; });
     document.getElementById('customersList').innerHTML = options;
   }
 
@@ -1878,11 +1679,8 @@
     const spInput = document.getElementById('modalActSalesPerson').value.trim().toLowerCase();
     const actList = document.getElementById('actCustomersList');
     if (!actList) return;
-
     let filtered = rawCustomers;
-    if (spInput) {
-      filtered = rawCustomers.filter(c => String(c.salesPerson || '').toLowerCase().trim() === spInput || String(c.salesPerson || '').toLowerCase().trim().indexOf(spInput) > -1);
-    }
+    if (spInput) filtered = rawCustomers.filter(c => String(c.salesPerson || '').toLowerCase().trim() === spInput || String(c.salesPerson || '').toLowerCase().trim().indexOf(spInput) > -1);
     actList.innerHTML = filtered.map(c => `<option value="${escapeHtml(c.name)}">`).join('');
   }
 
@@ -1896,9 +1694,7 @@
       document.getElementById('custMobile').value = cust.mobile || '';
       document.getElementById('custEmail').value = cust.email || '';
       if (cust.defaultTerms !== undefined) document.getElementById('paymentTermsSelect').value = cust.defaultTerms;
-      if (cust.salesPerson && !document.getElementById('salesPersonInput').value) {
-        document.getElementById('salesPersonInput').value = cust.salesPerson;
-      }
+      if (cust.salesPerson && !document.getElementById('salesPersonInput').value) document.getElementById('salesPersonInput').value = cust.salesPerson;
       calculatePaymentFollowupDate();
     }
   }
@@ -1930,35 +1726,27 @@
 
   async function handleEnquirySubmit(e) {
     e.preventDefault();
-    const custName = document.getElementById('customerInput').value;
-    const saveBtn = document.getElementById('saveEnquiryBtn'); 
+    const saveBtn = document.getElementById('saveEnquiryBtn');
     saveBtn.disabled = true; saveBtn.innerText = "Saving to Google Sheet...";
 
-    const brandValue = getSelectedBrandsList();
-    const termsSelect = document.getElementById('paymentTermsSelect');
-    const spVal = document.getElementById('salesPersonInput').value || loggedInUser.salesPerson;
-    const approxVal = document.getElementById('approxValue').value;
-    const dateVal = document.getElementById('enquiryDate').value;
-    const payStatusVal = document.getElementById('paymentStatus').value;
-
     const formData = {
-      customer: custName,
+      customer: document.getElementById('customerInput').value,
       city: document.getElementById('custCity').value,
       address: document.getElementById('custModalAddress').value,
       contactPerson: document.getElementById('custContactPerson').value,
       mobile: document.getElementById('custMobile').value,
       email: document.getElementById('custEmail').value,
-      salesPerson: spVal,
+      salesPerson: document.getElementById('salesPersonInput').value || loggedInUser.salesPerson,
       description: document.getElementById('description').value,
-      brand: brandValue,
-      approxValue: approxVal,
+      brand: getSelectedBrandsList(),
+      approxValue: document.getElementById('approxValue').value,
       mode: document.getElementById('mode').value,
-      enquiryDate: dateVal,
+      enquiryDate: document.getElementById('enquiryDate').value,
       expectedClose: document.getElementById('expectedClose').value,
-      paymentStatus: payStatusVal,
+      paymentStatus: document.getElementById('paymentStatus').value,
       leadFollowup: document.getElementById('leadFollowup').value,
-      paymentTerms: termsSelect.options[termsSelect.selectedIndex].text,
-      paymentTermsDays: termsSelect.value,
+      paymentTerms: document.getElementById('paymentTermsSelect').options[document.getElementById('paymentTermsSelect').selectedIndex].text,
+      paymentTermsDays: document.getElementById('paymentTermsSelect').value,
       paymentFollowup: document.getElementById('paymentFollowupDate').value,
       dispatch: '',
       remark: document.getElementById('remark').value,
@@ -1966,34 +1754,15 @@
       longitude: userGeoCoords ? userGeoCoords.longitude : ''
     };
 
-    const tempId = 'UCE-TEMP-' + Math.floor(Math.random() * 1000);
-    const optimisticItem = {
-      id: tempId,
-      date: dateVal,
-      customer: custName,
-      salesPerson: spVal,
-      value: Number(approxVal) || 0,
-      leadFollowup: formData.leadFollowup,
-      paymentStatus: payStatusVal,
-      paymentFollowup: formData.paymentFollowup,
-      dispatch: '',
-      status: 'New Lead',
-      brand: brandValue
-    };
-    
-    globalEnquiries.unshift(optimisticItem);
     sessionStorage.removeItem('portal_dashboard_data');
-    applyDashboardFilters();
-    resetEnquiryForm();
-
     const res = await callAppsScriptApi("saveEnquiry", formData);
-    saveBtn.disabled = false; 
-    saveBtn.innerText = "Save Enquiry";
-    
+    saveBtn.disabled = false; saveBtn.innerText = "Save Enquiry";
+
     if (res && res.success) {
       showFloatingNotification("Success", res.message || "Lead saved successfully.");
       sessionStorage.removeItem('portal_dashboard_data');
       await loadDashboardData();
+      resetEnquiryForm();
       showTab('enquiry');
     } else {
       showAlert('Error: ' + (res ? res.message : 'Failed'), 'danger');
@@ -2003,16 +1772,10 @@
 
   async function loadDashboardData() {
     if (!loggedInUser) return;
-    
     const cached = sessionStorage.getItem('portal_dashboard_data');
     if (cached) {
-      try {
-        renderDashboardData(JSON.parse(cached));
-      } catch (e) {
-        sessionStorage.removeItem('portal_dashboard_data');
-      }
+      try { renderDashboardData(JSON.parse(cached)); } catch (e) { sessionStorage.removeItem('portal_dashboard_data'); }
     }
-
     const data = await callAppsScriptApi("getDashboardData", { user: loggedInUser });
     if (data && data.success) {
       sessionStorage.setItem('portal_dashboard_data', JSON.stringify(data));
@@ -2044,21 +1807,17 @@
 
     if (tasks) {
       tasks.forEach(t => {
-        if (normalizeDateForMatch(t.dueDate) === todayStr && String(t.status).toLowerCase() !== 'completed') {
-          todayTaskCount++;
-        }
+        if (normalizeDateForMatch(t.dueDate) === todayStr && String(t.status).toLowerCase() !== 'completed') todayTaskCount++;
       });
     }
 
     const banner = document.getElementById('reminderBanner');
     const textElem = document.getElementById('reminderText');
-
     if (todayLeadCount > 0 || todayPayCount > 0 || todayTaskCount > 0) {
       if (banner && textElem) {
         textElem.innerHTML = `You have <b>${todayLeadCount} Lead Follow-up(s)</b>, <b>${todayPayCount} Payment Follow-up(s)</b>, and <b>${todayTaskCount} Task(s)</b> scheduled for today (${todayStr}).`;
         banner.classList.remove('d-none');
       }
-      showFloatingNotification("Today's Reminders", `${todayLeadCount} Lead, ${todayPayCount} Payment & ${todayTaskCount} Tasks today!`);
     } else {
       if (banner) banner.classList.add('d-none');
     }
@@ -2090,14 +1849,10 @@
   }
   function onSalespersonFilterChange() { applyDashboardFilters(); loadSidebarTargetInfo(); }
 
-  // LIVE DYNAMIC SUMMARY METRICS CALCULATOR
   function renderFilteredSummaryMetrics(list) {
-    let totalCount = list.length;
-    let totalVal = 0, newCount = 0, newVal = 0;
-    let hotCount = 0, hotVal = 0;
-    let quotedCount = 0, quotedVal = 0;
-    let wonCount = 0, wonVal = 0;
-    let lostCount = 0, lostVal = 0;
+    let totalCount = list.length, totalVal = 0, newCount = 0, newVal = 0;
+    let hotCount = 0, hotVal = 0, quotedCount = 0, quotedVal = 0;
+    let wonCount = 0, wonVal = 0, lostCount = 0, lostVal = 0;
     let payPendingCount = 0, payPendingVal = 0;
 
     list.forEach(item => {
@@ -2111,83 +1866,50 @@
       else if (s === 'quoted' || s === 'live') { quotedCount++; quotedVal += v; }
       else if (s === 'won') { wonCount++; wonVal += v; }
       else if (s === 'lost') { lostCount++; lostVal += v; }
-
       if (p === 'pending') { payPendingCount++; payPendingVal += v; }
     });
 
     const setEl = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
-
-    setEl('kpiTotalCount', totalCount);
-    setEl('kpiTotalVal', '₹' + totalVal.toLocaleString());
-    setEl('kpiNewCount', newCount);
-    setEl('kpiNewVal', '₹' + newVal.toLocaleString());
-    setEl('kpiHotCount', hotCount);
-    setEl('kpiHotVal', '₹' + hotVal.toLocaleString());
-    setEl('kpiQuotedCount', quotedCount);
-    setEl('kpiQuotedVal', '₹' + quotedVal.toLocaleString());
-    setEl('kpiWonCount', wonCount);
-    setEl('kpiWonVal', '₹' + wonVal.toLocaleString());
-    setEl('kpiLostCount', lostCount);
-    setEl('kpiLostVal', '₹' + lostVal.toLocaleString());
-    setEl('kpiPayPendingCount', payPendingCount);
-    setEl('kpiPayPendingVal', '₹' + payPendingVal.toLocaleString());
+    setEl('kpiTotalCount', totalCount); setEl('kpiTotalVal', '₹' + totalVal.toLocaleString());
+    setEl('kpiNewCount', newCount); setEl('kpiNewVal', '₹' + newVal.toLocaleString());
+    setEl('kpiHotCount', hotCount); setEl('kpiHotVal', '₹' + hotVal.toLocaleString());
+    setEl('kpiQuotedCount', quotedCount); setEl('kpiQuotedVal', '₹' + quotedVal.toLocaleString());
+    setEl('kpiWonCount', wonCount); setEl('kpiWonVal', '₹' + wonVal.toLocaleString());
+    setEl('kpiLostCount', lostCount); setEl('kpiLostVal', '₹' + lostVal.toLocaleString());
+    setEl('kpiPayPendingCount', payPendingCount); setEl('kpiPayPendingVal', '₹' + payPendingVal.toLocaleString());
 
     const ind = document.getElementById('summaryFilterIndicator');
-    if (ind) {
-      ind.innerText = `Showing ${totalCount} filtered records | Value: ₹${totalVal.toLocaleString()}`;
-    }
+    if (ind) ind.innerText = `Showing ${totalCount} filtered records | Value: ₹${totalVal.toLocaleString()}`;
   }
 
-  // MEMBER-WISE PERFORMANCE SUMMARY GENERATOR
   function renderMemberWiseSummary(list) {
     const tbody = document.getElementById('memberWiseSummaryTbody');
     if (!tbody) return;
-
     if (!list || list.length === 0) {
       tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-2">No records match current filters</td></tr>';
       return;
     }
 
     const memberMap = {};
-
     list.forEach(item => {
       const sp = (item.salesPerson && item.salesPerson.trim()) ? item.salesPerson.trim() : 'Unassigned';
       if (!memberMap[sp]) {
-        memberMap[sp] = {
-          totalCount: 0,
-          totalVal: 0,
-          newCount: 0,
-          newVal: 0,
-          hotCount: 0,
-          hotVal: 0,
-          quotedCount: 0,
-          quotedVal: 0,
-          wonCount: 0,
-          wonVal: 0,
-          payPendingCount: 0,
-          payPendingVal: 0
-        };
+        memberMap[sp] = { totalCount: 0, totalVal: 0, newCount: 0, newVal: 0, hotCount: 0, hotVal: 0, quotedCount: 0, quotedVal: 0, wonCount: 0, wonVal: 0, payPendingCount: 0, payPendingVal: 0 };
       }
-
       const v = Number(item.value) || 0;
       const s = String(item.status || '').toLowerCase().trim();
       const p = String(item.paymentStatus || '').toLowerCase().trim();
 
-      memberMap[sp].totalCount++;
-      memberMap[sp].totalVal += v;
-
+      memberMap[sp].totalCount++; memberMap[sp].totalVal += v;
       if (s === 'new lead') { memberMap[sp].newCount++; memberMap[sp].newVal += v; }
       else if (s === 'hot lead') { memberMap[sp].hotCount++; memberMap[sp].hotVal += v; }
       else if (s === 'quoted' || s === 'live') { memberMap[sp].quotedCount++; memberMap[sp].quotedVal += v; }
       else if (s === 'won') { memberMap[sp].wonCount++; memberMap[sp].wonVal += v; }
-
       if (p === 'pending') { memberMap[sp].payPendingCount++; memberMap[sp].payPendingVal += v; }
     });
 
     let html = '';
-    const sortedMembers = Object.keys(memberMap).sort((a, b) => memberMap[b].totalVal - memberMap[a].totalVal);
-
-    sortedMembers.forEach(sp => {
+    Object.keys(memberMap).sort((a, b) => memberMap[b].totalVal - memberMap[a].totalVal).forEach(sp => {
       const m = memberMap[sp];
       const winRate = m.totalCount > 0 ? Math.round((m.wonCount / m.totalCount) * 100) : 0;
       const initials = sp.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'SP';
@@ -2213,9 +1935,7 @@
           </td>
           <td class="text-center" style="min-width: 100px;">
             <div class="d-flex align-items-center gap-1">
-              <div class="progress flex-fill" style="height: 6px;">
-                <div class="progress-bar bg-success" style="width: ${winRate}%"></div>
-              </div>
+              <div class="progress flex-fill" style="height: 6px;"><div class="progress-bar bg-success" style="width: ${winRate}%"></div></div>
               <span class="extra-small fw-bold">${winRate}%</span>
             </div>
           </td>
@@ -2226,7 +1946,6 @@
         </tr>
       `;
     });
-
     tbody.innerHTML = html;
   }
 
@@ -2240,11 +1959,8 @@
   }
 
   function triggerKpiFilter(statusType) {
-    const pills = document.querySelectorAll('.filter-pill-btn');
-    pills.forEach(p => {
-      if (p.innerText.includes(statusType)) {
-        filterByPill(statusType, p);
-      }
+    document.querySelectorAll('.filter-pill-btn').forEach(p => {
+      if (p.innerText.includes(statusType)) filterByPill(statusType, p);
     });
   }
 
@@ -2258,16 +1974,13 @@
     const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
 
     filteredEnquiriesList = globalEnquiries || [];
-
     if (searchVal) {
       filteredEnquiriesList = filteredEnquiriesList.filter(item => {
-        return (
-          String(item.id || '').toLowerCase().indexOf(searchVal) > -1 ||
-          String(item.customer || '').toLowerCase().indexOf(searchVal) > -1 ||
-          String(item.salesPerson || '').toLowerCase().indexOf(searchVal) > -1 ||
-          String(item.brand || '').toLowerCase().indexOf(searchVal) > -1 ||
-          String(item.description || '').toLowerCase().indexOf(searchVal) > -1
-        );
+        return String(item.id || '').toLowerCase().indexOf(searchVal) > -1 ||
+               String(item.customer || '').toLowerCase().indexOf(searchVal) > -1 ||
+               String(item.salesPerson || '').toLowerCase().indexOf(searchVal) > -1 ||
+               String(item.brand || '').toLowerCase().indexOf(searchVal) > -1 ||
+               String(item.description || '').toLowerCase().indexOf(searchVal) > -1;
       });
     }
 
@@ -2280,7 +1993,6 @@
 
     renderFilteredSummaryMetrics(filteredEnquiriesList);
     renderMemberWiseSummary(filteredEnquiriesList);
-
     currentPage = 1;
     renderPaginatedTable();
   }
@@ -2309,7 +2021,6 @@
       if (paymentEl) paymentEl.value = 'ALL';
       if (statusEl) statusEl.value = statusType;
     }
-    
     applyDashboardFilters();
   }
 
@@ -2317,9 +2028,7 @@
     const totalItems = filteredEnquiriesList.length;
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = Math.min(startIndex + pageSize, totalItems);
-    const paginatedItems = filteredEnquiriesList.slice(startIndex, endIndex);
-
-    renderEnquiryTable(paginatedItems);
+    renderEnquiryTable(filteredEnquiriesList.slice(startIndex, endIndex));
     document.getElementById('paginationInfo').innerText = totalItems > 0 ? `Showing ${startIndex + 1} to ${endIndex} of ${totalItems}` : 'Showing 0-0 of 0';
   }
 
@@ -2337,7 +2046,7 @@
         if (item.status === 'Live') badgeColor = 'bg-primary text-white';
         if (item.status === 'Quoted') badgeColor = 'bg-dark text-white';
         if (item.status === 'Hot lead') badgeColor = 'bg-warning text-dark';
-        
+
         let payBadgeColor = 'bg-secondary';
         if (item.paymentStatus === 'Fully Paid') payBadgeColor = 'bg-success';
         if (item.paymentStatus === 'Advance Received') payBadgeColor = 'bg-info text-dark';
@@ -2417,7 +2126,6 @@
 
     const btn = document.getElementById('exportSubmitBtn');
     btn.disabled = true; btn.innerText = 'Exporting...';
-
     const res = await callAppsScriptApi("getEnquiriesExportData", { salesPerson: sp, fromDate: fromDate, toDate: toDate });
     btn.disabled = false; btn.innerText = 'Download CSV';
 
@@ -2445,22 +2153,13 @@
 
   function checkDeliveryStatusCondition() {
     const stVal = document.getElementById('editStatus').value;
-    const deliveryWrapper = document.getElementById('deliveryStatusWrapper');
-    if (stVal.toLowerCase() === 'won') {
-      deliveryWrapper.classList.remove('d-none');
-    } else {
-      deliveryWrapper.classList.add('d-none');
-    }
+    document.getElementById('deliveryStatusWrapper').classList.toggle('d-none', stVal.toLowerCase() !== 'won');
   }
 
   function openEditModal(id) {
     const targetId = String(id || '').trim().toLowerCase();
     const item = globalEnquiries.find(e => String(e.id || '').trim().toLowerCase() === targetId);
-    
-    if (!item) {
-      alert("Lead details not found in current data! Please refresh dashboard.");
-      return;
-    }
+    if (!item) { alert("Lead details not found! Please refresh dashboard."); return; }
 
     document.getElementById('modalEnqTitle').innerText = "Lead Details - " + item.id;
     document.getElementById('editEnqId').value = item.id;
@@ -2470,10 +2169,7 @@
     document.getElementById('mSalesPerson').innerText = item.salesPerson || '-';
     document.getElementById('mDescription').innerText = item.description || '-';
     
-    const editDispatchStatusEl = document.getElementById('editDispatchStatus');
-    if (editDispatchStatusEl) {
-      editDispatchStatusEl.value = item.dispatch || 'Pending';
-    }
+    if (document.getElementById('editDispatchStatus')) document.getElementById('editDispatchStatus').value = item.dispatch || 'Pending';
 
     const masterCustomer = findMasterCustomer(item.customer, item.salesPerson);
     document.getElementById('mCustContact').innerText = masterCustomer ? getCustomerField(masterCustomer, ['contactPerson', 'contact']) : '-';
@@ -2496,13 +2192,7 @@
     fetchAndRenderDynamicCustomerDetails(item.customer, item.salesPerson);
 
     const modalEl = document.getElementById('leadDetailsModal');
-    if (modalEl) {
-      let modalInstance = bootstrap.Modal.getInstance(modalEl);
-      if (!modalInstance) {
-        modalInstance = new bootstrap.Modal(modalEl);
-      }
-      modalInstance.show();
-    }
+    if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
   }
 
   function findMasterCustomer(customerName, salesPerson) {
@@ -2541,7 +2231,7 @@
     const date = document.getElementById('modalSnoozeDate').value;
     if (!date) return alert("Select date");
 
-    const res = await callAppsScriptApi("quickSnoozeEnquiry", { id, type, newDate: date, user: loggedInUser.salesPerson });
+    const res = await callAppsScriptApi("quickSnoozeEnquiry", { id, type, newDate: date, user: loggedInUser });
     if (res && res.success) {
       showFloatingNotification("Snooze Saved", res.message);
       sessionStorage.removeItem('portal_dashboard_data');
@@ -2555,12 +2245,14 @@
     const targetSp = document.getElementById('modalTransferSp').value;
     if (!targetSp) return alert("Select salesperson");
 
-    const res = await callAppsScriptApi("transferLeadOwner", { id, targetSp, user: loggedInUser.salesPerson });
+    const res = await callAppsScriptApi("transferLeadOwner", { id, targetSp, user: loggedInUser });
     if (res && res.success) {
       showFloatingNotification("Transferred", res.message);
       sessionStorage.removeItem('portal_dashboard_data');
       bootstrap.Modal.getInstance(document.getElementById('leadDetailsModal')).hide();
       loadDashboardData();
+    } else {
+      alert("Transfer failed: " + (res ? res.message : 'Error'));
     }
   }
 
@@ -2614,74 +2306,38 @@
     const stVal = document.getElementById('editStatus').value;
     const lostReasonVal = document.getElementById('editLostReason').value;
 
-    if (stVal === 'Lost' && !lostReasonVal.trim()) {
-      showAlert("Lost Reason is required!", "danger");
-      return;
-    }
+    if (stVal === 'Lost' && !lostReasonVal.trim()) { showAlert("Lost Reason is required!", "danger"); return; }
 
     const saveBtn = document.getElementById('saveUpdateBtn');
-    if (saveBtn) {
-      saveBtn.disabled = true;
-      saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Saving Updates...';
-    }
+    if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Saving Updates...'; }
 
     const enqId = document.getElementById('editEnqId').value;
-    const approxVal = document.getElementById('editApproxValue').value;
-    const payStatusVal = document.getElementById('editPaymentStatus').value;
-    const leadFupVal = document.getElementById('editLeadFollowup').value;
-    const payTermsVal = document.getElementById('editPaymentTerms').value;
-    const payFupVal = document.getElementById('editPaymentFollowup').value;
-
-    const dispatchVal = (stVal.toLowerCase() === 'won')
-      ? (document.getElementById('editDispatchStatus').value || 'Pending')
-      : '';
-    const remarkVal = document.getElementById('editRemark').value;
+    const dispatchVal = (stVal.toLowerCase() === 'won') ? (document.getElementById('editDispatchStatus').value || 'Pending') : '';
 
     const payload = {
       id: enqId,
-      approxValue: approxVal,
+      approxValue: document.getElementById('editApproxValue').value,
       status: stVal,
-      paymentStatus: payStatusVal,
-      leadFollowup: leadFupVal,
-      paymentTerms: payTermsVal,
-      paymentFollowup: payFupVal,
+      paymentStatus: document.getElementById('editPaymentStatus').value,
+      leadFollowup: document.getElementById('editLeadFollowup').value,
+      paymentTerms: document.getElementById('editPaymentTerms').value,
+      paymentFollowup: document.getElementById('editPaymentFollowup').value,
       dispatch: dispatchVal,
       lostReason: lostReasonVal,
-      remark: remarkVal,
+      remark: document.getElementById('editRemark').value,
       user: loggedInUser
     };
 
-    const localLead = globalEnquiries.find(e => String(e.id) === String(enqId));
-    if (localLead) {
-      localLead.value = Number(approxVal) || 0;
-      localLead.status = stVal;
-      localLead.paymentStatus = payStatusVal;
-      localLead.leadFollowup = leadFupVal;
-      localLead.paymentTerms = payTermsVal;
-      localLead.paymentFollowup = payFupVal;
-      localLead.dispatch = dispatchVal;
-      localLead.lostReason = lostReasonVal;
-      localLead.remark = remarkVal;
-    }
     sessionStorage.removeItem('portal_dashboard_data');
-    applyDashboardFilters();
-
-    const modalEl = document.getElementById('leadDetailsModal');
-    if (modalEl) {
-      const modalInstance = bootstrap.Modal.getInstance(modalEl);
-      if (modalInstance) modalInstance.hide();
-    }
-
     const res = await callAppsScriptApi("updateEnquiryFull", payload);
     
-    if (saveBtn) {
-      saveBtn.disabled = false;
-      saveBtn.innerHTML = '<i class="fa fa-save me-1"></i> Save Updates';
-    }
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '<i class="fa fa-save me-1"></i> Save Updates'; }
 
     if (res && res.success) {
       showFloatingNotification("Updated Successfully", `Enquiry ${enqId} updated to ${stVal}`);
       sessionStorage.removeItem('portal_dashboard_data');
+      const modalEl = document.getElementById('leadDetailsModal');
+      if (modalEl) bootstrap.Modal.getInstance(modalEl).hide();
       loadDashboardData();
     } else {
       showAlert("Failed: " + (res ? res.message : 'Error'), "danger");
@@ -2740,8 +2396,7 @@
   async function submitModalActivityRecord() {
     const actBtn = document.getElementById('saveActivityBtn');
     if (actBtn.disabled) return;
-    actBtn.disabled = true;
-    actBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Saving...';
+    actBtn.disabled = true; actBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Saving...';
 
     const payload = {
       date: selectedActivityDateStr,
@@ -2751,16 +2406,11 @@
       status: document.querySelector('input[name="modalInteractionStatus"]:checked').value,
       remark: document.getElementById('modalActRemark').value.trim()
     };
-    if (!payload.customer) {
-      alert("Customer required");
-      actBtn.disabled = false;
-      actBtn.innerHTML = '<i class="fa fa-save me-1"></i> Save Entry';
-      return;
-    }
+    if (!payload.customer) { alert("Customer required"); actBtn.disabled = false; actBtn.innerHTML = '<i class="fa fa-save me-1"></i> Save Entry'; return; }
 
+    sessionStorage.removeItem('portal_dashboard_data');
     const res = await callAppsScriptApi("saveActivity", payload);
-    actBtn.disabled = false;
-    actBtn.innerHTML = '<i class="fa fa-save me-1"></i> Save Entry';
+    actBtn.disabled = false; actBtn.innerHTML = '<i class="fa fa-save me-1"></i> Save Entry';
 
     if (res && res.success) {
       showFloatingNotification("Saved", res.message);
@@ -2800,7 +2450,6 @@
     `).join('') || '<tr><td colspan="6" class="text-center text-muted">No lost enquiries</td></tr>';
   }
 
-  // UPDATED VISUAL ANALYTICS WITH ROLE-BASED SALESPERSON FILTER
   async function renderPowerBiDashboard() {
     if (!globalEnquiries) return;
     const reportType = document.getElementById('powerBiReportSelect').value;
@@ -2808,9 +2457,7 @@
     const selectedSp = spFilterEl ? spFilterEl.value : 'ALL';
 
     let analyticsList = globalEnquiries;
-    if (selectedSp !== 'ALL') {
-      analyticsList = analyticsList.filter(e => String(e.salesPerson || '').toLowerCase() === selectedSp.toLowerCase());
-    }
+    if (selectedSp !== 'ALL') analyticsList = analyticsList.filter(e => String(e.salesPerson || '').toLowerCase() === selectedSp.toLowerCase());
 
     let won = 0, pipeline = 0, lost = 0;
     analyticsList.forEach(e => {
@@ -2824,9 +2471,7 @@
     document.getElementById('statLostValue').innerText = '₹' + lost.toLocaleString();
 
     const chartBadge = document.getElementById('analyticsChartBadge');
-    if (chartBadge) {
-      chartBadge.innerText = (selectedSp === 'ALL') ? 'All Team Members' : `Filtered: ${selectedSp}`;
-    }
+    if (chartBadge) chartBadge.innerText = (selectedSp === 'ALL') ? 'All Team Members' : `Filtered: ${selectedSp}`;
 
     const ctx = document.getElementById('powerBiCanvas');
     if (powerBiChartInstance) powerBiChartInstance.destroy();
@@ -2835,280 +2480,38 @@
 
     if (reportType === 'funnel') {
       let fVal = { 'New Lead': 0, 'Hot lead': 0, 'Live': 0, 'Won': 0, 'Lost': 0 };
-
       analyticsList.forEach(e => {
-        let st = e.status;
-        let v = Number(e.value) || 0;
+        let st = e.status, v = Number(e.value) || 0;
         if (st === 'Quoted') st = 'Live';
         if (fVal[st] !== undefined) fVal[st] += v;
       });
-
-      chartConfig.data = {
-        labels: ['New', 'Hot', 'Live / Quoted', 'Won', 'Lost'],
-        datasets: [{
-          label: 'Value (₹)',
-          data: [fVal['New Lead'], fVal['Hot lead'], fVal['Live'], fVal['Won'], fVal['Lost']],
-          backgroundColor: ['#6c757d', '#ffc107', '#0dcaf0', '#198754', '#dc3545']
-        }]
-      };
+      chartConfig.data = { labels: ['New', 'Hot', 'Live / Quoted', 'Won', 'Lost'], datasets: [{ label: 'Value (₹)', data: [fVal['New Lead'], fVal['Hot lead'], fVal['Live'], fVal['Won'], fVal['Lost']], backgroundColor: ['#6c757d', '#ffc107', '#0dcaf0', '#198754', '#dc3545'] }] };
     } else if (reportType === 'brands') {
       let brandMap = {};
       analyticsList.forEach(e => {
-        let b = e.brand || 'Other';
-        let v = Number(e.value) || 0;
-        let isWon = String(e.status).toLowerCase() === 'won';
-        if (!brandMap[b]) brandMap[b] = 0;
-        if (isWon) brandMap[b] += v;
+        let b = e.brand || 'Other', v = Number(e.value) || 0;
+        if (String(e.status).toLowerCase() === 'won') brandMap[b] = (brandMap[b] || 0) + v;
       });
-
       const labels = Object.keys(brandMap).slice(0, 10);
       chartConfig.data = { labels: labels, datasets: [{ label: 'Won Value (₹)', data: labels.map(l => brandMap[l]), backgroundColor: '#198754' }] };
     } else if (reportType === 'marketing') {
       let modeMap = {};
-      analyticsList.forEach(e => {
-        let m = e.mode || 'Direct';
-        let v = Number(e.value) || 0;
-        if (!modeMap[m]) modeMap[m] = 0;
-        modeMap[m] += v;
-      });
+      analyticsList.forEach(e => { let m = e.mode || 'Direct'; modeMap[m] = (modeMap[m] || 0) + (Number(e.value) || 0); });
       const labels = Object.keys(modeMap);
       chartConfig.type = 'doughnut';
       chartConfig.data = { labels: labels, datasets: [{ data: labels.map(l => modeMap[l]), backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#0dcaf0', '#dc3545', '#6610f2'] }] };
     } else if (reportType === 'productivity') {
       let spMap = {};
-      analyticsList.forEach(e => {
-        let sp = e.salesPerson || 'Unassigned';
-        let v = Number(e.value) || 0;
-        let isWon = String(e.status).toLowerCase() === 'won';
-        if (!spMap[sp]) spMap[sp] = 0;
-        if (isWon) spMap[sp] += v;
-      });
+      analyticsList.forEach(e => { if (String(e.status).toLowerCase() === 'won') spMap[e.salesPerson || 'Unassigned'] = (spMap[e.salesPerson || 'Unassigned'] || 0) + (Number(e.value) || 0); });
       const labels = Object.keys(spMap);
       chartConfig.data = { labels: labels, datasets: [{ label: 'Won Revenue (₹)', data: labels.map(l => spMap[l]), backgroundColor: '#198754' }] };
     } else if (reportType === 'cashflow') {
       let pMap = { 'Fully Paid': 0, 'Advance Received': 0, 'Partial': 0, 'Pending': 0, 'Credit': 0 };
-      analyticsList.forEach(e => {
-        let p = e.paymentStatus || 'Pending';
-        let v = Number(e.value) || 0;
-        if (pMap[p] !== undefined) pMap[p] += v;
-      });
+      analyticsList.forEach(e => { if (pMap[e.paymentStatus || 'Pending'] !== undefined) pMap[e.paymentStatus || 'Pending'] += (Number(e.value) || 0); });
       chartConfig.type = 'pie';
-      chartConfig.data = {
-        labels: ['Fully Paid', 'Advance', 'Partial', 'Pending', 'Credit'],
-        datasets: [{ data: [pMap['Fully Paid'], pMap['Advance Received'], pMap['Partial'], pMap['Pending'], pMap['Credit']], backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545', '#0f172a'] }]
-      };
+      chartConfig.data = { labels: ['Fully Paid', 'Advance', 'Partial', 'Pending', 'Credit'], datasets: [{ data: [pMap['Fully Paid'], pMap['Advance Received'], pMap['Partial'], pMap['Pending'], pMap['Credit']], backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545', '#0f172a'] }] };
     }
-
     powerBiChartInstance = new Chart(ctx, chartConfig);
-  }
-
-  // --- DYNAMIC CUSTOMER SALES INTELLIGENCE (MIS) FUNCTIONS ---
-  async function loadCustomerMisReport() {
-    const tbody = document.getElementById('misReportTableBody');
-    if (tbody) {
-      tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4"><i class="fa fa-spinner fa-spin me-2"></i>Loading sales intelligence report...</td></tr>';
-    }
-
-    const role = String(loggedInUser.role || '').toLowerCase();
-    const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
-    const spSelect = document.getElementById('misFilterSp');
-
-    let targetSp = 'ALL';
-    if (!isMgmt) {
-      targetSp = loggedInUser.salesPerson;
-      if (spSelect) {
-        spSelect.innerHTML = `<option value="${loggedInUser.salesPerson}">${loggedInUser.salesPerson}</option>`;
-        spSelect.disabled = true;
-      }
-    } else {
-      targetSp = spSelect ? spSelect.value : 'ALL';
-    }
-
-    const fromDate = document.getElementById('misFromDate') ? document.getElementById('misFromDate').value : '';
-    const toDate = document.getElementById('misToDate') ? document.getElementById('misToDate').value : '';
-
-    const res = await callAppsScriptApi("getCustomerYearlyComparisonReport", {
-      salesPerson: targetSp,
-      fromDate: fromDate,
-      toDate: toDate,
-      user: loggedInUser
-    });
-
-    if (res && res.success) {
-      rawMisReportData = res.report || [];
-      availableFinancialYears = res.availableYears || [];
-      populateDynamicYearSelectors(availableFinancialYears);
-      renderMisTable(rawMisReportData);
-    } else {
-      if (tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">Failed: ${res ? res.message : 'Error'}</td></tr>`;
-    }
-  }
-
-  function populateDynamicYearSelectors(years) {
-    const sel1 = document.getElementById('misCompareYear1');
-    const sel2 = document.getElementById('misCompareYear2');
-    if (!sel1 || !sel2) return;
-
-    let yList = (years && years.length > 0) ? years.slice() : ['FY 24-25', 'FY 25-26', 'FY 26-27'];
-
-    const cur1 = sel1.value;
-    const cur2 = sel2.value;
-
-    let opts = '';
-    yList.forEach(y => { opts += `<option value="${y}">${y}</option>`; });
-    sel1.innerHTML = opts;
-    sel2.innerHTML = opts;
-
-    if (cur1 && yList.includes(cur1)) sel1.value = cur1;
-    else sel1.value = yList.length >= 2 ? yList[yList.length - 2] : yList[0];
-
-    if (cur2 && yList.includes(cur2)) sel2.value = cur2;
-    else sel2.value = yList[yList.length - 1];
-  }
-
-  function clearMisDateFilter() {
-    if (document.getElementById('misFromDate')) document.getElementById('misFromDate').value = '';
-    if (document.getElementById('misToDate')) document.getElementById('misToDate').value = '';
-    loadCustomerMisReport();
-  }
-
-  function renderMisTable(list) {
-    const tbody = document.getElementById('misReportTableBody');
-    const turnoverBadge = document.getElementById('misTotalTurnoverBadge');
-    const sel1 = document.getElementById('misCompareYear1');
-    const sel2 = document.getElementById('misCompareYear2');
-    const th1 = document.getElementById('misThYear1');
-    const th2 = document.getElementById('misThYear2');
-
-    const y1 = sel1 ? sel1.value : 'Base FY';
-    const y2 = sel2 ? sel2.value : 'Target FY';
-
-    if (th1) th1.innerText = y1 || 'Base FY';
-    if (th2) th2.innerText = y2 || 'Target FY';
-
-    if (!tbody) return;
-
-    if (!list || list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">No records found for selected criteria.</td></tr>';
-      if (turnoverBadge) turnoverBadge.innerText = 'Total: ₹0';
-      return;
-    }
-
-    let totalAllRevenue = 0;
-    let rows = '';
-
-    list.forEach(item => {
-      totalAllRevenue += item.totalRevenue;
-
-      const valY1 = (item.fyBreakdown && item.fyBreakdown[y1]) ? Number(item.fyBreakdown[y1]) : 0;
-      const valY2 = (item.fyBreakdown && item.fyBreakdown[y2]) ? Number(item.fyBreakdown[y2]) : 0;
-
-      let growthHtml = '<span class="text-muted">-</span>';
-      if (valY1 > 0 && valY2 > 0) {
-        let pct = Math.round(((valY2 - valY1) / valY1) * 100);
-        let gColor = pct >= 0 ? 'text-success' : 'text-danger';
-        let icon = pct >= 0 ? '▲' : '▼';
-        growthHtml = `<span class="${gColor} fw-bold">${icon} ${pct}%</span>`;
-      } else if (valY1 === 0 && valY2 > 0) {
-        growthHtml = '<span class="text-success fw-bold">New (100%)</span>';
-      }
-
-      rows += `
-        <tr>
-          <td class="fw-bold text-dark">${escapeHtml(item.customer)}</td>
-          <td class="text-center"><span class="badge bg-light text-dark border px-2 py-1">${escapeHtml(item.salesPerson)}</span></td>
-          <td class="text-end fw-bold text-primary">₹${Number(item.totalRevenue).toLocaleString()}</td>
-          <td class="text-end fw-semibold">₹${Number(valY1).toLocaleString()}</td>
-          <td class="text-end fw-bold text-success">₹${Number(valY2).toLocaleString()}</td>
-          <td class="text-center">${growthHtml}</td>
-          <td><small class="text-dark fw-semibold">${escapeHtml(item.topProducts || 'Standard Equipment')}</small></td>
-          <td class="text-center">
-            <button class="btn btn-sm btn-outline-dark py-0 px-2 extra-small" onclick="openCustomerMonthlyModal('${escapeHtml(item.customer)}')">
-              <i class="fa fa-calendar-alt me-1"></i>Months
-            </button>
-          </td>
-        </tr>
-      `;
-    });
-
-    tbody.innerHTML = rows;
-    if (turnoverBadge) turnoverBadge.innerText = 'Total: ₹' + totalAllRevenue.toLocaleString();
-  }
-
-  function filterMisTableLive() {
-    const custQuery = document.getElementById('misSearchCustomer').value.toLowerCase().trim();
-    const prodQuery = document.getElementById('misSearchProduct').value.toLowerCase().trim();
-
-    let filtered = rawMisReportData.filter(item => {
-      let matchCust = (!custQuery || item.customer.toLowerCase().indexOf(custQuery) > -1);
-      let matchProd = (!prodQuery || (item.topProducts && item.topProducts.toLowerCase().indexOf(prodQuery) > -1));
-      return matchCust && matchProd;
-    });
-
-    renderMisTable(filtered);
-  }
-
-  function openCustomerMonthlyModal(customerName) {
-    const custObj = rawMisReportData.find(c => c.customer === customerName);
-    if (!custObj) return;
-
-    document.getElementById('modalLedgerCustName').innerText = customerName;
-    const tbody = document.getElementById('customerMonthlyLedgerTbody');
-    
-    let html = '';
-    const months = Object.keys(custObj.monthlyBreakdown || {});
-    if (months.length === 0) {
-      html = '<tr><td colspan="2" class="text-center text-muted py-2">No monthly breakdown available</td></tr>';
-    } else {
-      months.forEach(m => {
-        html += `
-          <tr>
-            <td><b>${escapeHtml(m)}</b></td>
-            <td class="text-end fw-bold text-success">₹${Number(custObj.monthlyBreakdown[m]).toLocaleString()}</td>
-          </tr>
-        `;
-      });
-    }
-    tbody.innerHTML = html;
-    new bootstrap.Modal(document.getElementById('customerMonthlyLedgerModal')).show();
-  }
-
-  function exportMisTableToCSV() {
-    if (!rawMisReportData || rawMisReportData.length === 0) {
-      alert("No records to export!");
-      return;
-    }
-    const sel1 = document.getElementById('misCompareYear1');
-    const sel2 = document.getElementById('misCompareYear2');
-    const y1 = sel1 ? sel1.value : 'Base FY';
-    const y2 = sel2 ? sel2.value : 'Target FY';
-
-    let csv = [];
-    csv.push(["Customer Name", "Sales Person", "Total Revenue (INR)", y1, y2, "YoY Growth", "Products/Brands"]);
-
-    rawMisReportData.forEach(r => {
-      const v1 = (r.fyBreakdown && r.fyBreakdown[y1]) ? Number(r.fyBreakdown[y1]) : 0;
-      const v2 = (r.fyBreakdown && r.fyBreakdown[y2]) ? Number(r.fyBreakdown[y2]) : 0;
-      let gStr = '-';
-      if (v1 > 0 && v2 > 0) gStr = Math.round(((v2 - v1) / v1) * 100) + '%';
-      else if (v1 === 0 && v2 > 0) gStr = '100%';
-
-      csv.push([
-        `"${r.customer.replace(/"/g, '""')}"`,
-        `"${r.salesPerson.replace(/"/g, '""')}"`,
-        r.totalRevenue,
-        v1,
-        v2,
-        `"${gStr}"`,
-        `"${(r.topProducts || '').replace(/"/g, '""')}"`
-      ]);
-    });
-
-    const blob = new Blob([csv.map(e => e.join(",")).join("\n")], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `Sales_MIS_${y1}_vs_${y2}_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
   }
 
   function changeTodoCalendarMonth(step) {
@@ -3120,12 +2523,10 @@
     const year = todoCalCurrentDate.getFullYear();
     const month = todoCalCurrentDate.getMonth();
     const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-    const monthLabel = document.getElementById('todoCalMonthLabel');
-    if (monthLabel) monthLabel.innerText = `${monthNames[month]} ${year}`;
+    document.getElementById('todoCalMonthLabel').innerText = `${monthNames[month]} ${year}`;
 
     const firstDay = new Date(year, month, 1).getDay();
     const totalDays = new Date(year, month + 1, 0).getDate();
-    
     const role = loggedInUser && loggedInUser.role ? String(loggedInUser.role).toLowerCase() : '';
     const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
     const selectedSp = (isMgmt && document.getElementById('todoFilterSalesPerson')) ? document.getElementById('todoFilterSalesPerson').value : (loggedInUser ? loggedInUser.salesPerson : 'ALL');
@@ -3137,40 +2538,25 @@
     for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="cal-day empty"></div>`;
 
     let monthPending = 0, monthCompleted = 0;
-
     for (let d = 1; d <= totalDays; d++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       const dayTasks = (globalTasks || []).filter(t => {
-        const matchDate = normalizeDateForMatch(t.dueDate) === dateStr;
-        if (!matchDate) return false;
-        if (isMgmt) {
-          return selectedSp === 'ALL' || String(t.salesPerson || '').toLowerCase() === String(selectedSp).toLowerCase();
-        } else {
-          return String(t.salesPerson || '').toLowerCase().trim() === String(loggedInUser.salesPerson || '').toLowerCase().trim();
-        }
+        if (normalizeDateForMatch(t.dueDate) !== dateStr) return false;
+        if (isMgmt) return selectedSp === 'ALL' || String(t.salesPerson || '').toLowerCase() === String(selectedSp).toLowerCase();
+        return String(t.salesPerson || '').toLowerCase().trim() === String(loggedInUser.salesPerson || '').toLowerCase().trim();
       });
       
       const pendingCount = dayTasks.filter(t => String(t.status).toLowerCase() !== 'completed').length;
       const completedCount = dayTasks.filter(t => String(t.status).toLowerCase() === 'completed').length;
-
-      monthPending += pendingCount;
-      monthCompleted += completedCount;
+      monthPending += pendingCount; monthCompleted += completedCount;
 
       let badgesHtml = '';
       if (pendingCount > 0) badgesHtml += `<span class="badge bg-warning text-dark d-block mt-1">⏳ ${pendingCount} Pending</span>`;
       if (completedCount > 0) badgesHtml += `<span class="badge bg-success d-block mt-1">✔ ${completedCount} Done</span>`;
 
-      grid.innerHTML += `
-        <div class="cal-day" onclick="openTodoDateModal('${dateStr}')">
-          <span class="day-num">${d}</span>
-          ${badgesHtml}
-          <i class="fa fa-plus add-hint-icon"></i>
-        </div>
-      `;
+      grid.innerHTML += `<div class="cal-day" onclick="openTodoDateModal('${dateStr}')"><span class="day-num">${d}</span>${badgesHtml}<i class="fa fa-plus add-hint-icon"></i></div>`;
     }
-
-    const summaryEl = document.getElementById('todoTotalSummary');
-    if (summaryEl) summaryEl.innerText = `Pending: ${monthPending} | Completed: ${monthCompleted}`;
+    document.getElementById('todoTotalSummary').innerText = `Pending: ${monthPending} | Completed: ${monthCompleted}`;
   }
 
   function openTodoDateModal(dateStr) {
@@ -3181,7 +2567,6 @@
     const spInput = document.getElementById('modalTodoSalesPerson');
     const role = loggedInUser && loggedInUser.role ? String(loggedInUser.role).toLowerCase() : '';
     const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
-
     if (spInput) {
       if (isMgmt) {
         const activeSpFilter = document.getElementById('todoFilterSalesPerson') ? document.getElementById('todoFilterSalesPerson').value : 'ALL';
@@ -3191,7 +2576,6 @@
         spInput.readOnly = true;
       }
     }
-
     renderModalTodoList();
     bootstrap.Modal.getOrCreateInstance(document.getElementById('todoDateModal')).show();
   }
@@ -3202,38 +2586,25 @@
     const selectedSp = (isMgmt && document.getElementById('todoFilterSalesPerson')) ? document.getElementById('todoFilterSalesPerson').value : (loggedInUser ? loggedInUser.salesPerson : 'ALL');
 
     const tasks = (globalTasks || []).filter(t => {
-      const matchDate = normalizeDateForMatch(t.dueDate) === selectedTodoDateStr;
-      if (!matchDate) return false;
-      if (isMgmt) {
-        return selectedSp === 'ALL' || String(t.salesPerson || '').toLowerCase() === String(selectedSp).toLowerCase();
-      } else {
-        return String(t.salesPerson || '').toLowerCase().trim() === String(loggedInUser.salesPerson || '').toLowerCase().trim();
-      }
+      if (normalizeDateForMatch(t.dueDate) !== selectedTodoDateStr) return false;
+      if (isMgmt) return selectedSp === 'ALL' || String(t.salesPerson || '').toLowerCase() === String(selectedSp).toLowerCase();
+      return String(t.salesPerson || '').toLowerCase().trim() === String(loggedInUser.salesPerson || '').toLowerCase().trim();
     });
 
     const tbody = document.getElementById('modalTodoTableBody');
     if (!tbody) return;
-
-    if (!tasks || tasks.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-3">No tasks scheduled for this date.</td></tr>`;
-      return;
-    }
+    if (!tasks || tasks.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-3">No tasks scheduled for this date.</td></tr>`; return; }
 
     tbody.innerHTML = tasks.map(t => {
       const isDone = String(t.status).toLowerCase() === 'completed';
-      const badge = isDone ? '<span class="badge bg-success">Done</span>' : '<span class="badge bg-warning text-dark">Pending</span>';
-      const priorityClass = t.priority === 'High' ? 'text-danger fw-bold' : (t.priority === 'Low' ? 'text-success' : 'text-dark');
-
       return `
         <tr ${isDone ? 'style="text-decoration: line-through; opacity: 0.65;"' : ''}>
-          <td>${badge}</td>
+          <td>${isDone ? '<span class="badge bg-success">Done</span>' : '<span class="badge bg-warning text-dark">Pending</span>'}</td>
           <td><b>${escapeHtml(t.salesPerson)}</b></td>
           <td>${escapeHtml(t.title)}</td>
-          <td><span class="${priorityClass}">${escapeHtml(t.priority)}</span></td>
+          <td><span class="${t.priority === 'High' ? 'text-danger fw-bold' : (t.priority === 'Low' ? 'text-success' : 'text-dark')}">${escapeHtml(t.priority)}</span></td>
           <td class="text-center">
-            <button class="btn btn-sm ${isDone ? 'btn-outline-secondary' : 'btn-success'} py-0 px-2" onclick="toggleTaskStatus('${escapeHtml(t.id)}', '${isDone ? 'Pending' : 'Completed'}')">
-              ${isDone ? 'Mark Pending' : '✔ Complete'}
-            </button>
+            <button class="btn btn-sm ${isDone ? 'btn-outline-secondary' : 'btn-success'} py-0 px-2" onclick="toggleTaskStatus('${escapeHtml(t.id)}', '${isDone ? 'Pending' : 'Completed'}')">${isDone ? 'Mark Pending' : '✔ Complete'}</button>
           </td>
         </tr>
       `;
@@ -3243,30 +2614,19 @@
   async function submitModalTodoTask() {
     const title = document.getElementById('modalTodoTitle').value.trim();
     const sp = document.getElementById('modalTodoSalesPerson').value.trim();
-    const priority = document.getElementById('modalTodoPriority').value;
-
     if (!title) { alert("Please enter task description!"); return; }
 
     const btn = document.getElementById('modalTodoSaveBtn');
     if (btn.disabled) return;
-    btn.disabled = true; 
-    btn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Adding...';
+    btn.disabled = true; btn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Adding...';
 
-    const payload = {
-      salesPerson: sp || (loggedInUser ? loggedInUser.salesPerson : ''),
-      title: title,
-      dueDate: selectedTodoDateStr,
-      priority: priority
-    };
-
-    const res = await callAppsScriptApi("saveToDoTask", payload);
-    btn.disabled = false; 
-    btn.innerHTML = '<i class="fa fa-save me-1"></i> Add Task';
+    sessionStorage.removeItem('portal_dashboard_data');
+    const res = await callAppsScriptApi("saveToDoTask", { salesPerson: sp || loggedInUser.salesPerson, title: title, dueDate: selectedTodoDateStr, priority: document.getElementById('modalTodoPriority').value });
+    btn.disabled = false; btn.innerHTML = '<i class="fa fa-save me-1"></i> Add Task';
 
     if (res && res.success) {
       showFloatingNotification("Task Added", `Task scheduled for ${selectedTodoDateStr}`);
       document.getElementById('modalTodoTitle').value = '';
-      sessionStorage.removeItem('portal_dashboard_data');
       await loadDashboardData();
       setTimeout(renderModalTodoList, 400);
     } else {
@@ -3275,14 +2635,14 @@
   }
 
   async function toggleTaskStatus(taskId, newStatus) {
+    sessionStorage.removeItem('portal_dashboard_data');
     const res = await callAppsScriptApi("toggleToDoTaskStatus", { taskId: taskId, newStatus: newStatus });
     if (res && res.success) {
       showFloatingNotification("Task Updated", `Task marked as ${newStatus}`);
-      sessionStorage.removeItem('portal_dashboard_data');
       await loadDashboardData();
       setTimeout(renderModalTodoList, 400);
     } else {
-      showAlert('Error: ' + (res ? res.message : 'Status update failed'), 'danger');
+      showAlert('Error: Status update failed', 'danger');
     }
   }
 
@@ -3295,22 +2655,19 @@
       return;
     }
 
-    ['enquiry', 'add-lead', 'mis', 'todo', 'analytics', 'lost', 'activity'].forEach(t => {
-      const mod = document.getElementById(t + 'Module');
+    ['enquiry', 'add-lead', 'todo', 'analytics', 'lost', 'activity'].forEach(t => {
+      document.getElementById(t + 'Module').classList.toggle('d-none', t !== tabName);
       const btn = document.getElementById('tab-' + t + '-btn');
-      if (mod) mod.classList.toggle('d-none', t !== tabName);
       if (btn) btn.classList.toggle('active', t === tabName);
     });
 
     if (tabName === 'analytics') renderPowerBiDashboard();
-    if (tabName === 'mis') loadCustomerMisReport();
     if (tabName === 'activity') renderActivityCalendarAndMatrix();
     if (tabName === 'todo') renderTodoCalendar();
     if (saveState) localStorage.setItem('active_portal_tab', tabName);
   }
 
   function logout() { localStorage.clear(); sessionStorage.clear(); location.reload(); }
-
   function showAlert(msg, type) {
     const alertBox = document.getElementById('alertBox');
     document.getElementById('alertMsg').innerText = msg;
@@ -3319,84 +2676,27 @@
     setTimeout(() => alertBox.classList.add('d-none'), 5000);
   }
 
-  function getInitialFinancialMonth() {
-    const m = new Date().getMonth(); // 0=Jan, 3=Apr
-    return (m >= 3) ? (m - 2) : (m + 10);
-  }
-
   async function loadSidebarTargetInfo() {
     if (!loggedInUser) return;
     let targetSp = loggedInUser.salesPerson;
     const filterEl = document.getElementById('filterSalesPerson');
-    const role = String(loggedInUser.role || '').toLowerCase();
-    const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
-
-    if (filterEl && filterEl.value) {
-      targetSp = (filterEl.value === 'ALL') ? 'ALL' : filterEl.value;
-    } else if (isMgmt) {
-      targetSp = 'ALL';
-    }
-
+    if (filterEl && filterEl.value) targetSp = (filterEl.value === 'ALL') ? 'ALL' : filterEl.value;
     if (!targetSp) return;
 
-    const monthSelector = document.getElementById('targetMonthSelector');
-    if (monthSelector && !monthSelector.dataset.initialized) {
-      monthSelector.value = String(getInitialFinancialMonth());
-      monthSelector.dataset.initialized = "true";
-    }
-    const selectedMonth = monthSelector ? monthSelector.value : getInitialFinancialMonth();
+    const selectedYear = document.getElementById('targetYearSelect') ? document.getElementById('targetYearSelect').value : '2026';
+    const selectedMonth = document.getElementById('targetMonthSelect') ? document.getElementById('targetMonthSelect').value : '1';
 
-    const res = await callAppsScriptApi("getSalespersonTargetInfo", {
-      targetSp: targetSp,
-      selectedMonth: selectedMonth,
-      user: loggedInUser
-    });
-
-    if (res && res.success) {
-      const mTarget = res.monthlyTarget || 0;
-      const mAchieved = res.monthlyAchieved || 0;
-      const mBalance = res.monthlyBalance || 0;
-      const mPct = res.monthlyPct || 0;
-      
-      const mTargetText = document.getElementById('mTargetText');
-      const mProgressBar = document.getElementById('mProgressBar');
-      const mPctText = document.getElementById('mPctText');
-      const mBalanceText = document.getElementById('mBalanceText');
-
-      if (mTargetText) mTargetText.innerHTML = `₹${mAchieved.toLocaleString()} / ₹${mTarget.toLocaleString()}`;
-      if (mProgressBar) mProgressBar.style.width = Math.min(mPct, 100) + '%';
-      if (mPctText) mPctText.innerText = mPct + '% Done';
-      if (mBalanceText) mBalanceText.innerText = 'Bal: ₹' + mBalance.toLocaleString();
-
-      const qTarget = res.quarterlyTarget || 0;
-      const qAchieved = res.quarterlyAchieved || 0;
-      const qBalance = res.quarterlyBalance || 0;
-      const qPct = res.quarterlyPct || 0;
-      
-      const qTargetText = document.getElementById('qTargetText');
-      const qProgressBar = document.getElementById('qProgressBar');
-      const qPctText = document.getElementById('qPctText');
-      const qBalanceText = document.getElementById('qBalanceText');
-
-      if (qTargetText) qTargetText.innerHTML = `₹${qAchieved.toLocaleString()} / ₹${qTarget.toLocaleString()}`;
-      if (qProgressBar) qProgressBar.style.width = Math.min(qPct, 100) + '%';
-      if (qPctText) qPctText.innerText = qPct + '% Done';
-      if (qBalanceText) qBalanceText.innerText = 'Bal: ₹' + qBalance.toLocaleString();
-
-      const aTarget = res.annualTarget || 0;
-      const aAchieved = res.annualAchieved || 0;
-      const aBalance = res.annualBalance || 0;
-      const aPct = res.annualPct || 0;
-      
-      const aTargetText = document.getElementById('aTargetText');
-      const aProgressBar = document.getElementById('aProgressBar');
-      const aPctText = document.getElementById('aPctText');
-      const aBalanceText = document.getElementById('aBalanceText');
-
-      if (aTargetText) aTargetText.innerHTML = `₹${aAchieved.toLocaleString()} / ₹${aTarget.toLocaleString()}`;
-      if (aProgressBar) aProgressBar.style.width = Math.min(aPct, 100) + '%';
-      if (aPctText) aPctText.innerText = aPct + '% Done';
-      if (aBalanceText) aBalanceText.innerText = 'Bal: ₹' + aBalance.toLocaleString();
+    const res = await callAppsScriptApi("getSalespersonTargetInfo", { targetSp: targetSp, user: loggedInUser, targetYear: selectedYear, targetMonthCol: selectedMonth });
+    if (res) {
+      const setTargetUI = (prefix, t, a, b, p) => {
+        document.getElementById(prefix + 'TargetText').innerHTML = `₹${a.toLocaleString()} / ₹${t.toLocaleString()}`;
+        document.getElementById(prefix + 'ProgressBar').style.width = Math.min(p, 100) + '%';
+        document.getElementById(prefix + 'PctText').innerText = p + '% Done';
+        document.getElementById(prefix + 'BalanceText').innerText = 'Bal: ₹' + b.toLocaleString();
+      };
+      setTargetUI('m', res.monthlyTarget, res.monthlyAchieved, res.monthlyBalance, res.monthlyPct);
+      setTargetUI('q', res.quarterlyTarget, res.quarterlyAchieved, res.quarterlyBalance, res.quarterlyPct);
+      setTargetUI('a', res.annualTarget, res.annualAchieved, res.annualBalance, res.annualPct);
     }
   }
 </script>
