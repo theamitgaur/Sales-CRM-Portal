@@ -180,21 +180,22 @@
         <li class="nav-item" id="navItemActivity"><a class="nav-link" id="tab-activity-btn" onclick="showTab('activity')">📞 Calls & Visits</a></li>
       </ul>
       
-      <!-- FUTURE-READY MULTI-YEAR TARGET SELECTOR WIDGET -->
+      <!-- FUTURE-READY TARGET SELECTOR WIDGET (Year & Month Selectors) -->
       <div class="p-2 mb-2 bg-dark rounded border border-secondary text-white small shadow-sm" id="sidebarTargetWidget">
         <div class="fw-bold text-info mb-2 d-flex justify-content-between align-items-center">
           <span><i class="fa fa-bullseye me-1"></i> Targets & Goals</span>
         </div>
         
         <div class="row g-1 mb-2">
-          <div class="col-7">
+          <div class="col-6">
             <select id="targetYearSelect" class="form-select form-select-sm bg-secondary text-white border-0 py-1" style="font-size: 0.75rem;" onchange="loadSidebarTargetInfo()">
-              <option value="2026">Financial Year 2026-27</option>
-              <option value="2025">Financial Year 2025-26</option>
-              <option value="2027">Financial Year 2027-28</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2027">2027</option>
+              <option value="2028">2028</option>
             </select>
           </div>
-          <div class="col-5">
+          <div class="col-6">
             <select id="targetMonthSelect" class="form-select form-select-sm bg-secondary text-white border-0 py-1" style="font-size: 0.75rem;" onchange="loadSidebarTargetInfo()">
               <option value="1">April</option>
               <option value="2">May</option>
@@ -1420,6 +1421,7 @@
     document.getElementById('loginForm').addEventListener('submit', handleLoginSubmit);
     document.getElementById('enquiryForm').addEventListener('submit', handleEnquirySubmit);
 
+    // Initialize Target Selectors with Current Year and Month
     const now = new Date();
     const curYear = now.getFullYear();
     const curMonth = now.getMonth() + 1;
@@ -1794,6 +1796,7 @@
     renderPowerBiDashboard();
     renderActivityCalendarAndMatrix();
     renderTodoCalendar();
+    loadSidebarTargetInfo(); // Refresh target info dynamically when dashboard data loads
   }
 
   function checkTodayReminders(enquiries, tasks) {
@@ -2157,8 +2160,8 @@
   }
 
   function openEditModal(id) {
-    const targetId = String(id || '').trim().toLowerCase();
-    const item = globalEnquiries.find(e => String(e.id || '').trim().toLowerCase() === targetId);
+    const targetId = String(id || '').trim().toUpperCase();
+    const item = globalEnquiries.find(e => String(e.id || '').trim().toUpperCase() === targetId);
     if (!item) { alert("Lead details not found! Please refresh dashboard."); return; }
 
     document.getElementById('modalEnqTitle').innerText = "Lead Details - " + item.id;
