@@ -195,8 +195,7 @@
         <div class="row g-1 mb-2">
           <div class="col-6">
             <select id="targetYearSelect" class="form-select form-select-sm bg-secondary text-white border-0 py-1" style="font-size: 0.75rem;" onchange="loadSidebarTargetInfo()">
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
+              <!-- Financial years are populated dynamically by JavaScript -->
             </select>
           </div>
           <div class="col-6">
@@ -1433,14 +1432,34 @@
     document.getElementById('loginForm').addEventListener('submit', handleLoginSubmit);
     document.getElementById('enquiryForm').addEventListener('submit', handleEnquirySubmit);
 
-    // Initialize 2-year target year & month selector
+    // Initialize dynamic Financial Year (April–March) and month selectors.
+    // The selected year is the FY starting year: FY 2026-27 has value 2026.
     const now = new Date();
-    const curYear = now.getFullYear();
+    const calendarYear = now.getFullYear();
     const curMonth = now.getMonth() + 1;
+    const currentFYStartYear = curMonth >= 4 ? calendarYear : calendarYear - 1;
     const yrSelect = document.getElementById('targetYearSelect');
     const moSelect = document.getElementById('targetMonthSelect');
-    if (yrSelect) yrSelect.value = String(curYear);
-    if (moSelect) moSelect.value = String(curMonth >= 4 ? curMonth - 3 : curMonth + 9);
+
+    if (yrSelect) {
+      const firstFY = currentFYStartYear - 2;
+      const lastFY = currentFYStartYear + 10;
+      yrSelect.innerHTML = '';
+
+      for (let fyYear = firstFY; fyYear <= lastFY; fyYear++) {
+        const option = document.createElement('option');
+        option.value = String(fyYear);
+        option.textContent = `FY ${fyYear}-${String(fyYear + 1).slice(-2)}`;
+        yrSelect.appendChild(option);
+      }
+
+      yrSelect.value = String(currentFYStartYear);
+    }
+
+    // Convert calendar month to financial-year month: April=1 ... March=12.
+    if (moSelect) {
+      moSelect.value = String(curMonth >= 4 ? curMonth - 3 : curMonth + 9);
+    }
 
     const savedTab = localStorage.getItem('active_portal_tab') || 'enquiry';
     showTab(savedTab, false);
@@ -2739,7 +2758,7 @@
 
     if (!targetSp) return;
 
-    const selectedYear = document.getElementById('targetYearSelect') ? document.getElementById('targetYearSelect').value : '2026';
+    const selectedYear = document.getElementById('targetYearSelect') ? document.getElementById('targetYearSelect').value : String(new Date().getMonth() + 1 >= 4 ? new Date().getFullYear() : new Date().getFullYear() - 1);
     const selectedMonth = document.getElementById('targetMonthSelect') ? document.getElementById('targetMonthSelect').value : '1';
 
     const res = await callAppsScriptApi("getSalespersonTargetInfo", { targetSp: targetSp, user: loggedInUser, targetYear: selectedYear, targetMonthCol: selectedMonth });
