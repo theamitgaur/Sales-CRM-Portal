@@ -19,6 +19,7 @@
     .sidebar { background: #0f172a; color: #fff; min-height: 100vh; box-shadow: 4px 0 20px rgba(0,0,0,0.06); }
     .sidebar .nav-link { color: #94a3b8; font-weight: 500; border-radius: 10px; margin-bottom: 6px; cursor: pointer; transition: all 0.2s ease; padding: 10px 14px; }
     .sidebar .nav-link.active, .sidebar .nav-link:hover { color: #fff; background-color: #1e293b; transform: translateX(3px); }
+    #sidebarTargetWidget[aria-busy="true"] { opacity: 0.72; }
     .card { border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03); transition: all 0.2s ease; background: #ffffff; }
     .card:hover { box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); }
     .form-label { font-weight: 600; font-size: 0.8rem; color: #475569; }
@@ -171,16 +172,7 @@
         <img src="https://unitedcontrolengg.com/wp-content/uploads/2025/06/United-Logo.png" alt="Logo" style="height: 35px; width: auto; margin-right: 8px; vertical-align: middle;">
         <span style="vertical-align: middle;">UCEIPL SALES</span>
       </h4>
-      <ul class="nav nav-pills flex-column mb-auto" id="sidebarNavList">
-        <li class="nav-item"><a class="nav-link" id="tab-add-lead-btn" onclick="showTab('add-lead')">➕ Add Lead</a></li>
-        <li class="nav-item" id="navItemDashboard"><a class="nav-link active" id="tab-enquiry-btn" onclick="showTab('enquiry')">📋 Dashboard</a></li>
-        <li class="nav-item" id="navItemTodo"><a class="nav-link" id="tab-todo-btn" onclick="showTab('todo')">✅ To-Do List</a></li>
-        <li class="nav-item" id="navItemAnalytics"><a class="nav-link" id="tab-analytics-btn" onclick="showTab('analytics')">📊 Visual Analytics</a></li>
-        <li class="nav-item" id="navItemLost"><a class="nav-link" id="tab-lost-btn" onclick="showTab('lost')">❌ Lost Enquiries</a></li>
-        <li class="nav-item" id="navItemActivity"><a class="nav-link" id="tab-activity-btn" onclick="showTab('activity')">📞 Calls & Visits</a></li>
-      </ul>
-      
-      <!-- TARGETS & GOALS WIDGET WITH 2-YEAR DATA & ADMIN/MANAGER USER FILTER -->
+      <!-- TARGETS & GOALS WIDGET: CURRENT + PREVIOUS FY -->
       <div class="p-2 mb-2 bg-dark rounded border border-secondary text-white small shadow-sm" id="sidebarTargetWidget">
         <div class="fw-bold text-info mb-1 d-flex justify-content-between align-items-center">
           <span><i class="fa fa-bullseye me-1"></i> Targets & Goals</span>
@@ -255,6 +247,16 @@
         </div>
       </div>
 
+
+      <ul class="nav nav-pills flex-column mb-auto" id="sidebarNavList">
+        <li class="nav-item"><a class="nav-link" id="tab-add-lead-btn" onclick="showTab('add-lead')">➕ Add Lead</a></li>
+        <li class="nav-item" id="navItemDashboard"><a class="nav-link active" id="tab-enquiry-btn" onclick="showTab('enquiry')">📋 Dashboard</a></li>
+        <li class="nav-item" id="navItemTodo"><a class="nav-link" id="tab-todo-btn" onclick="showTab('todo')">✅ To-Do List</a></li>
+        <li class="nav-item" id="navItemAnalytics"><a class="nav-link" id="tab-analytics-btn" onclick="showTab('analytics')">📊 Visual Analytics</a></li>
+        <li class="nav-item" id="navItemLost"><a class="nav-link" id="tab-lost-btn" onclick="showTab('lost')">❌ Lost Enquiries</a></li>
+        <li class="nav-item" id="navItemActivity"><a class="nav-link" id="tab-activity-btn" onclick="showTab('activity')">📞 Calls & Visits</a></li>
+      </ul>
+      
       <div class="mt-auto p-2 bg-dark rounded border border-secondary text-white small">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <span>👤 <span id="loggedUser">Not Logged In</span></span>
@@ -1442,8 +1444,9 @@
     const moSelect = document.getElementById('targetMonthSelect');
 
     if (yrSelect) {
-      const firstFY = currentFYStartYear - 2;
-      const lastFY = currentFYStartYear + 10;
+      // Keep only the current FY and the immediately previous FY; this rolls forward automatically.
+      const firstFY = currentFYStartYear - 1;
+      const lastFY = currentFYStartYear;
       yrSelect.innerHTML = '';
 
       for (let fyYear = firstFY; fyYear <= lastFY; fyYear++) {
@@ -2739,39 +2742,68 @@
     setTimeout(() => alertBox.classList.add('d-none'), 5000);
   }
 
+  let sidebarTargetRequestId = 0;
+
   async function loadSidebarTargetInfo() {
     if (!loggedInUser) return;
-    
+
+    // Ignore older responses if the user changes FY/month before a request finishes.
+    const requestId = ++sidebarTargetRequestId;
     const role = String(loggedInUser.role || '').toLowerCase();
     const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
-    
+
     let targetSp = loggedInUser.salesPerson;
     if (isMgmt) {
       const adminUserSelect = document.getElementById('targetAdminUserSelect');
-      if (adminUserSelect && adminUserSelect.value) {
-        targetSp = adminUserSelect.value;
-      }
+      if (adminUserSelect && adminUserSelect.value) targetSp = adminUserSelect.value;
     } else {
       const filterEl = document.getElementById('filterSalesPerson');
       if (filterEl && filterEl.value) targetSp = (filterEl.value === 'ALL') ? 'ALL' : filterEl.value;
     }
-
     if (!targetSp) return;
 
-    const selectedYear = document.getElementById('targetYearSelect') ? document.getElementById('targetYearSelect').value : String(new Date().getMonth() + 1 >= 4 ? new Date().getFullYear() : new Date().getFullYear() - 1);
-    const selectedMonth = document.getElementById('targetMonthSelect') ? document.getElementById('targetMonthSelect').value : '1';
+    const now = new Date();
+    const currentFY = (now.getMonth() + 1) >= 4 ? now.getFullYear() : now.getFullYear() - 1;
+    const yearSelect = document.getElementById('targetYearSelect');
+    const monthSelect = document.getElementById('targetMonthSelect');
+    const selectedYear = yearSelect ? yearSelect.value : String(currentFY);
+    const selectedFYMonth = Number(monthSelect ? monthSelect.value : '1');
 
-    const res = await callAppsScriptApi("getSalespersonTargetInfo", { targetSp: targetSp, user: loggedInUser, targetYear: selectedYear, targetMonthCol: selectedMonth });
-    if (res) {
+    // Dropdown values are FY months: April=1 ... March=12. API month-column index is zero-based.
+    const targetMonthCol = String(Math.max(0, selectedFYMonth - 1));
+    const widget = document.getElementById('sidebarTargetWidget');
+    if (widget) widget.setAttribute('aria-busy', 'true');
+
+    try {
+      const res = await callAppsScriptApi("getSalespersonTargetInfo", {
+        targetSp: targetSp,
+        user: loggedInUser,
+        targetYear: selectedYear,
+        targetMonthCol: targetMonthCol
+      });
+      if (requestId !== sidebarTargetRequestId || !res) return;
+
       const setTargetUI = (prefix, t, a, b, p) => {
-        document.getElementById(prefix + 'TargetText').innerHTML = `₹${a.toLocaleString()} / ₹${t.toLocaleString()}`;
-        document.getElementById(prefix + 'ProgressBar').style.width = Math.min(p, 100) + '%';
-        document.getElementById(prefix + 'PctText').innerText = p + '% Done';
-        document.getElementById(prefix + 'BalanceText').innerText = 'Bal: ₹' + b.toLocaleString();
+        const targetText = document.getElementById(prefix + 'TargetText');
+        const progressBar = document.getElementById(prefix + 'ProgressBar');
+        const pctText = document.getElementById(prefix + 'PctText');
+        const balanceText = document.getElementById(prefix + 'BalanceText');
+        const target = Number(t) || 0;
+        const achieved = Number(a) || 0;
+        const balance = Number(b) || 0;
+        const pct = Number(p) || 0;
+        if (targetText) targetText.innerHTML = `₹${achieved.toLocaleString('en-IN')} / ₹${target.toLocaleString('en-IN')}`;
+        if (progressBar) progressBar.style.width = Math.min(Math.max(pct, 0), 100) + '%';
+        if (pctText) pctText.innerText = pct + '% Done';
+        if (balanceText) balanceText.innerText = 'Bal: ₹' + balance.toLocaleString('en-IN');
       };
       setTargetUI('m', res.monthlyTarget, res.monthlyAchieved, res.monthlyBalance, res.monthlyPct);
       setTargetUI('q', res.quarterlyTarget, res.quarterlyAchieved, res.quarterlyBalance, res.quarterlyPct);
       setTargetUI('a', res.annualTarget, res.annualAchieved, res.annualBalance, res.annualPct);
+    } catch (error) {
+      console.error('Unable to load sidebar target information:', error);
+    } finally {
+      if (requestId === sidebarTargetRequestId && widget) widget.removeAttribute('aria-busy');
     }
   }
 </script>
