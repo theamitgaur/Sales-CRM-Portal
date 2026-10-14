@@ -178,33 +178,31 @@
           <span><i class="fa fa-bullseye me-1"></i> Targets & Goals</span>
         </div>
 
-        <!-- Admin/Manager Target User Selector -->
-        <div class="mb-2 d-none" id="targetAdminUserFilterWrapper">
-          <label class="form-label text-light extra-small mb-1">View Target For:</label>
-          <select id="targetAdminUserSelect" class="form-select form-select-sm bg-secondary text-white border-0 py-1" style="font-size: 0.75rem;" onchange="loadSidebarTargetInfo()"></select>
+        <div class="mb-2">
+          <label for="targetMonthSelect" class="form-label text-light extra-small mb-1">Month</label>
+          <select id="targetMonthSelect" class="form-select form-select-sm bg-secondary text-white border-0 py-1" style="font-size: 0.75rem;" onchange="syncTargetDateRangeFromMonth(); loadSidebarTargetInfo()">
+            <option value="1">April</option>
+            <option value="2">May</option>
+            <option value="3">June</option>
+            <option value="4">July</option>
+            <option value="5">August</option>
+            <option value="6">September</option>
+            <option value="7">October</option>
+            <option value="8">November</option>
+            <option value="9">December</option>
+            <option value="10">January</option>
+            <option value="11">February</option>
+            <option value="12">March</option>
+          </select>
         </div>
-        
         <div class="row g-1 mb-2">
           <div class="col-6">
-            <select id="targetYearSelect" class="form-select form-select-sm bg-secondary text-white border-0 py-1" style="font-size: 0.75rem;" onchange="loadSidebarTargetInfo()">
-              <!-- Financial years are populated dynamically by JavaScript -->
-            </select>
+            <label for="targetFromDate" class="form-label text-light extra-small mb-1">From</label>
+            <input type="date" id="targetFromDate" class="form-control form-control-sm bg-secondary text-white border-0 py-1" style="font-size: 0.72rem;" onchange="loadSidebarTargetInfo()">
           </div>
           <div class="col-6">
-            <select id="targetMonthSelect" class="form-select form-select-sm bg-secondary text-white border-0 py-1" style="font-size: 0.75rem;" onchange="loadSidebarTargetInfo()">
-              <option value="1">April</option>
-              <option value="2">May</option>
-              <option value="3">June</option>
-              <option value="4">July</option>
-              <option value="5">August</option>
-              <option value="6">September</option>
-              <option value="7">October</option>
-              <option value="8">November</option>
-              <option value="9">December</option>
-              <option value="10">January</option>
-              <option value="11">February</option>
-              <option value="12">March</option>
-            </select>
+            <label for="targetToDate" class="form-label text-light extra-small mb-1">To</label>
+            <input type="date" id="targetToDate" class="form-control form-control-sm bg-secondary text-white border-0 py-1" style="font-size: 0.72rem;" onchange="loadSidebarTargetInfo()">
           </div>
         </div>
 
@@ -1434,35 +1432,16 @@
     document.getElementById('loginForm').addEventListener('submit', handleLoginSubmit);
     document.getElementById('enquiryForm').addEventListener('submit', handleEnquirySubmit);
 
-    // Initialize dynamic Financial Year (April–March) and month selectors.
-    // The selected year is the FY starting year: FY 2026-27 has value 2026.
+    // Initialize the month selector and date range (FY dropdown removed).
     const now = new Date();
-    const calendarYear = now.getFullYear();
     const curMonth = now.getMonth() + 1;
-    const currentFYStartYear = curMonth >= 4 ? calendarYear : calendarYear - 1;
-    const yrSelect = document.getElementById('targetYearSelect');
     const moSelect = document.getElementById('targetMonthSelect');
-
-    if (yrSelect) {
-      // Keep only the current FY and the immediately previous FY; this rolls forward automatically.
-      const firstFY = currentFYStartYear - 1;
-      const lastFY = currentFYStartYear;
-      yrSelect.innerHTML = '';
-
-      for (let fyYear = firstFY; fyYear <= lastFY; fyYear++) {
-        const option = document.createElement('option');
-        option.value = String(fyYear);
-        option.textContent = `FY ${fyYear}-${String(fyYear + 1).slice(-2)}`;
-        yrSelect.appendChild(option);
-      }
-
-      yrSelect.value = String(currentFYStartYear);
-    }
-
-    // Convert calendar month to financial-year month: April=1 ... March=12.
-    if (moSelect) {
-      moSelect.value = String(curMonth >= 4 ? curMonth - 3 : curMonth + 9);
-    }
+    if (moSelect) moSelect.value = String(curMonth >= 4 ? curMonth - 3 : curMonth + 9);
+    const fromInput = document.getElementById('targetFromDate');
+    const toInput = document.getElementById('targetToDate');
+    const currentFYStartYear = curMonth >= 4 ? now.getFullYear() : now.getFullYear() - 1;
+    if (fromInput) fromInput.value = `${now.getFullYear()}-${String(curMonth).padStart(2, '0')}-01`;
+    if (toInput) toInput.value = `${now.getFullYear()}-${String(curMonth).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     const savedTab = localStorage.getItem('active_portal_tab') || 'enquiry';
     showTab(savedTab, false);
@@ -1628,7 +1607,8 @@
     if (targetAdminUserSelect && targetAdminUserWrapper) {
       if (isMgmt) {
         targetAdminUserSelect.innerHTML = targetAdminOpts;
-        targetAdminUserSelect.value = loggedInUser.salesPerson;
+        // Admin/Manager target widget defaults to the whole team.
+        targetAdminUserSelect.value = 'ALL';
         targetAdminUserWrapper.classList.remove('d-none');
       } else {
         targetAdminUserWrapper.classList.add('d-none');
@@ -2742,6 +2722,27 @@
     setTimeout(() => alertBox.classList.add('d-none'), 5000);
   }
 
+  // When a month is selected, align the date range to that month in the year currently
+  // represented by the From date. The dates remain editable for custom ranges.
+  function syncTargetDateRangeFromMonth() {
+    const monthSelect = document.getElementById('targetMonthSelect');
+    const fromInput = document.getElementById('targetFromDate');
+    const toInput = document.getElementById('targetToDate');
+    if (!monthSelect || !fromInput || !toInput || !monthSelect.value) return;
+
+    const currentFrom = fromInput.value;
+    const baseDate = currentFrom ? new Date(`${currentFrom}T12:00:00`) : new Date();
+    const baseCalendarMonth = baseDate.getMonth() + 1;
+    const baseFYStartYear = baseCalendarMonth >= 4 ? baseDate.getFullYear() : baseDate.getFullYear() - 1;
+    const fyMonth = Number(monthSelect.value);
+    const calendarMonth = ((fyMonth + 2) % 12) + 1; // FY month 1=April ... 12=March
+    const year = fyMonth >= 10 ? baseFYStartYear + 1 : baseFYStartYear;
+    const monthString = String(calendarMonth).padStart(2, '0');
+    const lastDay = new Date(year, calendarMonth, 0).getDate();
+    fromInput.value = `${year}-${monthString}-01`;
+    toInput.value = `${year}-${monthString}-${String(lastDay).padStart(2, '0')}`;
+  }
+
   let sidebarTargetRequestId = 0;
 
   async function loadSidebarTargetInfo() {
@@ -2752,25 +2753,27 @@
     const role = String(loggedInUser.role || '').toLowerCase();
     const isMgmt = role.indexOf('admin') > -1 || role.indexOf('manager') > -1;
 
-    let targetSp = loggedInUser.salesPerson;
-    if (isMgmt) {
-      const adminUserSelect = document.getElementById('targetAdminUserSelect');
-      if (adminUserSelect && adminUserSelect.value) targetSp = adminUserSelect.value;
-    } else {
+    // Admin/Manager always see the combined team target; regular users see only their own.
+    let targetSp = isMgmt ? 'ALL' : loggedInUser.salesPerson;
+    if (!isMgmt) {
       const filterEl = document.getElementById('filterSalesPerson');
-      if (filterEl && filterEl.value) targetSp = (filterEl.value === 'ALL') ? 'ALL' : filterEl.value;
+      if (filterEl && filterEl.value) targetSp = (filterEl.value === 'ALL') ? loggedInUser.salesPerson : filterEl.value;
     }
     if (!targetSp) return;
 
-    const now = new Date();
-    const currentFY = (now.getMonth() + 1) >= 4 ? now.getFullYear() : now.getFullYear() - 1;
-    const yearSelect = document.getElementById('targetYearSelect');
     const monthSelect = document.getElementById('targetMonthSelect');
-    const selectedYear = yearSelect ? yearSelect.value : String(currentFY);
     const selectedFYMonth = Number(monthSelect ? monthSelect.value : '1');
+    const fromDate = document.getElementById('targetFromDate')?.value || '';
+    const toDate = document.getElementById('targetToDate')?.value || '';
 
-    // Dropdown values are FY months: April=1 ... March=12. API month-column index is zero-based.
+    // Month selector uses FY order: April=1 ... March=12. Backend will use date range
+    // to determine the applicable period/FY once its function is updated.
     const targetMonthCol = String(Math.max(0, selectedFYMonth - 1));
+    const targetYear = fromDate ? String(Number(fromDate.slice(0, 4)) + (Number(fromDate.slice(5, 7)) >= 4 ? 0 : -1)) : '';
+    if (fromDate && toDate && fromDate > toDate) {
+      showAlert('From date cannot be after To date.', 'warning');
+      return;
+    }
     const widget = document.getElementById('sidebarTargetWidget');
     if (widget) widget.setAttribute('aria-busy', 'true');
 
@@ -2778,8 +2781,10 @@
       const res = await callAppsScriptApi("getSalespersonTargetInfo", {
         targetSp: targetSp,
         user: loggedInUser,
-        targetYear: selectedYear,
-        targetMonthCol: targetMonthCol
+        targetYear: targetYear,
+        targetMonthCol: targetMonthCol,
+        targetFromDate: fromDate,
+        targetToDate: toDate
       });
       if (requestId !== sidebarTargetRequestId || !res) return;
 
